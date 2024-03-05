@@ -1,0 +1,27 @@
+﻿<UserControl x:Class="TechtonicaModLoader.MyPanels.ControlBox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TechtonicaModLoader.MyPanels"
+             xmlns:MyControls="clr-namespace:TechtonicaModLoader.MyControls"
+             mc:Ignorable="d" 
+             Height="34" Width="Auto">
+    <Grid>
+        <Border Background="{DynamicResource backgroundBrush}"
+                CornerRadius="{DynamicResource borderCorners}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <MyControls:MySVGButton x:Name="settingsButton"  Source="ControlBox/Settings" SVGMargin="4" Margin="2,0,1,0"  Grid.Column="0" LeftClicked="OnSettingsClicked"/>
+                <MyControls:MySVGButton x:Name="moveButton" Source="ControlBox/Move" SVGMargin="4" Margin="1,0,1,0"  Grid.Column="1" MouseLeftButtonDown="OnMoveButtonMouseLeftButtonDown"/>
+                <MyControls:MySVGButton x:Name="minimsieButton" Source="ControlBox/Minimise" SVGMargin="4" Margin="1,0,1,0" Grid.Column="2" LeftClicked="OnMinimiseClicked"/>
+                <MyControls:MySVGButton x:Name="closeButton" Source="ControlBox/Close" SVGMargin="4"    Margin="1,0,2,0" Grid.Column="3" LeftClicked="OnCloseClicked"/>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

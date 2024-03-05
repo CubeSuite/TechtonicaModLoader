@@ -1,0 +1,73 @@
+﻿<UserControl x:Class="TechtonicaModLoader.MyControls.MyComboBox" x:Name="thisControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TechtonicaModLoader.MyControls"
+             mc:Ignorable="d" 
+             Height="30" d:DesignWidth="200"
+             Loaded="OnControlLoaded">
+    <Grid>
+        <Border BorderBrush="{DynamicResource accentBrush}" BorderThickness="2" CornerRadius="5"
+                MouseLeftButtonUp="OnMyComboBoxLeftClicked">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Background" Value="{DynamicResource uiBackgroundBrush}"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ElementName=thisControl, Path=IsMouseOver, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource accentBrush}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+        </Border>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="40"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBox x:Name="displayLabel" FontSize="16"
+                     Text="{Binding ElementName=thisControl, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged}" 
+                     HorizontalContentAlignment="{Binding ElementName=thisControl, Path=SelectedItemAlignment, UpdateSourceTrigger=PropertyChanged}" 
+                     IsHitTestVisible="{Binding ElementName=thisControl, Path=Searchable, UpdateSourceTrigger=PropertyChanged}"
+                     VerticalContentAlignment="Center" Margin="10,0"
+                     Background="Transparent" BorderThickness="0"
+                     PreviewKeyUp="OnInputBoxPreviewKeyUp"
+                     GotKeyboardFocus="OnInputBoxGotFocus">
+                <TextBox.Style>
+                    <Style TargetType="TextBox">
+                        <Setter Property="Foreground" Value="{DynamicResource textBrush}"/>
+                        <Setter Property="CaretBrush" Value="{DynamicResource textBrush}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=thisControl, Path=IsMouseOver, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                <Setter Property="Foreground" Value="{DynamicResource textBrush}"/>
+                                <Setter Property="CaretBrush" Value="{DynamicResource textBrush}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+
+            <TextBlock x:Name="arrow" Text="V" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource textBrush}"
+                       Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-1,0,1" IsHitTestVisible="False"/>
+            <Rectangle Fill="{DynamicResource textBrush}" Width="1" IsHitTestVisible="False"
+                       HorizontalAlignment="Left" Grid.Column="1" Margin="0,5"/>
+        </Grid>
+
+        <Popup x:Name="ItemsPopup"
+               IsOpen="{Binding ElementName=thisControl, Path=ShowItems, UpdateSourceTrigger=PropertyChanged}"
+               Width="{Binding ElementName=thisControl, Path=ActualWidth, UpdateSourceTrigger=PropertyChanged}"
+               Placement="Bottom" AllowsTransparency="True" VerticalOffset="5"
+               MouseLeave="OnItemsListMouseLeave">
+            <Grid>
+                <Border Background="{DynamicResource uiBackgroundBrush}" BorderBrush="{DynamicResource accentBrush}"
+                        BorderThickness="2" CornerRadius="5"/>
+                <ScrollViewer Margin="5" VerticalScrollBarVisibility="Auto">
+                    <StackPanel x:Name="itemsList"/>
+                </ScrollViewer>
+            </Grid>
+        </Popup>
+
+    </Grid>
+</UserControl>

@@ -1,0 +1,70 @@
+﻿<UserControl x:Class="TechtonicaModLoader.MyControls.MySVGButton" x:Name="thisControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TechtonicaModLoader.MyControls"
+             xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
+             mc:Ignorable="d" 
+             Height="30" Width="30"
+             MouseLeftButtonDown="OnMouseLeftButtonDown"
+             MouseRightButtonDown="OnMouseRightButtonDown">
+    <Grid>
+        <Border BorderThickness="2" CornerRadius="{DynamicResource uiCorners}" RenderTransformOrigin="0.5 0.5">
+            <Border.RenderTransform>
+                <ScaleTransform x:Name="scaler"/>
+            </Border.RenderTransform>
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Background" Value="{DynamicResource uiBackgroundBrush}"/>
+                    <Setter Property="BorderBrush" Value="{DynamicResource accentBrush}"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ElementName=thisControl, Path=IsMouseOver, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource accentBrush}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            <Border.Triggers>
+                <EventTrigger RoutedEvent="MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation To="1.025" Duration="0:0:0.2" Storyboard.TargetName="scaler" Storyboard.TargetProperty="ScaleX"/>
+                            <DoubleAnimation To="1.025" Duration="0:0:0.2" Storyboard.TargetName="scaler" Storyboard.TargetProperty="ScaleY"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation To="1" Duration="0:0:0.2" Storyboard.TargetName="scaler" Storyboard.TargetProperty="ScaleX"/>
+                            <DoubleAnimation To="1" Duration="0:0:0.2" Storyboard.TargetName="scaler" Storyboard.TargetProperty="ScaleY"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation To="0.95" Duration="0:0:0.1" Storyboard.TargetName="scaler" Storyboard.TargetProperty="ScaleX"/>
+                            <DoubleAnimation To="0.95" Duration="0:0:0.1" Storyboard.TargetName="scaler" Storyboard.TargetProperty="ScaleY"/>
+                            <DoubleAnimation To="1.025" Duration="0:0:0.1" BeginTime="0:0:0.1" Storyboard.TargetName="scaler" Storyboard.TargetProperty="ScaleY"/>
+                            <DoubleAnimation To="1.025" Duration="0:0:0.1" BeginTime="0:0:0.1" Storyboard.TargetName="scaler" Storyboard.TargetProperty="ScaleY"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="MouseRightButtonDown">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation To="0.95" Duration="0:0:0.1" Storyboard.TargetName="scaler" Storyboard.TargetProperty="ScaleX"/>
+                            <DoubleAnimation To="0.95" Duration="0:0:0.1" Storyboard.TargetName="scaler" Storyboard.TargetProperty="ScaleY"/>
+                            <DoubleAnimation To="1.025" Duration="0:0:0.1" BeginTime="0:0:0.1" Storyboard.TargetName="scaler" Storyboard.TargetProperty="ScaleY"/>
+                            <DoubleAnimation To="1.025" Duration="0:0:0.1" BeginTime="0:0:0.1" Storyboard.TargetName="scaler" Storyboard.TargetProperty="ScaleY"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Border.Triggers>
+        </Border>
+        <svgc:SvgViewbox x:Name="svg" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"
+                         Margin="{Binding ElementName=thisControl, Path=SVGMargin, UpdateSourceTrigger=PropertyChanged}"/>
+    </Grid>
+</UserControl>
