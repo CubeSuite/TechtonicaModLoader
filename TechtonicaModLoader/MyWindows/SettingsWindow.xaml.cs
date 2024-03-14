@@ -1,5 +1,4 @@
-﻿using MyLogger;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,9 +16,6 @@ using TechtonicaModLoader.MyPanels.SettingsPanels;
 
 namespace TechtonicaModLoader.MyWindows
 {
-    /// <summary>
-    /// Interaction logic for SettingsWindow.xaml
-    /// </summary>
     public partial class SettingsWindow : Window
     {
         public SettingsWindow() {
@@ -50,7 +46,12 @@ namespace TechtonicaModLoader.MyWindows
         }
 
         private void OnCloseClicked(object sender, EventArgs e) {
-            Close();
+            if (FileStructureUtils.ValidateGameFolder()) {
+                Close();
+            }
+            else {
+                GuiUtils.ShowErrorMessage("Invalid Game Folder", "Please check that your Game Folder setting is set correctly before exiting.");
+            }
         }
 
         private void OnCategoryClicked(object sender, MouseButtonEventArgs e) {
@@ -91,9 +92,16 @@ namespace TechtonicaModLoader.MyWindows
             settingsPanel.Children.Clear();
             List<Setting> settings = Settings.userSettings.GetSettingsInCategory(category);
             foreach (Setting setting in settings) {
+                if(setting.isHidden) continue;
                 switch (setting.type) {
                     case "String":
                         settingsPanel.Children.Add(new StringSettingPanel((StringSetting)setting) {
+                            Margin = new Thickness(10, 5, 10, 5)
+                        });
+                        break;
+
+                    case "Combo":
+                        settingsPanel.Children.Add(new ComboSettingPanel((ComboSetting)setting) {
                             Margin = new Thickness(10, 5, 10, 5)
                         });
                         break;

@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TechtonicaModLoader.MyClasses;
 
 namespace TechtonicaModLoader.MyPanels.SettingsPanels
 {
@@ -25,18 +26,81 @@ namespace TechtonicaModLoader.MyPanels.SettingsPanels
             InitializeComponent();
             settingName = setting.name;
             nameLabel.Content = setting.name;
-            desciptionLabel.Text = setting.description;
+            descriptionLabel.Text = setting.description;
             inputBox.Input = setting.value;
             inputBox.Hint = setting.name;
         }
 
+        public StringSettingPanel(KeyboardShortcutConfigOption option) {
+            type = ConfigOptionTypes.keyboardShortcutOption;
+            InitializeComponent();
+            settingName = option.name;
+            nameLabel.Content = option.name;
+            descriptionLabel.Text = $"{option.optionType}: {option.GetDescription()}";
+            inputBox.Input = option.value;
+            inputBox.Hint = option.name;
+        }
+
+        public StringSettingPanel(StringConfigOption option) {
+            type = ConfigOptionTypes.stringOption;
+            InitializeComponent();
+            settingName = option.name;
+            nameLabel.Content = option.name;
+            descriptionLabel.Text = $"{option.optionType}: {option.GetDescription()}";
+            inputBox.Input = option.value;
+            inputBox.Hint = option.name;
+        }
+
+        public StringSettingPanel(FloatConfigOption option) {
+            type = ConfigOptionTypes.floatOption;
+            InitializeComponent();
+            settingName = option.name;
+            nameLabel.Content = option.name;
+            descriptionLabel.Text = $"{option.optionType}: {option.GetDescription()}";
+            inputBox.Input = option.value.ToString();
+            inputBox.Hint = option.name;
+        }
+
+        public StringSettingPanel(DoubleConfigOption option) {
+            type = ConfigOptionTypes.doubleOption;
+            InitializeComponent();
+            settingName = option.name;
+            nameLabel.Content = option.name;
+            descriptionLabel.Text = $"{option.optionType}: {option.GetDescription()}";
+            inputBox.Input = option.value.ToString();
+            inputBox.Hint = option.name;
+        }
+
         // Objects & Variables
-        private string settingName;
+        public string settingName;
+        private string type = "TMLSetting";
 
         // Events
 
         private void OnInputBoxTextChanged(object sender, EventArgs e) {
-            Settings.userSettings.SetSetting(settingName, inputBox.Input);
+            switch (type) {
+                case "TMLSetting": Settings.userSettings.SetSetting(settingName, inputBox.Input); break;
+                case ConfigOptionTypes.stringOption: ModConfig.activeConfig.UpdateSetting(settingName, inputBox.Input); break;
+                case ConfigOptionTypes.keyboardShortcutOption: ModConfig.activeConfig.UpdateSetting(settingName, inputBox.Input); break;
+
+                case ConfigOptionTypes.floatOption:
+                    if(float.TryParse(inputBox.Input, out float floatValue)) {
+                        ModConfig.activeConfig.UpdateSetting(settingName, floatValue);
+                    }
+                    else if(!string.IsNullOrEmpty(inputBox.Input)){
+                        GuiUtils.ShowErrorMessage("Invalid Number", $"TML couldn't process '{inputBox.Input}' into a number");
+                    }
+                    break;
+
+                case ConfigOptionTypes.doubleOption:
+                    if (double.TryParse(inputBox.Input, out double doubleValue)) {
+                        ModConfig.activeConfig.UpdateSetting(settingName, doubleValue);
+                    }
+                    else if (!string.IsNullOrEmpty(inputBox.Input)) {
+                        GuiUtils.ShowErrorMessage("Invalid Number", $"TML couldn't process '{inputBox.Input}' into a number");
+                    }
+                    break;
+            }
         }
     }
 }

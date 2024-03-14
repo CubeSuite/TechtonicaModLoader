@@ -17,7 +17,7 @@
 
                 <Label x:Name="nameLabel" Content="Setting Name" Style="{DynamicResource titleStyle}" 
                        Margin="5,0" VerticalAlignment="Stretch"/>
-                <TextBlock x:Name="desciptionLabel" Style="{DynamicResource textStyle}" Grid.Row="1"
+                <TextBlock x:Name="descriptionLabel" Style="{DynamicResource textStyle}" Grid.Row="1"
                            VerticalAlignment="Center" Margin="5,0"/>
                 <MyControls:MyTextBox x:Name="inputBox" HorizontalAlignment="Right" MinWidth="200" Margin="5,0"
                                       TextChanged="OnInputBoxTextChanged"/>

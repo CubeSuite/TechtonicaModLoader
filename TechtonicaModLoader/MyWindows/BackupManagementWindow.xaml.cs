@@ -52,7 +52,7 @@ namespace TechtonicaModLoader.MyWindows
             backupsPanel.Children.Clear();
             List<string> backups = BackupManager.GetAllBackups();
             foreach (string backup in backups) {
-                backupsPanel.Children.Add(new BackupPanel(backup));
+                backupsPanel.Children.Add(new BackupPanel(backup) { Margin = new Thickness(4, 2, 4, 2) });
             }
         }
 

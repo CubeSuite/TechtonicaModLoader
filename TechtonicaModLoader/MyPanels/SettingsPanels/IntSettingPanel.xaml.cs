@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TechtonicaModLoader.MyClasses;
 
 namespace TechtonicaModLoader.MyPanels.SettingsPanels
 {
@@ -25,13 +26,28 @@ namespace TechtonicaModLoader.MyPanels.SettingsPanels
             inputBox.Value = setting.value;
         }
 
+        public IntSettingPanel(IntConfigOption option) {
+            InitializeComponent();
+            settingName = option.name;
+            nameLabel.Content = option.name;
+            desciptionLabel.Text = $"{option.optionType}: {option.GetDescription()}";
+            inputBox.Value = option.value;
+            type = "ConfigOption";
+        }
+
         // Objects & Variables
         private string settingName;
+        private string type = "TMLSetting";
 
         // Events
 
         private void OnInputBoxValueChanged(object sender, EventArgs e) {
-            Settings.userSettings.SetSetting(settingName, inputBox.Value);
+            if (type == "TMLSetting") {
+                Settings.userSettings.SetSetting(settingName, inputBox.Value);
+            }
+            else {
+                ModConfig.activeConfig.UpdateSetting(settingName, inputBox.Value);
+            }
         }
     }
 }

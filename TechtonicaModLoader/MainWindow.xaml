@@ -7,23 +7,72 @@
         xmlns:MyControls="clr-namespace:TechtonicaModLoader.MyControls"
         xmlns:MyPanels="clr-namespace:TechtonicaModLoader.MyPanels"
         mc:Ignorable="d"
-        Title="MainWindow" Height="675" Width="1200"
+        Title="Techtonica Mod Loader" Height="675" Width="1600"
         WindowStyle="None" WindowStartupLocation="CenterScreen" 
         Background="Transparent" AllowsTransparency="True"
         Loaded="OnProgramLoaded" Closing="OnProgramClosing">
     <Grid>
-        <Border Background="{DynamicResource dimBackgroundBrush}" BorderBrush="{DynamicResource accentBrush}"
+        <Border BorderBrush="{DynamicResource accentBrush}"
                 BorderThickness="2" CornerRadius="{DynamicResource borderCorners}">
+            <Border.Background>
+                <ImageBrush ImageSource="Images/Background.jpg"/>
+            </Border.Background>
             <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <Label x:Name="titleLabel" Content="Title" Style="{DynamicResource titleStyle}" Margin="5,0,5,0"/>
+                <MyPanels:LoadingPanel x:Name="loadingPanel"/>
+                <Grid x:Name="mainGrid" Visibility="Visible">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Label x:Name="titleLabel" Content="Title" Style="{DynamicResource titleStyle}" Margin="5,0,5,0"/>
+
+                    <Grid Grid.Row="1" Margin="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <!--Mod List Options-->
+                        <Border Background="{DynamicResource dimBackgroundBrush}" CornerRadius="{DynamicResource borderCorners}"
+                                Grid.RowSpan="2" Margin="0,0,5,0">
+                            <StackPanel Margin="5">
+                                <MyControls:MyButton ButtonText="Check For Updates" LeftClicked="OnCheckForUpdatesClicked"/>
+                                <Label Content="Profile" Style="{DynamicResource titleStyle}" FontSize="16"/>
+                                <MyControls:MyComboBox x:Name="profileBox" Searchable="False" Margin="0,5,0,0" SelectedItemChanged="OnProfileChanged"/>
+                                <Label Content="Mod List" Style="{DynamicResource titleStyle}" FontSize="16"/>
+                                <MyControls:MyComboBox x:Name="modListBox" Searchable="False" Margin="0,5,0,0" SelectedItemChanged="OnModListChanged"/>
+                                <Label Content="Sort By" Style="{DynamicResource titleStyle}" FontSize="16"/>
+                                <MyControls:MyComboBox x:Name="sortBox" Searchable="False" Margin="0,5,0,0" SelectedItemChanged="OnSortOptionChanged"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!--Search Bar-->
+                        <Border Background="{DynamicResource dimBackgroundBrush}" CornerRadius="{DynamicResource borderCorners}"
+                                Grid.Column="1">
+                            <MyControls:MyTextBox x:Name="searchBar" Hint="Search..." Margin="5,0"
+                                                  TextChanged="OnSearchBarTextChanged"/>
+                        </Border>
+
+                        <!--Mod List-->
+                        <Border x:Name="modListBorder" Background="{DynamicResource dimBackgroundBrush}" CornerRadius="{DynamicResource borderCorners}"
+                                Grid.Column="1" Grid.Row="1" Margin="0,5,0,0">
+
+                        </Border>
+
+                    </Grid>
+                </Grid>
+                <Border Background="{DynamicResource dimBackgroundBrush}"
+                        CornerRadius="{DynamicResource borderCorners}"
+                        Width="343" Height="40"
+                        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="2"/>
                 <MyPanels:ControlBox x:Name="controlBox" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5"/>
-                <Border x:Name="pageBorder" Margin="5,45,5,5">
-                    
-                </Border>
+                <MyControls:MyButton x:Name="launchGameButton" ButtonText="Launch Game" 
+                                     HorizontalAlignment="Right" VerticalAlignment="Top" Width="200" Margin="0,7,140,1"
+                                     LeftClicked="OnLaunchGameClicked"/>
             </Grid>
         </Border>
     </Grid>

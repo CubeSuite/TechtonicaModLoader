@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TechtonicaModLoader.MyClasses;
 
 namespace TechtonicaModLoader.MyPanels.SettingsPanels
 {
@@ -28,13 +29,28 @@ namespace TechtonicaModLoader.MyPanels.SettingsPanels
             checkBox.IsChecked = setting.value;
         }
 
+        public BoolSettingPanel(BooleanConfigOption option) {
+            InitializeComponent();
+            settingName = option.name;
+            nameLabel.Content = option.name;
+            desciptionLabel.Text = $"{option.optionType}: {option.GetDescription()}";
+            checkBox.IsChecked = option.value;
+            type = "ConfigOption";
+        }
+
         // Objects & Variables
         private string settingName;
+        private string type = "TMLSetting";
 
         // Events
 
         private void OnCheckBoxIsCheckedChanged(object sender, EventArgs e) {
-            Settings.userSettings.SetSetting(settingName, checkBox.IsChecked);
+            if (type == "TMLSetting") {
+                Settings.userSettings.SetSetting(settingName, checkBox.IsChecked);
+            }
+            else {
+                ModConfig.activeConfig.UpdateSetting(settingName, checkBox.IsChecked);
+            }
         }
     }
 }

@@ -8,8 +8,7 @@
              mc:Ignorable="d" 
              Height="34" Width="Auto">
     <Grid>
-        <Border Background="{DynamicResource backgroundBrush}"
-                CornerRadius="{DynamicResource borderCorners}">
+        <Border CornerRadius="5">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -17,10 +16,18 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <MyControls:MySVGButton x:Name="settingsButton"  Source="ControlBox/Settings" SVGMargin="4" Margin="2,0,1,0"  Grid.Column="0" LeftClicked="OnSettingsClicked"/>
-                <MyControls:MySVGButton x:Name="moveButton" Source="ControlBox/Move" SVGMargin="4" Margin="1,0,1,0"  Grid.Column="1" MouseLeftButtonDown="OnMoveButtonMouseLeftButtonDown"/>
-                <MyControls:MySVGButton x:Name="minimsieButton" Source="ControlBox/Minimise" SVGMargin="4" Margin="1,0,1,0" Grid.Column="2" LeftClicked="OnMinimiseClicked"/>
-                <MyControls:MySVGButton x:Name="closeButton" Source="ControlBox/Close" SVGMargin="4"    Margin="1,0,2,0" Grid.Column="3" LeftClicked="OnCloseClicked"/>
+                <MyControls:MySVGButton x:Name="settingsButton" SVGMargin="4" Margin="2,0,1,0"  Grid.Column="0" 
+                                        Source="ControlBox/Settings" Tip="Settings"
+                                        LeftClicked="OnSettingsClicked"/>
+                <MyControls:MySVGButton x:Name="moveButton" SVGMargin="4" Margin="1,0,1,0" Grid.Column="1" 
+                                        Source="ControlBox/Move" Tip="Move"
+                                        MouseLeftButtonDown="OnMoveButtonMouseLeftButtonDown"/>
+                <MyControls:MySVGButton x:Name="minimsieButton" SVGMargin="4" Margin="1,0,1,0" Grid.Column="2" 
+                                        Source="ControlBox/Minimise" Tip="Minimise"
+                                        LeftClicked="OnMinimiseClicked"/>
+                <MyControls:MySVGButton x:Name="closeButton" SVGMargin="4" Margin="1,0,2,0" Grid.Column="3" 
+                                        Source="ControlBox/Close" Tip="Close"
+                                        LeftClicked="OnCloseClicked"/>
             </Grid>
         </Border>
     </Grid>

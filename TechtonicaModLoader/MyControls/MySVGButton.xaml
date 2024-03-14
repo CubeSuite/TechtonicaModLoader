@@ -64,6 +64,24 @@
                 </EventTrigger>
             </Border.Triggers>
         </Border>
+        <Popup x:Name="tooltipPopup" Placement="Top" HorizontalAlignment="Center" VerticalOffset="-5" 
+               AllowsTransparency="True">
+            <Popup.Style>
+                <Style TargetType="Popup">
+                    <Setter Property="IsOpen" Value="False"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ElementName=thisControl, Path=IsMouseOver, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                            <Setter Property="IsOpen" Value="True"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Popup.Style>
+            <Border Background="{DynamicResource uiBackgroundBrush}" BorderBrush="{DynamicResource accentBrush}"
+                    BorderThickness="2" Margin="2" HorizontalAlignment="Center">
+                <TextBlock Text="{Binding ElementName=thisControl, Path=Tip, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                           Style="{DynamicResource textStyle}" Padding="4,2"/>
+            </Border>
+        </Popup>
         <svgc:SvgViewbox x:Name="svg" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"
                          Margin="{Binding ElementName=thisControl, Path=SVGMargin, UpdateSourceTrigger=PropertyChanged}"/>
     </Grid>

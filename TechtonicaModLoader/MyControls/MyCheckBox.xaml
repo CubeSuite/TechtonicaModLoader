@@ -8,16 +8,31 @@
              Height="30" Width="30"
              MouseLeftButtonUp="OnMouseLeftButtonUp">
     <Grid>
-        <Border Background="{DynamicResource uiBackgroundBrush}" BorderBrush="{DynamicResource accentBrush}"
-                BorderThickness="2" CornerRadius="{DynamicResource uiCorners}">
-            <Border Background="{DynamicResource accentBrush}" CornerRadius="{DynamicResource uiCorners}" 
+        <Border BorderThickness="2" CornerRadius="{DynamicResource uiCorners}">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Background" Value="{DynamicResource uiBackgroundBrush}"/>
+                    <Setter Property="BorderBrush" Value="{DynamicResource accentBrush}"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ElementName=thisControl, Path=IsEditable, UpdateSourceTrigger=PropertyChanged}" Value="False">
+                            <Setter Property="Background" Value="Gray"/>
+                            <Setter Property="BorderBrush" Value="LightGray"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            <Border CornerRadius="{DynamicResource uiCorners}" 
                     Margin="2" IsHitTestVisible="False">
                 <Border.Style>
                     <Style TargetType="Border">
                         <Setter Property="Visibility" Value="Hidden"/>
+                        <Setter Property="Background" Value="{DynamicResource accentBrush}"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding ElementName=thisControl, Path=IsChecked, UpdateSourceTrigger=PropertyChanged}" Value="True">
                                 <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ElementName=thisControl, Path=IsEditable, UpdateSourceTrigger=PropertyChanged}" Value="False">
+                                <Setter Property="Background" Value="LightGray"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>

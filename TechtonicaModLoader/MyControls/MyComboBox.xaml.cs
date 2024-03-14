@@ -1,5 +1,4 @@
-﻿using MyLogger;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Linq;
@@ -98,9 +97,13 @@ namespace TechtonicaModLoader.MyControls
 
         private void OnMyComboBoxLeftClicked(object sender, MouseButtonEventArgs e) {
             ShowItems = !ShowItems;
-            if (Searchable) {
+            if (Searchable && ShowItems) {
                 SelectedItem = "";
                 LoadItems();
+            }
+            else if (string.IsNullOrEmpty(SelectedItem) && !ShowItems) {
+                SetItem(string.IsNullOrEmpty(lastItem) ? itemsAsList[0] : lastItem);
+                SelectedItemChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -172,6 +175,10 @@ namespace TechtonicaModLoader.MyControls
             SelectedItem = item;
             lastItem = item;
             displayLabel.Text = item;
+        }
+
+        public void SetItems(string items) {
+            SetItems(items.Split('|').ToList());
         }
 
         public void SetItems(List<string> items) {

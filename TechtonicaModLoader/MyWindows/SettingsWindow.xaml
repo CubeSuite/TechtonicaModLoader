@@ -28,7 +28,7 @@
             <MyControls:MyButton ButtonText="Restore Defaults" Grid.Column="1" 
                                  HorizontalAlignment="Right" Margin="0,0,42,0"
                                  LeftClicked="OnRestoreDefaultsClicked"/>
-            <MyControls:MySVGButton x:Name="closeButton" Source="ControlBox/Close" SVGMargin="4"
+            <MyControls:MySVGButton x:Name="closeButton" Source="ControlBox/Close" SVGMargin="4" Tip="Close"
                                     HorizontalAlignment="Right" Grid.Column="1" Margin="5,0,7,0"
                                     LeftClicked="OnCloseClicked"/>
 
