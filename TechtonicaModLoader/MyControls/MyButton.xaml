@@ -21,6 +21,10 @@
                         <DataTrigger Binding="{Binding ElementName=thisControl, Path=IsMouseOver, UpdateSourceTrigger=PropertyChanged}" Value="True">
                             <Setter Property="Background" Value="{DynamicResource accentBrush}"/>
                         </DataTrigger>
+                        <DataTrigger Binding="{Binding ElementName=thisControl, Path=IsEnabled, UpdateSourceTrigger=PropertyChanged}" Value="False">
+                            <Setter Property="Background" Value="LightGray"/>
+                            <Setter Property="BorderBrush" Value="Gray"/>
+                        </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </Border.Style>

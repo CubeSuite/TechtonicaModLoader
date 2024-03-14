@@ -2,7 +2,8 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:TechtonicaModLoader"
-             StartupUri="MainWindow.xaml">
+             StartupUri="MainWindow.xaml"
+             DispatcherUnhandledException="OnUnhandledException">
     <Application.Resources>
          
         <!--Colours-->
@@ -25,7 +26,7 @@
 
         <!--Corners-->
         <CornerRadius x:Key="uiCorners">0</CornerRadius>
-        <CornerRadius x:Key="borderCorners">0</CornerRadius>
+        <CornerRadius x:Key="borderCorners">10</CornerRadius>
         <CornerRadius x:Key="topCorners">0</CornerRadius>
         <CornerRadius x:Key="bottomCorners">0</CornerRadius>
         

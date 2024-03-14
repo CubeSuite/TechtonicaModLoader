@@ -1,5 +1,4 @@
-﻿using MyLogger;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -60,6 +59,17 @@ namespace TechtonicaModLoader.MyControls
         public Thickness SVGMargin {
             get => (Thickness)GetValue(SVGMarginProperty);
             set => SetValue(SVGMarginProperty, value);
+        }
+
+        #endregion
+
+        #region Tip Property
+
+        public static readonly DependencyProperty TipProperty = DependencyProperty.Register("Tip", typeof(string), typeof(MySVGButton), new PropertyMetadata(""));
+
+        public string Tip {
+            get => (string)GetValue(TipProperty);
+            set => SetValue(TipProperty, value);
         }
 
         #endregion
