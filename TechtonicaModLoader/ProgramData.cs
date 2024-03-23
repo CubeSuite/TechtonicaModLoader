@@ -32,7 +32,7 @@ namespace TechtonicaModLoader
 
         public static int programVersion = 2;
         public static int majorVersion = 0;
-        public static int minorVersion = 0;
+        public static int minorVersion = 1;
         public static string versionText => $"{programVersion}.{majorVersion}.{minorVersion}";
 
         public static int programWidth = 1600;
@@ -71,7 +71,7 @@ namespace TechtonicaModLoader
             public static string imageCacheMapFile = $"{dataFolder}\\ImageCacheMap.json";
 
             public static string gameFolder => Settings.userSettings.gameFolder.value;
-            public static string gameDataFolder = $"{gameFolder}/Techtonica_Data";
+            public static string gameDataFolder => $"{gameFolder}/Techtonica_Data";
             public static string bepInExConfigFolder => $"{gameFolder}/BepInEx/config";
             public static string bepInExPatchersFolder => $"{gameFolder}/BepInEx/patchers";
             public static string bepInExPluginsFolder => $"{gameFolder}/BepInEx/plugins";
