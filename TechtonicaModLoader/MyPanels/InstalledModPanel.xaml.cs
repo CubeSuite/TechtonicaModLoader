@@ -76,6 +76,7 @@ namespace TechtonicaModLoader.MyPanels
             mod = await ThunderStore.GetMod(modID);
             ModManager.AddMod(mod);
             await mod.DownloadAndInstall();
+            MainWindow.current.RefreshCurrentModList();
         }
 
         private void OnDonateClicked(object sender, EventArgs e) {
@@ -92,7 +93,7 @@ namespace TechtonicaModLoader.MyPanels
             ModConfig.activeConfig = config;
             ModConfigWindow.EditActiveConfig();
         }
-
+        
         private void OnViewModPageClicked(object sender, EventArgs e) {
             GuiUtils.OpenURL(ModManager.GetMod(modID).link);
         }
