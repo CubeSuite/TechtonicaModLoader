@@ -85,7 +85,8 @@ namespace TechtonicaModLoader
             return modsToSort;
         }
 
-        public static async Task<string> CheckForUpdates() {
+        public static async Task<bool> CheckForUpdates() {
+            bool anyModNeedsUpdate = false;
             Log.Debug($"Checking for mod updates");
             for(int i =  0; i < mods.Count; i++) {
                 Mod mod = mods.Values.ToList()[i];
@@ -98,6 +99,7 @@ namespace TechtonicaModLoader
 
                 ModVersion latestVersion = ModVersion.Parse(thunderStoreMod.versions[0].version_number);
                 mod.updateAvailable = latestVersion > mod.version;
+                if (mod.updateAvailable) anyModNeedsUpdate = true;
 
                 mod.name = thunderStoreMod.name;
                 mod.author = thunderStoreMod.owner;
@@ -113,7 +115,7 @@ namespace TechtonicaModLoader
                 Log.Info($"Updated info for mod '{mod.name}'");
             }
 
-            return "";
+            return anyModNeedsUpdate;
         }
 
         // Data Functions
