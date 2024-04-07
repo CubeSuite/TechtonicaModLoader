@@ -43,10 +43,17 @@ namespace TechtonicaModLoader.MyPanels
         // Events
 
         private void EnabledToggled(object sender, EventArgs e) {
+            Mod mod = ModManager.GetMod(modID);
+            if (mod.IsDependencyOfAnother(out string dependentMod)) {
+                enabledBox.IsChecked = true;
+                Log.Debug($"Blocking disable, is dependency");
+                GuiUtils.ShowInfoMessage("Can't Disable", $"This mod cannot be disabled as it is a dependency of {dependentMod}. Please disable or delete that mod first.");
+                return;
+            }
+
             Profile profile = ProfileManager.GetActiveProfile();
             profile.ToggleMod(modID);
             ProfileManager.UpdateProfile(profile);
-            Mod mod = ModManager.GetMod(modID);
 
             string state = enabledBox.IsChecked ? "enabled" : "disabled";
             Log.Debug($"Set mod '{mod.name}' to '{state}' on profile '{profile.name}'");
@@ -91,9 +98,16 @@ namespace TechtonicaModLoader.MyPanels
         }
 
         private void OnDeleteModClicked(object sender, EventArgs e) {
+            Mod mod = ModManager.GetMod(modID);
+            if (mod.IsDependencyOfAnother(out string dependentMod)) {
+                enabledBox.IsChecked = true;
+                Log.Debug($"Blocking disable, is dependency");
+                GuiUtils.ShowInfoMessage("Can't Disable", $"This mod cannot be disabled as it is a dependency of {dependentMod}. Please disable or delete that mod first.");
+                return;
+            }
+
             if (GuiUtils.GetUserConfirmation("Delete Mod?", "Are you sure you want to delete this mod?")) {
                 Profile profile = ProfileManager.GetActiveProfile();
-                Mod mod = ModManager.GetMod(modID);
                 if (profile.IsModEnabled(modID)) {
                     mod.Uninstall();
                 }
