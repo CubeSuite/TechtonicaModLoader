@@ -63,7 +63,9 @@ namespace TechtonicaModLoader
                 await ProfileManager.CreateDefaultProfiles();
             }
 
-            await ModManager.CheckForUpdates();
+            if(!await ModManager.CheckForUpdates()) {
+                sidePanel.Children.Remove(updateAllButton);
+            }
 
             InitialiseProcessCheckTimer();
             InitialiseAutoSaveTimer();
@@ -118,8 +120,43 @@ namespace TechtonicaModLoader
             FileStructureUtils.StartGame();
         }
 
+        private async void OnUpdateAllClicked(object sender, EventArgs e) {
+            List<Mod> mods = ModManager.GetAllMods();
+            mods = mods.Where(mod => mod.updateAvailable).ToList();
+            LoadingWindow loader = new LoadingWindow();
+            loader.SetProgress("Updating Mods", 1, mods.Count);
+            loader.Show();
+
+            await Task.Run(async () => {
+                for (int i = 0; i < mods.Count; i++) {
+                    Dispatcher.Invoke(delegate () {
+                        loader.SetProgress("Updating Mods", i + 1, mods.Count);
+                    });
+
+                    Mod mod = mods[i];
+                    mod.Uninstall();
+                    ModManager.DeleteMod(mod);
+
+                    mod = await ThunderStore.GetMod(mod.id);
+                    ModManager.AddMod(mod);
+                    await mod.DownloadAndInstall();
+                    
+                }
+            });
+
+            sidePanel.Children.Remove(updateAllButton);
+            loader.Close();
+            RefreshCurrentModList();
+        }
+
         private async void OnCheckForUpdatesClicked(object sender, EventArgs e) {
-            await ModManager.CheckForUpdates();
+            if(await ModManager.CheckForUpdates() && !sidePanel.Children.Contains(updateAllButton)) {
+                sidePanel.Children.Insert(0, updateAllButton);
+            }
+            else if (sidePanel.Children.Contains(updateAllButton)) {
+                sidePanel.Children.Remove(updateAllButton);
+            }
+
             RefreshCurrentModList();
         }
 
