@@ -6,8 +6,10 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using TechtonicaModLoader.MyClasses;
 using TechtonicaModLoader.MyClasses.ThunderStoreResponses;
 using TechtonicaModLoader.MyWindows;
@@ -249,8 +251,22 @@ namespace TechtonicaModLoader.Modes
             return searchableParts.ToLower().Contains(searchTerm.ToLower());
         }
 
-        public string toJson(bool indented = true) {
+        public string ToJson(bool indented = true) {
             return JsonConvert.SerializeObject(this, indented ? Formatting.Indented : Formatting.None);
+        }
+
+        public bool IsDependencyOfAnother(out string dependentMod) {
+            foreach(Mod mod in ModManager.GetAllMods()) {
+                foreach(string dependency in mod.dependencies) {
+                    if (dependency.Contains(name)) {
+                        dependentMod = mod.name;
+                        Log.Debug($"Mod '{name}' is a dependency of {mod.name} - {dependency}");
+                        return true;
+                    }
+                }
+            }
+            dependentMod = "None";
+            return false;
         }
 
         // Private Functions

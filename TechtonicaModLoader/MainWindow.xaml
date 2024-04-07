@@ -39,7 +39,8 @@
                         <!--Mod List Options-->
                         <Border Background="{DynamicResource dimBackgroundBrush}" CornerRadius="{DynamicResource borderCorners}"
                                 Grid.RowSpan="2" Margin="0,0,5,0">
-                            <StackPanel Margin="5">
+                            <StackPanel x:Name="sidePanel" Margin="5">
+                                <MyControls:MyButton x:Name="updateAllButton" ButtonText="Update All" Margin="0,0,0,5" LeftClicked="OnUpdateAllClicked"/>
                                 <MyControls:MyButton ButtonText="Check For Updates" LeftClicked="OnCheckForUpdatesClicked"/>
                                 <Label Content="Profile" Style="{DynamicResource titleStyle}" FontSize="16"/>
                                 <MyControls:MyComboBox x:Name="profileBox" Searchable="False" Margin="0,5,0,0" SelectedItemChanged="OnProfileChanged"/>
