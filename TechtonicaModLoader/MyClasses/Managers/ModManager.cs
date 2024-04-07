@@ -53,6 +53,10 @@ namespace TechtonicaModLoader
             }
         }
 
+        public static List<Mod> GetAllMods() {
+            return mods.Values.ToList();
+        }
+
         public static int getModsCount() {
             return mods.Count;
         }
