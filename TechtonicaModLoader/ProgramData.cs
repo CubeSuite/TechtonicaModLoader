@@ -31,7 +31,7 @@ namespace TechtonicaModLoader
         public static ModListSortOption currentSortOption = StringUtils.GetModListSortOptionFromName(Settings.userSettings.defaultSortOption.defaultValue);
 
         public static int programVersion = 2;
-        public static int majorVersion = 1;
+        public static int majorVersion = 2;
         public static int minorVersion = 0;
         public static string versionText => $"{programVersion}.{majorVersion}.{minorVersion}";
 
