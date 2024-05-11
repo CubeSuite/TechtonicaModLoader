@@ -43,8 +43,6 @@ namespace TechtonicaModLoader.MyPanels
         }
 
         private async void OnDownloadClicked(object sender, EventArgs e) {
-            //GuiUtils.ShowDownloadingGui(mod);
-            // ToDo: Show Downloading gui 
             ModManager.AddMod(mod);
             await mod.DownloadAndInstall();
             MainWindow.current.RefreshCurrentModList();

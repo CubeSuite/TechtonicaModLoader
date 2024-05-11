@@ -16,6 +16,8 @@ namespace TechtonicaModLoader
 {
     public static class GuiUtils
     {
+        private static Dictionary<string, LoadingWindow> downloadingWindows = new Dictionary<string, LoadingWindow>();
+
         public static void OpenURL(string url) {
             if (GetUserConfirmation("Open Link?", $"Do you want to open this link?\n{url}")) {
                 ProcessStartInfo info = new ProcessStartInfo() {
@@ -48,6 +50,36 @@ namespace TechtonicaModLoader
 
         public static void ShowErrorMessage(string title, string description, string closeButtonText = "Close") {
             WarningWindow.ShowError(title, description, closeButtonText);
+        }
+
+        public static void ShowDownloadingGui(string modName) {
+            LoadingWindow window = new LoadingWindow();
+            window.SetProgress($"Downloading {modName}", 0, 1);
+            downloadingWindows.Add(modName, window);
+            window.Show();
+        }
+
+        public static void ShowInstallingGui(string modName) {
+            if (downloadingWindows.ContainsKey(modName)) {
+                downloadingWindows[modName].SetProgress($"Installing {modName}", 0 , 1);
+            }
+            else {
+                string error = $"ShowInstallGui() called for modName that is not in dictionary: {modName}";
+                Log.Error(error);
+                DebugUtils.CrashIfDebug(error);
+            }
+        }
+
+        public static void HideDownloadingGui(string modName) {
+            if(downloadingWindows.ContainsKey(modName)) {
+                downloadingWindows[modName].Close();
+                downloadingWindows.Remove(modName);
+            }
+            else {
+                string error = $"HideDownloadingGui() called for modName that is not in dictionary: {modName}";
+                Log.Error(error);
+                DebugUtils.CrashIfDebug(error);
+            }
         }
     }
 

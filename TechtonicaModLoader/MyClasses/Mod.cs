@@ -93,13 +93,29 @@ namespace TechtonicaModLoader.Modes
         // Public Functions
 
         public async Task<bool> DownloadAndInstall() {
-            if (!await CheckDependencies()) return false;
+            GuiUtils.ShowDownloadingGui(name);
+
+            if (!await CheckDependencies()) {
+                GuiUtils.HideDownloadingGui(name);
+                return false;
+            }
+
             Log.Debug("CheckDependencies() passed");
 
-            if (!await DownloadZipFile()) return false;
+            if (!await DownloadZipFile()) {
+                GuiUtils.HideDownloadingGui(name);
+                return false;
+            }
+
             Log.Debug("DownloadZipFile() passed");
 
-            if (!Install()) return false;
+            GuiUtils.ShowInstallingGui(name);
+            if (!Install()) {
+                GuiUtils.HideDownloadingGui(name);
+                return false;
+            }
+
+            GuiUtils.HideDownloadingGui(name);
             return true;
         }
 
