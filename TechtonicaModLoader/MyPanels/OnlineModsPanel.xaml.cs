@@ -28,6 +28,7 @@ namespace TechtonicaModLoader.MyPanels
 
         // Objects & Variables
         public List<Mod> modsOnDisplay = new List<Mod>();
+        private Thickness margin = new Thickness(5, 5, 10, 5);
 
         // Events
 
@@ -41,7 +42,7 @@ namespace TechtonicaModLoader.MyPanels
             modsPanel.Children.Clear();
             foreach (Mod mod in mods) {
                 Log.Debug($"Creating panel for online mod '{mod.name}'");
-                modsPanel.Children.Add(new OnlineModPanel(mod) { Margin = new Thickness(4, 4, 4, 0) });
+                modsPanel.Children.Add(new OnlineModPanel(mod) { Margin = margin });
                 string seenMods = Settings.userSettings.seenMods.value;
                 if (string.IsNullOrEmpty(seenMods) || !seenMods.Contains(mod.id)) {
                     if (string.IsNullOrEmpty(seenMods)) {
@@ -65,7 +66,7 @@ namespace TechtonicaModLoader.MyPanels
             modsPanel.Children.Clear();
             List<Mod> results = modsOnDisplay.Where(mod => mod.AppearsInSearch(searchTerm)).ToList();
             foreach (Mod mod in results) {
-                modsPanel.Children.Add(new OnlineModPanel(mod) { Margin = new Thickness(4, 4, 4, 0) });
+                modsPanel.Children.Add(new OnlineModPanel(mod) { Margin = margin });
             }
         }
     }

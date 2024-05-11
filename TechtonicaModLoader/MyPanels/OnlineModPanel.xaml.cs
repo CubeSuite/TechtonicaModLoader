@@ -44,7 +44,7 @@ namespace TechtonicaModLoader.MyPanels
 
         private async void OnDownloadClicked(object sender, EventArgs e) {
             //GuiUtils.ShowDownloadingGui(mod);
-            // ToDo: Show Downloading gui
+            // ToDo: Show Downloading gui 
             ModManager.AddMod(mod);
             await mod.DownloadAndInstall();
             MainWindow.current.RefreshCurrentModList();
@@ -54,8 +54,8 @@ namespace TechtonicaModLoader.MyPanels
 
         public void showMod(Mod modToShow) {
             mod = modToShow;
-            modNameLabel.Text = modToShow.name;
-            modTaglineLabel.Text = modToShow.tagLine;
+            nameLabel.Content = modToShow.name;
+            taglineLabel.Text = modToShow.tagLine;
             icon.Source = new BitmapImage(new Uri(modToShow.iconLink));
         }
     }
