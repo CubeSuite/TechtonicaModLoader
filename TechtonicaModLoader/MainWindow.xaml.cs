@@ -98,6 +98,7 @@ namespace TechtonicaModLoader
         }
 
         private void OnProcessCheckTimerTick(object sender, EventArgs e) {
+            return; // ToDo: Remove this
             Process[] techtonicaProcess = Process.GetProcessesByName("Techtonica");
             if (techtonicaProcess.Length != 0) {
                 launchGameButton.IsEnabled = false;
