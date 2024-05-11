@@ -116,6 +116,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="MyClasses\Globals\Log.cs" />
+    <Compile Include="MyClasses\Globals\WindowSwitcher.cs" />
     <Compile Include="MyClasses\Managers\ProfileManager.cs" />
     <Compile Include="MyClasses\ModConfig.cs" />
     <Compile Include="MyClasses\Profile.cs" />
