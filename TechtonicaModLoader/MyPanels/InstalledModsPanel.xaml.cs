@@ -28,6 +28,7 @@ namespace TechtonicaModLoader.MyPanels
 
         // Objects & Variables
         public List<Mod> modsOnDisplay = new List<Mod>();
+        private Thickness margin = new Thickness(5, 5, 10, 5);
 
         // Events
 
@@ -38,7 +39,7 @@ namespace TechtonicaModLoader.MyPanels
             modsPanel.Children.Clear();
             foreach(string id in profile.mods.Keys) {
                 Log.Debug($"Creating panel for installed mod {id}");
-                modsPanel.Children.Add(new InstalledModPanel(id) { Margin = new Thickness(4, 4, 4, 0) });
+                modsPanel.Children.Add(new InstalledModPanel(id) { Margin = margin });
                 modsOnDisplay.Add(ModManager.GetMod(id));
             }
         }
@@ -49,7 +50,7 @@ namespace TechtonicaModLoader.MyPanels
             modsPanel.Children.Clear();
             List<Mod> results = modsOnDisplay.Where(mod => mod.AppearsInSearch(searchTerm)).ToList();
             foreach(Mod mod in results) {
-                modsPanel.Children.Add(new InstalledModPanel(mod) { Margin = new Thickness(4, 4, 4, 0) });
+                modsPanel.Children.Add(new InstalledModPanel(mod) { Margin = margin });
             }
         }
     }

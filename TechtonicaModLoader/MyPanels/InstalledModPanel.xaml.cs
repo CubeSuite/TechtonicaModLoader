@@ -130,15 +130,15 @@ namespace TechtonicaModLoader.MyPanels
             modID = mod.id;
             enabledBox.IsChecked = ProfileManager.GetActiveProfile().IsModEnabled(modID);
             enabledBox.IsEditable = mod.canBeToggled;
-            modNameLabel.Text = mod.name;
+            nameLabel.Content = mod.name;
 
             if (mod.isDeprecated) {
-                modNameLabel.Foreground = Brushes.Red;
-                modTaglineLabel.Foreground = Brushes.Red;
-                modTaglineLabel.Text = "Depricated";
+                nameLabel.Foreground = Brushes.Red;
+                taglineLabel.Foreground = Brushes.Red;
+                taglineLabel.Text = "Depricated";
             }
             else {
-                modTaglineLabel.Text = mod.tagLine;
+                taglineLabel.Text = mod.tagLine;
             }
 
             string iconPath = string.IsNullOrEmpty(mod.iconLink) ? "pack://application:,,,/UnknownModIcon.png" : mod.iconLink;

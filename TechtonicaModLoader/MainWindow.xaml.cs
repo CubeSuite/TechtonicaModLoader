@@ -19,6 +19,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using TechtonicaModLoader.Modes;
 using TechtonicaModLoader.MyClasses;
+using TechtonicaModLoader.MyClasses.Globals;
 using TechtonicaModLoader.MyPanels;
 using TechtonicaModLoader.MyWindows;
 
@@ -105,12 +106,17 @@ namespace TechtonicaModLoader
                 loadingPanel.SetInfo("Game Is Running");
                 mainGrid.Visibility = Visibility.Hidden;
                 loadingPanel.Visibility = Visibility.Visible;
+
+                if (!WindowSwitcher.gaveFocusSinceLaunch) {
+                    WindowSwitcher.FocusGame();
+                }
             }
             else {
                 launchGameButton.IsEnabled = true;
                 launchGameButton.ButtonText = "Launch Game";
                 mainGrid.Visibility = Visibility.Visible;
                 loadingPanel.Visibility = Visibility.Hidden;
+                WindowSwitcher.gaveFocusSinceLaunch = false;
             }
         }
 
