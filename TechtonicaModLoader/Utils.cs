@@ -105,6 +105,13 @@ namespace TechtonicaModLoader
             text = text.Replace("HideManagerGameObject = false", "HideManagerGameObject = true");
             File.WriteAllText(bepinexConfigPath, text);
 
+            string[] configFiles = Directory.GetFiles(ProgramData.FilePaths.configsFolder);
+            foreach(string configFile in configFiles) {
+                string newPath = configFile.Replace(ProgramData.FilePaths.configsFolder, ProgramData.FilePaths.bepInExConfigFolder);
+                if (File.Exists(newPath)) File.Delete(newPath);
+                File.Copy(configFile, newPath);
+            }
+
             Process.Start($"{Settings.userSettings.gameFolder.value}\\Techtonica.exe");
         }
 

@@ -53,6 +53,8 @@ namespace TechtonicaModLoader
 
             await LoadData();
             Log.Info("Data Loaded");
+            
+            ProgramData.FilePaths.CopyConfigFiles();
 
             Settings.userSettings.findGameFolder.OnClick();
             if (!FileStructureUtils.ValidateGameFolder()) {
