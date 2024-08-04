@@ -41,6 +41,16 @@ namespace TechtonicaModLoader.MyPanels.SettingsPanels
             inputBox.Hint = option.name;
         }
 
+        public StringSettingPanel(KeyCodeConfigOption option) {
+            type = ConfigOptionTypes.keycodeOption;
+            InitializeComponent();
+            settingName = option.name;
+            nameLabel.Content = option.name;
+            descriptionLabel.Text = $"{option.optionType}: {option.GetDescription()}";
+            inputBox.Input = option.value;
+            inputBox.Hint = option.name;
+        }
+
         public StringSettingPanel(StringConfigOption option) {
             type = ConfigOptionTypes.stringOption;
             InitializeComponent();
@@ -82,6 +92,7 @@ namespace TechtonicaModLoader.MyPanels.SettingsPanels
                 case "TMLSetting": Settings.userSettings.SetSetting(settingName, inputBox.Input); break;
                 case ConfigOptionTypes.stringOption: ModConfig.activeConfig.UpdateSetting(settingName, inputBox.Input); break;
                 case ConfigOptionTypes.keyboardShortcutOption: ModConfig.activeConfig.UpdateSetting(settingName, inputBox.Input); break;
+                case ConfigOptionTypes.keycodeOption: ModConfig.activeConfig.UpdateSetting(settingName, inputBox.Input); break;
 
                 case ConfigOptionTypes.floatOption:
                     if(float.TryParse(inputBox.Input, out float floatValue)) {
