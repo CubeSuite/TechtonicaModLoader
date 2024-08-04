@@ -128,8 +128,12 @@ namespace TechtonicaModLoader
         public static void Load() {
             if (File.Exists(ProgramData.FilePaths.modsSaveFile)) {
                 string json = File.ReadAllText(ProgramData.FilePaths.modsSaveFile);
-                List<Mod> modes = JsonConvert.DeserializeObject<List<Mod>>(json);
-                foreach (Mod mod in modes) {
+                List<Mod> mods = JsonConvert.DeserializeObject<List<Mod>>(json);
+                foreach (Mod mod in mods) {
+                    if (mod.configFileLocation.Contains(ProgramData.FilePaths.bepInExConfigFolder)) {
+                        mod.configFileLocation = mod.configFileLocation.Replace(ProgramData.FilePaths.bepInExConfigFolder, ProgramData.FilePaths.configsFolder);
+                    }
+
                     AddMod(mod);
                 }
             }

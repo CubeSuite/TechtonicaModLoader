@@ -53,6 +53,8 @@ namespace TechtonicaModLoader
 
             await LoadData();
             Log.Info("Data Loaded");
+            
+            ProgramData.FilePaths.CopyConfigFiles();
 
             Settings.userSettings.findGameFolder.OnClick();
             if (!FileStructureUtils.ValidateGameFolder()) {
@@ -83,6 +85,8 @@ namespace TechtonicaModLoader
             }
 
             RefreshCurrentModList();
+
+            mainGrid.Visibility = Visibility.Visible;
         }
 
         private async void OnProgramClosing(object sender, System.ComponentModel.CancelEventArgs e) {

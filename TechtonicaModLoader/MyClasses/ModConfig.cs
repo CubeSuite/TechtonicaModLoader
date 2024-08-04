@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -48,6 +51,14 @@ namespace TechtonicaModLoader.MyClasses
                         shortcutOption.value = value;
                         SaveToFile();
                         Log.Debug($"Set mod config KeyboardShortcutSetting '{name}' to '{value}'");
+                    }
+                    else if (option is KeyCodeConfigOption keycodeOption) {
+                        keycodeOption.value = value;
+                        SaveToFile();
+                        Log.Debug($"Set mod config KeyCodeSetting '{name}' to '{value}'");
+                    }
+                    else {
+                        Log.Error($"Cannot Update mod config entry '{name}' - unknown type '{option.optionType}'");
                     }
                     return;
                 }
@@ -112,6 +123,25 @@ namespace TechtonicaModLoader.MyClasses
             Log.Error($"Could not find mod config BoolSetting with name '{name}'");
         }
 
+        public void UpdateSetting(ConfigOption setting) {
+            foreach(ConfigOption option in options) {
+                if (option.name != setting.name) continue;
+
+                if (setting is StringConfigOption stringOption) UpdateSetting(setting.name, stringOption.value);
+                else if (setting is KeyboardShortcutConfigOption shortcutOption) UpdateSetting(setting.name, shortcutOption.value);
+                else if (setting is KeyCodeConfigOption keycodeOption) UpdateSetting(setting.name, keycodeOption.value);
+                else if (setting is IntConfigOption intOption) UpdateSetting(setting.name, intOption.value);
+                else if (setting is FloatConfigOption floatOption) UpdateSetting(setting.name, floatOption.value);
+                else if (setting is DoubleConfigOption doubleOption) UpdateSetting(setting.name, doubleOption.value);
+                else if (setting is BooleanConfigOption boolOption) UpdateSetting(setting.name, boolOption.value);
+                else Log.Error($"Cannot update mod config option '{setting.name}' - unknown type: '{setting.optionType}'");
+            }
+        }
+
+        public bool HasSetting(string name) {
+            return options.Select(option => option.name).Contains(name);
+        }
+
         public void RestoreDefaults() {
             Log.Debug($"Restoring mod config defaults");
             foreach(ConfigOption option in options) {
@@ -156,6 +186,7 @@ namespace TechtonicaModLoader.MyClasses
                     switch (optionType) {
                         case "String": config.options.Add(new StringConfigOption(optionLines) { category = latestCategory }); break;
                         case ConfigOptionTypes.keyboardShortcutOption: config.options.Add(new KeyboardShortcutConfigOption(optionLines) { category = latestCategory }); break;
+                        case ConfigOptionTypes.keycodeOption: config.options.Add(new KeyCodeConfigOption(optionLines) { category = latestCategory }); break;
                         case "Int32": config.options.Add(new IntConfigOption(optionLines) { category = latestCategory }); break;
                         case "Single": config.options.Add(new FloatConfigOption(optionLines) { category = latestCategory }); break;
                         case "Double": config.options.Add(new DoubleConfigOption(optionLines) { category = latestCategory }); break;
@@ -206,8 +237,8 @@ namespace TechtonicaModLoader.MyClasses
             else return "No description available.";
         }
 
-
         public virtual void RestoreDefault(){}
+       
         public virtual List<string> ToLines() {
             string error = "ConfigOption.ToLine() has not been overridden";
             Log.Error(error);
@@ -220,6 +251,7 @@ namespace TechtonicaModLoader.MyClasses
     {
         public const string stringOption = "String";
         public const string keyboardShortcutOption = "KeyboardShortcut";
+        public const string keycodeOption = "KeyCode";
         public const string intOption = "Int32";
         public const string floatOption = "Single";
         public const string doubleOption = "Double";
@@ -291,6 +323,41 @@ namespace TechtonicaModLoader.MyClasses
                 $"# Setting type: {optionType}",
                 $"# Default value: {defaultValue}",
                 $"{name} = {value}",
+            };
+        }
+    }
+
+    public class KeyCodeConfigOption : ConfigOption
+    {
+        public string value;
+        public string defaultValue;
+
+        public KeyCodeConfigOption() { optionType = ConfigOptionTypes.keycodeOption; }
+        public KeyCodeConfigOption(List<string> fileLines) {
+            optionType = ConfigOptionTypes.keycodeOption;
+            foreach (string line in fileLines) {
+                if (line.StartsWith("## ")) {
+                    description = line.Replace("## ", "");
+                }
+                else if (line.StartsWith("# Default")) {
+                    defaultValue = line.Split(new string[] { ": " }, StringSplitOptions.None).Last();
+                }
+                else if (!line.StartsWith("# Setting type")) {
+                    name = line.Split(new string[] { " = " }, StringSplitOptions.None).First();
+                    value = line.Split(new string[] { " = " }, StringSplitOptions.None).Last();
+                }
+            }
+        }
+
+        public override void RestoreDefault() {
+            value = defaultValue;
+        }
+
+        public override List<string> ToLines() {
+            return new List<string>() {
+                $"# Setting type: {optionType}",
+                $"# Default value: {defaultValue}",
+                $"{name} = {value}"
             };
         }
     }

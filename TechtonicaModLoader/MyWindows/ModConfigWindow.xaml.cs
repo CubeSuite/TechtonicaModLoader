@@ -98,6 +98,12 @@ namespace TechtonicaModLoader.MyWindows
                         });
                         break;
 
+                    case ConfigOptionTypes.keycodeOption:
+                        settingsPanel.Children.Add(new StringSettingPanel((KeyCodeConfigOption)option){
+                            Margin = new Thickness(10, 5, 10, 5)
+                        });
+                        break;
+
                     case ConfigOptionTypes.intOption:
                         settingsPanel.Children.Add(new IntSettingPanel((IntConfigOption)option) {
                             Margin = new Thickness(10, 5, 10, 5)

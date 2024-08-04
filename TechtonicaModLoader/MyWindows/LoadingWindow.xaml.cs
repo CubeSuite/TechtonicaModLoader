@@ -20,10 +20,12 @@ namespace TechtonicaModLoader.MyWindows
     public partial class LoadingWindow : Window
     {
         public LoadingWindow() {
-            Owner = Application.Current.MainWindow;
-            InitializeComponent();
-            Width = ProgramData.programWidth;
-            Height = ProgramData.programHeight;
+            Dispatcher.Invoke(delegate () {
+                Owner = Application.Current.MainWindow;
+                InitializeComponent();
+                Width = ProgramData.programWidth;
+                Height = ProgramData.programHeight;
+            });
         }
 
         // Public Functions
