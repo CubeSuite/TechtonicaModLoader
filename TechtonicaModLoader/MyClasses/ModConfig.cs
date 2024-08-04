@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -119,6 +121,25 @@ namespace TechtonicaModLoader.MyClasses
             }
 
             Log.Error($"Could not find mod config BoolSetting with name '{name}'");
+        }
+
+        public void UpdateSetting(ConfigOption setting) {
+            foreach(ConfigOption option in options) {
+                if (option.name != setting.name) continue;
+
+                if (setting is StringConfigOption stringOption) UpdateSetting(setting.name, stringOption.value);
+                else if (setting is KeyboardShortcutConfigOption shortcutOption) UpdateSetting(setting.name, shortcutOption.value);
+                else if (setting is KeyCodeConfigOption keycodeOption) UpdateSetting(setting.name, keycodeOption.value);
+                else if (setting is IntConfigOption intOption) UpdateSetting(setting.name, intOption.value);
+                else if (setting is FloatConfigOption floatOption) UpdateSetting(setting.name, floatOption.value);
+                else if (setting is DoubleConfigOption doubleOption) UpdateSetting(setting.name, doubleOption.value);
+                else if (setting is BooleanConfigOption boolOption) UpdateSetting(setting.name, boolOption.value);
+                else Log.Error($"Cannot update mod config option '{setting.name}' - unknown type: '{setting.optionType}'");
+            }
+        }
+
+        public bool HasSetting(string name) {
+            return options.Select(option => option.name).Contains(name);
         }
 
         public void RestoreDefaults() {

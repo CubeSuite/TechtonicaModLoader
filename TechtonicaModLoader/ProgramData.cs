@@ -31,7 +31,7 @@ namespace TechtonicaModLoader
         public static ModListSortOption currentSortOption = StringUtils.GetModListSortOptionFromName(Settings.userSettings.defaultSortOption.defaultValue);
 
         public static int programVersion = 2;
-        public static int majorVersion = 2;
+        public static int majorVersion = 3;
         public static int minorVersion = 0;
         public static string versionText => $"{programVersion}.{majorVersion}.{minorVersion}";
 
@@ -57,6 +57,7 @@ namespace TechtonicaModLoader
             public static string logsFolder = $"{rootFolder}\\Logs";
             public static string crashReportsFolder = $"{rootFolder}\\CrashReports";
             public static string modsFolder = $"{dataFolder}\\Mods";
+            public static string configsFolder = $"{dataFolder}\\Configs";
             public static string unzipFolder = $"{rootFolder}\\Unzip";
             public static string markdownFiles = $"{dataFolder}\\MarkdownFiles";
             public static string imageCache = $"{rootFolder}\\ImageCache";
@@ -90,6 +91,7 @@ namespace TechtonicaModLoader
                     logsFolder,
                     crashReportsFolder,
                     modsFolder,
+                    configsFolder,
                     unzipFolder,
                     markdownFiles,
                     imageCache
@@ -125,6 +127,16 @@ namespace TechtonicaModLoader
                 GenerateDeleteSVG();
 
                 MainWindow.current.controlBox.RefreshIcons();
+            }
+
+            public static void CopyConfigFiles() {
+                if (!Directory.Exists(bepInExConfigFolder)) return;
+                string[] configFiles = Directory.GetFiles(bepInExConfigFolder);
+                foreach(string configFile in configFiles) {
+                    string newPath = configFile.Replace(bepInExConfigFolder, configsFolder);
+                    if (File.Exists(newPath)) continue;
+                    File.Copy(configFile, newPath);
+                }
             }
 
             // Private Functions

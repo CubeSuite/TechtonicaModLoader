@@ -140,16 +140,23 @@ namespace TechtonicaModLoader.Modes
 
             if (id != ProgramData.bepInExID) {
                 if (FileStructureUtils.SearchForConfigFile(ProgramData.FilePaths.unzipFolder, out configFileLocation)) {
-                    string newPath = configFileLocation.Replace(Path.GetDirectoryName(configFileLocation), ProgramData.FilePaths.bepInExConfigFolder);
-                    if (File.Exists(newPath)) {
-                        Log.Warning($"Config file already exists at '{newPath}' - deleting original");
-                        File.Delete(newPath);
-                        // ToDo: Update new config file with values from last one.
+                    string pathInDataConfigsFolder = configFileLocation.Replace(Path.GetDirectoryName(configFileLocation), ProgramData.FilePaths.configsFolder);
+                    if (File.Exists(pathInDataConfigsFolder)) {
+                        ModConfig oldConfig = ModConfig.FromFile(pathInDataConfigsFolder);
+                        ModConfig newConfig = ModConfig.FromFile(configFileLocation);
+
+                        foreach (ConfigOption option in oldConfig.options) {
+                            if (!newConfig.HasSetting(option.name)) continue;
+                            newConfig.UpdateSetting(option);
+                        }
+
+                        newConfig.SaveToFile();
+                        File.Delete(pathInDataConfigsFolder);
                     }
 
-                    File.Copy(configFileLocation, newPath);
-                    configFileLocation = newPath;
-                    installedFiles.Add(newPath);
+                    File.Copy(configFileLocation, pathInDataConfigsFolder);
+                    configFileLocation = pathInDataConfigsFolder;
+                    installedFiles.Add(pathInDataConfigsFolder);
                     Log.Info($"Installed config file for '{name}'");
                 }
 
@@ -230,7 +237,7 @@ namespace TechtonicaModLoader.Modes
 
             List<string> foldersToDelete = new List<string>();
             foreach (string file in installedFiles) {
-                if (file.EndsWith(".md") || file.EndsWith(".zip")) continue;
+                if (file.EndsWith(".md") || file.EndsWith(".zip") || file.EndsWith(".cfg")) continue;
                 if (File.Exists(file)) {
                     if (DoesFileHaveNamedParentFolder(file)) {
                         foldersToDelete.Add(Path.GetDirectoryName(file));
