@@ -19,7 +19,7 @@
             </Border.Background>
             <Grid>
                 <MyPanels:LoadingPanel x:Name="loadingPanel"/>
-                <Grid x:Name="mainGrid" Visibility="Visible">
+                <Grid x:Name="mainGrid" Visibility="Hidden">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition/>
