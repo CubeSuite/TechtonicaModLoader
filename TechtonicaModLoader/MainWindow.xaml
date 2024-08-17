@@ -66,12 +66,12 @@
 
                     </Grid>
                 </Grid>
-                <Border Background="{DynamicResource dimBackgroundBrush}"
+                <Border x:Name="controlBoxBorder" Background="{DynamicResource dimBackgroundBrush}"
                         CornerRadius="{DynamicResource borderCorners}"
-                        Width="343" Height="40"
+                        Width="343" Height="40" Visibility="Hidden"
                         HorizontalAlignment="Right" VerticalAlignment="Top" Margin="2"/>
-                <MyPanels:ControlBox x:Name="controlBox" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5"/>
-                <MyControls:MyButton x:Name="launchGameButton" ButtonText="Launch Game" 
+                <MyPanels:ControlBox x:Name="controlBox" Visibility="Hidden" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5"/>
+                <MyControls:MyButton x:Name="launchGameButton" ButtonText="Launch Game" Visibility="Hidden" 
                                      HorizontalAlignment="Right" VerticalAlignment="Top" Width="200" Margin="0,7,140,1"
                                      LeftClicked="OnLaunchGameClicked"/>
             </Grid>
