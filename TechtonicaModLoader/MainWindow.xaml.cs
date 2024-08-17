@@ -55,8 +55,18 @@ namespace TechtonicaModLoader
             Log.Info("Data Loaded");
             
             ProgramData.FilePaths.CopyConfigFiles();
+            if (!FileStructureUtils.ValidateGameFolder()) {
+                Settings.userSettings.findGameFolder.OnClick();
 
-            Settings.userSettings.findGameFolder.OnClick();
+                if (FileStructureUtils.ValidateGameFolder()) {
+                    if (!GuiUtils.GetUserConfirmation("Correct Game Folder?",
+                                                     $"TML found Techtonica installed in the following location.\n" +
+                                                     $"Is this installation you would like to mod?\n{Settings.userSettings.gameFolder.value}")) {
+                        SettingsWindow.ShowSettingsWindow();
+                    }
+                }
+            }
+                
             if (!FileStructureUtils.ValidateGameFolder()) {
                 GuiUtils.ShowInfoMessage("Game Folder Not Found", "TML couldn't find Techtonica's installation location. Please set it in the settings.");
                 SettingsWindow.ShowSettingsWindow();
