@@ -97,6 +97,9 @@ namespace TechtonicaModLoader
             RefreshCurrentModList();
 
             mainGrid.Visibility = Visibility.Visible;
+            launchGameButton.Visibility = Visibility.Visible;
+            controlBox.Visibility = Visibility.Visible;
+            controlBoxBorder.Visibility = Visibility.Visible;
         }
 
         private async void OnProgramClosing(object sender, System.ComponentModel.CancelEventArgs e) {
