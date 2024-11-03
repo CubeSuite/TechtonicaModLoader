@@ -93,6 +93,14 @@ namespace TechtonicaModLoader.MyControls
 
         private void OnControlLoaded(object sender, RoutedEventArgs e) {
             LoadItems();
+            if (ProgramData.isRuntime) {
+                MainWindow.current.PreviewMouseDown += OnMainWindowPreviewMouseDown;
+            }
+        }
+
+        private void OnMainWindowPreviewMouseDown(object sender, MouseButtonEventArgs e) {
+            Keyboard.ClearFocus();
+            e.Handled = ShowItems;
         }
 
         private void OnMyComboBoxLeftClicked(object sender, MouseButtonEventArgs e) {
@@ -108,21 +116,9 @@ namespace TechtonicaModLoader.MyControls
         }
 
         private void OnInputBoxGotFocus(object sender, KeyboardFocusChangedEventArgs e) {
-            ShowItems = !ShowItems;
+            ShowItems = true;
             SelectedItem = "";
             LoadItems();
-        }
-
-        private void OnItemsListMouseLeave(object sender, MouseEventArgs e) {
-            ShowItems = false;
-            if (Searchable) {
-                if (!itemsAsList.Contains(displayLabel.Text)) {
-                    SetItem(string.IsNullOrEmpty(lastItem) ? itemsAsList[0] : lastItem);
-                    SelectedItemChanged?.Invoke(this, EventArgs.Empty);
-                }
-
-                Keyboard.ClearFocus();
-            }
         }
 
         private void OnItemClicked(object sender, MouseButtonEventArgs e) {
