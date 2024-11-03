@@ -68,6 +68,7 @@ namespace TechtonicaModLoader
                     string steamPath = $"{drive}:/steam/steamapps/common/Techtonica/Techtonica.exe";
                     string steamPath2 = $"{drive}:/ steam/steamapps/common/Techtonica/Techtonica.exe";
                     string steamPath3 = $"{drive}:/SteamLibrary/steamapps/common/Techtonica/Techtonica.exe";
+                    string steamPath4 = $"{drive}:/Program Files (x86)/Steam/steamapps/common/Techtonica/Techtonica.exe";
                     string xboxPath = $"{drive}:/XBoxGames/Techtonica/Content/Techtonica.exe";
 
                     if (File.Exists(xboxPath)) {
@@ -87,6 +88,11 @@ namespace TechtonicaModLoader
                     }
                     else if (File.Exists(steamPath3)) {
                         userSettings.SetSetting(SettingNames.gameFolder, Path.GetDirectoryName(steamPath3), false);
+                        Log.Debug($"Found game folder at '{userSettings.gameFolder.name}'");
+                        return;
+                    }
+                    else if (File.Exists(steamPath4)) {
+                        userSettings.SetSetting(SettingNames.gameFolder, Path.GetDirectoryName(steamPath4), false);
                         Log.Debug($"Found game folder at '{userSettings.gameFolder.name}'");
                         return;
                     }
@@ -494,10 +500,10 @@ namespace TechtonicaModLoader
 
     public class Setting
     {
-        public readonly string type = "None";
-        public string name;
-        public string description;
-        public string category;
+        [JsonIgnore] public readonly string type = "None";
+        [JsonIgnore] public string name;
+        [JsonIgnore] public string description;
+        [JsonIgnore] public string category;
 
         [JsonIgnore]
         public bool isHidden = false;
@@ -513,7 +519,7 @@ namespace TechtonicaModLoader
     public class StringSetting : Setting
     {
         public string value;
-        public string defaultValue;
+        [JsonIgnore] public string defaultValue;
 
         public override void RestoreDefault() {
             value = defaultValue;
@@ -525,8 +531,8 @@ namespace TechtonicaModLoader
     public class ComboSetting : Setting
     {
         public string value;
-        public string defaultValue;
-        public string values;
+        [JsonIgnore] public string defaultValue;
+        [JsonIgnore] public string values;
 
         public override void RestoreDefault() {
             value = defaultValue;
@@ -537,10 +543,10 @@ namespace TechtonicaModLoader
 
     public class IntSetting : Setting
     {
-        public int min;
-        public int max;
+        [JsonIgnore] public int min;
+        [JsonIgnore] public int max;
         public int value;
-        public int defaultValue;
+        [JsonIgnore] public int defaultValue;
 
         public override void RestoreDefault() {
             value = defaultValue;
@@ -560,7 +566,7 @@ namespace TechtonicaModLoader
             }
         }
 
-        public bool defaultValue;
+        [JsonIgnore] public bool defaultValue;
 
         [JsonIgnore]
         public Action<bool> OnValueChanged = (bool newValue) => {};
@@ -574,7 +580,7 @@ namespace TechtonicaModLoader
 
     public class ButtonSetting : Setting
     {
-        public string buttonText;
+        [JsonIgnore] public string buttonText;
 
         [JsonIgnore]
         public Action OnClick = delegate () { };
@@ -585,7 +591,7 @@ namespace TechtonicaModLoader
     public class ColourSetting : Setting
     {
         public Color value;
-        public Color defaultValue;
+        [JsonIgnore] public Color defaultValue;
 
         public override void RestoreDefault() {
             value = defaultValue;

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using TechtonicaModLoader.Modes.Globals;
 using TechtonicaModLoader.MyWindows;
 
@@ -77,7 +78,12 @@ namespace TechtonicaModLoader
 
         private static bool ValidateBackupFolder() {
             if (string.IsNullOrEmpty(Settings.userSettings.backupsFolder.value)) {
-                Settings.userSettings.backupsFolder.value = defaultBackupsFolder;
+                Settings.userSettings.SetSetting(SettingNames.backupsFolder, defaultBackupsFolder, false);
+            }
+
+            string name = Settings.userSettings.backupsFolder.value.Split('\\').Last();
+            if(!string.IsNullOrEmpty(name) || name == "Backups" || name == " Backups") {
+                Settings.userSettings.SetSetting(SettingNames.backupsFolder, defaultBackupsFolder, false);
             }
 
             try {

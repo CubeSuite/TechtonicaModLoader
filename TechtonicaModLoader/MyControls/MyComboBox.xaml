@@ -56,10 +56,10 @@
         </Grid>
 
         <Popup x:Name="ItemsPopup"
+               StaysOpen="{Binding ElementName=displayLabel, Path=IsKeyboardFocused, UpdateSourceTrigger=PropertyChanged}"
                IsOpen="{Binding ElementName=thisControl, Path=ShowItems, UpdateSourceTrigger=PropertyChanged}"
                Width="{Binding ElementName=thisControl, Path=ActualWidth, UpdateSourceTrigger=PropertyChanged}"
-               Placement="Bottom" AllowsTransparency="True" VerticalOffset="5"
-               MouseLeave="OnItemsListMouseLeave">
+               Placement="Bottom" AllowsTransparency="True" VerticalOffset="5">
             <Grid>
                 <Border Background="{DynamicResource uiBackgroundBrush}" BorderBrush="{DynamicResource accentBrush}"
                         BorderThickness="2" CornerRadius="5"/>

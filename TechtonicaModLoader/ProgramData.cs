@@ -25,14 +25,14 @@ namespace TechtonicaModLoader
         public static bool isRuntime => MainWindow.current != null;
         public static bool runUnitTests = true;
         public static bool logDebugMessages = true;
-        public static string programName = "Techtonica Mod Loader";
+        public const string programName = "Techtonica Mod Loader";
         public static bool safeToSave = false;
         public const string bepInExID = "b9a5a1bd-81d8-4913-a46e-70ca7734628c";
         public static ModListSortOption currentSortOption = StringUtils.GetModListSortOptionFromName(Settings.userSettings.defaultSortOption.defaultValue);
 
         public static int programVersion = 2;
         public static int majorVersion = 3;
-        public static int minorVersion = 1;
+        public static int minorVersion = 2;
         public static string versionText => $"{programVersion}.{majorVersion}.{minorVersion}";
 
         public static int programWidth = 1600;
