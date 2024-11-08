@@ -189,6 +189,20 @@ namespace TechtonicaModLoader
             return dllFiles;
         }
 
+        public static List<string> SearchForXmlFiles(string folder) {
+            Log.Debug($"Searching folder '{folder}' for .xml files");
+
+            List<string> xmlFiles = Directory.GetFiles(folder).Where(
+                file => file.EndsWith(".xml", StringComparison.OrdinalIgnoreCase)
+            ).ToList();
+
+            foreach(string directory in Directory.GetDirectories(folder)) {
+                xmlFiles.AddRange(SearchForXmlFiles(folder));
+            }
+
+            return xmlFiles;
+        }
+
         public static List<string> CopyFolder(string source, string destination) {
             Log.Debug($"Copying folder from '{source}' to '{destination}'");
             string[] files = Directory.GetFiles(source);

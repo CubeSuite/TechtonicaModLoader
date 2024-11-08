@@ -193,6 +193,11 @@ namespace TechtonicaModLoader.Modes
                     Directory.CreateDirectory(targetFolder);
                     List<string> dllFiles = FileStructureUtils.SearchForDllFiles(pluginsFolder);
                     InstallFiles(dllFiles, targetFolder);
+
+                    List<string> xmlFiles = FileStructureUtils.SearchForXmlFiles(pluginsFolder);
+                    if(xmlFiles.Count != 0) {
+                        InstallFiles(dllFiles, targetFolder);
+                    }
                 }
 
                 if (hasPatcherFiles) {
@@ -252,6 +257,10 @@ namespace TechtonicaModLoader.Modes
             foreach (string folder in foldersToDelete) {
                 if (folder == ProgramData.FilePaths.gameFolder || folder == ProgramData.FilePaths.gameDataFolder) continue;
                 Log.Debug($"Deleting folder '{folder.Replace(ProgramData.FilePaths.gameFolder, "")}'");
+                foreach(string file in Directory.GetFiles(folder)) {
+                    File.Delete(file);
+                }
+
                 Directory.Delete(folder);
             }
 
