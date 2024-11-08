@@ -60,7 +60,10 @@ namespace TechtonicaModLoader.MyWindows
         }
 
         private void OnSettingChanged(object sender, SettingChangedEventArgs e) {
-            closeButton.Source = "ControlBox/Close";
+            Dispatcher.Invoke(delegate () {
+                closeButton.Source = "ControlBox/Close";
+            });
+
             if (!e.changeFromGUI) LoadCategory(currentCategory);
         }
 

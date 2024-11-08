@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -129,6 +130,15 @@ namespace TechtonicaModLoader
                 }
             }
             else {
+                if (!launchGameButton.IsEnabled) {
+                    string[] configFiles = Directory.GetFiles(ProgramData.FilePaths.bepInExConfigFolder);
+                    foreach (string configFile in configFiles) {
+                        string newpath = configFile.Replace(ProgramData.FilePaths.bepInExConfigFolder, ProgramData.FilePaths.configsFolder);
+                        if (File.Exists(newpath)) File.Delete(newpath);
+                        File.Copy(configFile, newpath);
+                    }
+                }
+
                 launchGameButton.IsEnabled = true;
                 launchGameButton.ButtonText = "Launch Game";
                 mainGrid.Visibility = Visibility.Visible;
