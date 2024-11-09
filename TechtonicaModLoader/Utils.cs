@@ -197,7 +197,7 @@ namespace TechtonicaModLoader
             ).ToList();
 
             foreach(string directory in Directory.GetDirectories(folder)) {
-                xmlFiles.AddRange(SearchForXmlFiles(folder));
+                xmlFiles.AddRange(SearchForXmlFiles(directory));
             }
 
             return xmlFiles;
