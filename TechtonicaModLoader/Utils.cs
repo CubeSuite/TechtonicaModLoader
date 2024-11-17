@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TechtonicaModLoader.MyWindows;
@@ -53,10 +54,13 @@ namespace TechtonicaModLoader
         }
 
         public static void ShowDownloadingGui(string modName) {
-            LoadingWindow window = new LoadingWindow();
-            window.SetProgress($"Downloading {modName}", 0, 1);
-            downloadingWindows.Add(modName, window);
-            window.Show();
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                LoadingWindow window = new LoadingWindow();
+                window.SetProgress($"Downloading {modName}", 0, 1);
+                downloadingWindows.Add(modName, window);
+                window.Show();
+            });
         }
 
         public static void ShowInstallingGui(string modName) {
@@ -72,7 +76,11 @@ namespace TechtonicaModLoader
 
         public static void HideDownloadingGui(string modName) {
             if(downloadingWindows.ContainsKey(modName)) {
-                downloadingWindows[modName].Close();
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    downloadingWindows[modName].Close();
+                });
+
                 downloadingWindows.Remove(modName);
             }
             else {
