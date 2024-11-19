@@ -103,8 +103,7 @@ namespace TechtonicaModLoader
                 (DateTime.Parse(mod.date_updated) < ModManager.techtonicaReleaseDate && !ModManager.allowedMods.Contains(mod.name))).ToList();
 
             mods = mods.Where(mod => !mod.is_deprecated && !ModManager.disallowedMods.Contains(mod.name) &&
-                                     (DateTime.Parse(mod.date_updated) >= ModManager.techtonicaReleaseDate ||
-                                      ModManager.allowedMods.Contains(mod.name))).ToList();
+                (DateTime.Parse(mod.date_updated) >= ModManager.techtonicaReleaseDate || ModManager.allowedMods.Contains(mod.name))).ToList();
 
             Log.Debug($"Removed {depricatedMods.Count} deprecated mods");
 
