@@ -17,9 +17,21 @@ namespace TechtonicaModLoader
     {
         // Objects & Variables
 
-        // The release of 1.0, used to filter mods that are likely broken.
         internal static readonly DateTime techtonicaReleaseDate = new DateTime(2024, 11, 7);
-        internal static HashSet<string> allowedMods = new HashSet<string> { "BepInExPack", "UnityAudio" };
+
+        internal static readonly HashSet<string> allowedMods = new HashSet<string> { 
+            "BepInExPack", 
+            "Helium",
+            "LongStackInserters",
+            "Official_BepInEx_ConfigurationManager",
+            "UnityAudio",
+            "UnityExplorer",
+        };
+
+        internal static readonly HashSet<string> disallowedMods = new HashSet<string> { 
+            "r2modman",
+            "GaleModManager",
+        };
 
         private static Dictionary<string, Mod> mods = new Dictionary<string, Mod>();
 
@@ -139,14 +151,7 @@ namespace TechtonicaModLoader
                         mod.configFileLocation = mod.configFileLocation.Replace(ProgramData.FilePaths.bepInExConfigFolder, ProgramData.FilePaths.configsFolder);
                     }
 
-                    // Only add mods that are newer than the 1.0 release date or on the allowed list.
-                    if (mod.dateUpdated >= techtonicaReleaseDate || allowedMods.Contains(mod.name)) {
-                        AddMod(mod);
-                    }
-                    else {
-                        File.Delete(mod.zipFileLocation);
-                        DeleteMod(mod);
-                    }
+                    AddMod(mod);
                 }
             }
         }

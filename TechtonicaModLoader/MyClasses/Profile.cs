@@ -101,6 +101,36 @@ namespace TechtonicaModLoader.MyClasses
             }
         }
 
+        public void RemoveObsoleteMods()
+        {
+            List<string> modsRemoved = new List<string>();
+            foreach (Mod mod in GetMods())
+            {
+                if (ModManager.disallowedMods.Contains(mod.id) || 
+                    (mod.dateUpdated < ModManager.techtonicaReleaseDate && !ModManager.allowedMods.Contains(mod.name))) {
+                    modsRemoved.Add(mod.name);
+                    if (IsModEnabled(mod.id)) {
+                        mod.Uninstall();
+                    }
+
+                    mods.Remove(mod.id);
+
+                    System.IO.File.Delete(mod.zipFileLocation);
+                    ModManager.DeleteMod(mod);
+                }
+            }
+
+            if (modsRemoved.Count > 0) {
+                StringBuilder stringBuilder = new StringBuilder($"The following obsolete mods have been removed from profile '{name}':\n");
+
+                foreach (string modName in  modsRemoved) {
+                    stringBuilder.Append($"{modName}\n");
+                }
+
+                GuiUtils.ShowWarningMessage("Removed Obsolete Mods", stringBuilder.ToString());
+            }
+        }
+
         #region Overloads
 
         // Public Functions
