@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using TechtonicaModLoader.Modes;
+using TechtonicaModLoader.MyClasses;
 using TechtonicaModLoader.MyClasses.ThunderStoreResponses;
 
 namespace TechtonicaModLoader
@@ -15,6 +16,10 @@ namespace TechtonicaModLoader
     public static class ModManager
     {
         // Objects & Variables
+
+        // The release of 1.0, used to filter mods that are likely broken.
+        internal static readonly DateTime techtonicaReleaseDate = new DateTime(2024, 11, 7);
+        internal static HashSet<string> allowedMods = new HashSet<string> { "BepInExPack", "UnityAudio" };
 
         private static Dictionary<string, Mod> mods = new Dictionary<string, Mod>();
 
@@ -134,7 +139,14 @@ namespace TechtonicaModLoader
                         mod.configFileLocation = mod.configFileLocation.Replace(ProgramData.FilePaths.bepInExConfigFolder, ProgramData.FilePaths.configsFolder);
                     }
 
-                    AddMod(mod);
+                    // Only add mods that are newer than the 1.0 release date or on the allowed list.
+                    if (mod.dateUpdated >= techtonicaReleaseDate || allowedMods.Contains(mod.name)) {
+                        AddMod(mod);
+                    }
+                    else {
+                        File.Delete(mod.zipFileLocation);
+                        DeleteMod(mod);
+                    }
                 }
             }
         }

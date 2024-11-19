@@ -98,7 +98,19 @@ namespace TechtonicaModLoader
 
             List<ThunderStoreMod> mods = JsonConvert.DeserializeObject<List<ThunderStoreMod>>(json);
             Log.Debug($"Got {mods.Count} mods from ThunderStore");
-            
+
+            // Mark all mods older than the 1.0 release as deprecated.
+            int preReleaseMods = 0;
+            foreach (ThunderStoreMod thunderStoreMod in mods) {
+                // The DateTime strings from Thunderstore are ISO 8601 compliant so don't need a format provider for Parse.
+                if (DateTime.Parse(thunderStoreMod.date_updated) < ModManager.techtonicaReleaseDate && 
+                    !ModManager.allowedMods.Contains(thunderStoreMod.name)) {
+                    thunderStoreMod.is_deprecated = true;
+                    ++preReleaseMods;
+                }
+            }
+            Log.Debug($"Marked {preReleaseMods} pre-release mods as deprecated");
+
             List<ThunderStoreMod> depricatedMods = mods.Where(mod => mod.is_deprecated).ToList();
             mods = mods.Where(mod => !mod.is_deprecated).ToList();
             mods = mods.Where(mod => mod.name != "r2modman").ToList();
