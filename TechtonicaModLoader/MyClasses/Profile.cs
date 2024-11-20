@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -115,7 +116,7 @@ namespace TechtonicaModLoader.MyClasses
 
                     mods.Remove(mod.id);
 
-                    System.IO.File.Delete(mod.zipFileLocation);
+                    File.Delete(mod.zipFileLocation);
                     ModManager.DeleteMod(mod);
                 }
             }
