@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="TechtonicaModLoader.MVVM.Mod.ModView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TechtonicaModLoader.MVVM.Mod"
+             xmlns:Converters="clr-namespace:TechtonicaModLoader.MVVM.Converters"
+             xmlns:Controls="clr-namespace:TechtonicaModLoader.Controls"
+             mc:Ignorable="d" 
+             Height="100" d:DesignWidth="800">
+    <UserControl.Resources>
+        <Converters:TrueToCollapseConverter x:Key="trueToCollapseConverter"/>
+        <Converters:FalseToCollapseConverter x:Key="falseToCollapseConverter"/>
+    </UserControl.Resources>
+    <Border Background="{DynamicResource backgroundBrush}" CornerRadius="{DynamicResource borderCorners}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <CheckBox IsChecked="{Binding IsEnabled}" Margin="5" VerticalAlignment="Center" Grid.RowSpan="2" 
+                      Visibility="{Binding IsDownloaded, Converter={StaticResource falseToCollapseConverter}}"/>
+            <Controls:SvgButton Source="OnlineModPanel/Download" HandleClickCommand="{Binding DownloadCommand}"
+                                Margin="5" VerticalAlignment="Center" Grid.RowSpan="2"
+                                Visibility="{Binding IsDownloaded, Converter={StaticResource trueToCollapseConverter}}"/>
+
+            <Image Source="{Binding IconLink}" Grid.Column="1" Grid.RowSpan="2" Margin="5"/>
+            
+            <Label Content="{Binding Name}" Style="{DynamicResource titleStyle}" FontSize="18" 
+                   VerticalAlignment="Stretch" Grid.Column="2" Margin="0,0,5,0"/>
+            <TextBlock Text="{Binding TagLine}" Style="{DynamicResource textStyle}" 
+                       Grid.Column="2" Grid.Row="1" VerticalAlignment="Center" Margin="10,0"/>
+
+        </Grid>
+    </Border>
+</UserControl>

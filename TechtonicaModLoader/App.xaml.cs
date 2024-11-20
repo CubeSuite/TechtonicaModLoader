@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
+﻿using System.Configuration;
 using System.Data;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
+using TechtonicaModLoader.MVVM;
+using TechtonicaModLoader.Services;
+using TechtonicaModLoader.Stores;
 
 namespace TechtonicaModLoader
 {
@@ -15,14 +12,53 @@ namespace TechtonicaModLoader
     /// </summary>
     public partial class App : Application
     {
-        private void OnUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e) {
-            string crashLogText = $"Log Content:\n\n{File.ReadAllText(ProgramData.FilePaths.logFile)}\n\n";
-            crashLogText += $"Error:\n\n{e.Exception.Message}\n\n";
-            crashLogText += $"Stack Trace:\n\n{e.Exception.StackTrace}";
-            File.WriteAllText($"{ProgramData.FilePaths.crashReportsFolder}\\CrashReport.log", crashLogText);
+        // Members
 
-            GuiUtils.ShowErrorMessage($"Sorry, TML Has Crashed", "A folder will open containing a 'CrashReport.log' file, please send it to @Equinox on the Techtonica Discord sever.");
-            Process.Start(ProgramData.FilePaths.crashReportsFolder);
+        private Log? logger = null;
+        private MainViewModel? mainVeiwModel = null;
+        private ProfileManager? profileManager = null;
+        private DialogService? dialogService = null;
+
+        // Overrides
+
+        protected override void OnStartup(StartupEventArgs e) {
+            dialogService = new DialogService();
+            
+            DoStartupProcess();
+
+            mainVeiwModel = new MainViewModel(
+                profileManager ?? new ProfileManager(dialogService), 
+                dialogService, 
+                new Thunderstore(profileManager ?? new ProfileManager(dialogService))
+            );
+
+            mainVeiwModel.SelectedModList = Settings.UserSettings?.DefaultModList.Value;
+            mainVeiwModel.SelectedSortOption = Settings.UserSettings?.DefaultModListSortOption.Value;
+
+            MainWindow = new MainWindow() {
+                DataContext = mainVeiwModel
+            };
+
+            MainWindow.Show();
+            base.OnStartup(e);
+        }
+
+        // Private Functions
+
+        private void DoStartupProcess() {
+            logger = new Log();
+            Log.Info("Logger started");
+            ProgramData.FilePaths.CreateFolderStructure();
+            Log.Info("Created folder structure");
+            ProgramData.FilePaths.GenerateResources();
+            Log.Info("Generated resources");
+            Settings.Load(dialogService ?? new DialogService());
+            Log.Info("Settings loaded");
+
+            profileManager = new ProfileManager(dialogService ?? new DialogService());
+            profileManager.Load();
+            Log.Info("ProfileManager loaded");
         }
     }
+
 }

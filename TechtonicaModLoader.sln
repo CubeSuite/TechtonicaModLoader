@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.8.34525.116
+VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechtonicaModLoader", "TechtonicaModLoader\TechtonicaModLoader.csproj", "{5B760223-C7EE-4C2E-B409-4D7A6D21E693}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechtonicaModLoader", "TechtonicaModLoader\TechtonicaModLoader.csproj", "{EC4D219C-B122-413A-91D1-86AFE7BF1952}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5B760223-C7EE-4C2E-B409-4D7A6D21E693}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5B760223-C7EE-4C2E-B409-4D7A6D21E693}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5B760223-C7EE-4C2E-B409-4D7A6D21E693}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5B760223-C7EE-4C2E-B409-4D7A6D21E693}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC4D219C-B122-413A-91D1-86AFE7BF1952}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC4D219C-B122-413A-91D1-86AFE7BF1952}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC4D219C-B122-413A-91D1-86AFE7BF1952}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC4D219C-B122-413A-91D1-86AFE7BF1952}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {0288731A-16CE-4670-82F9-60DA55D4EDF2}
+		SolutionGuid = {2F1965B6-0AD3-4F7C-976F-AA5397A2596F}
 	EndGlobalSection
 EndGlobal

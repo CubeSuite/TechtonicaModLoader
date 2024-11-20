@@ -1,21 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <AssemblyVersion>3.0.0.0</AssemblyVersion>
-    <PackageIcon>TML Logo.ico</PackageIcon>
-    <FileVersion>3.0.0.0</FileVersion>
+    <AssemblyVersion>1.2.3.4</AssemblyVersion>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="Images\Background.jpg" />
-    <None Remove="Images\Logo.png" />
-    <None Remove="Images\UnknownModIcon.png" />
-  </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Images\Background.jpg" />
@@ -38,10 +30,6 @@
     </None>
     <None Update="Licenses\SharpVectors.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="TML Logo.ico">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
 
