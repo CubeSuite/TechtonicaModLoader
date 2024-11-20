@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -98,6 +99,36 @@ namespace TechtonicaModLoader.MyClasses
                 if (IsModEnabled(mod)) {
                     mod.Uninstall();
                 }
+            }
+        }
+
+        public void RemoveObsoleteMods()
+        {
+            List<string> modsRemoved = new List<string>();
+            foreach (Mod mod in GetMods())
+            {
+                if (ModManager.disallowedMods.Contains(mod.id) || 
+                    (mod.dateUpdated < ModManager.techtonicaReleaseDate && !ModManager.allowedMods.Contains(mod.name))) {
+                    modsRemoved.Add(mod.name);
+                    if (IsModEnabled(mod.id)) {
+                        mod.Uninstall();
+                    }
+
+                    mods.Remove(mod.id);
+
+                    File.Delete(mod.zipFileLocation);
+                    ModManager.DeleteMod(mod);
+                }
+            }
+
+            if (modsRemoved.Count > 0) {
+                StringBuilder stringBuilder = new StringBuilder($"The following obsolete mods have been removed from profile '{name}':\n");
+
+                foreach (string modName in  modsRemoved) {
+                    stringBuilder.Append($"{modName}\n");
+                }
+
+                GuiUtils.ShowWarningMessage("Removed Obsolete Mods", stringBuilder.ToString());
             }
         }
 

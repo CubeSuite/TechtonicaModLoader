@@ -98,12 +98,12 @@ namespace TechtonicaModLoader
 
             List<ThunderStoreMod> mods = JsonConvert.DeserializeObject<List<ThunderStoreMod>>(json);
             Log.Debug($"Got {mods.Count} mods from ThunderStore");
-            
-            List<ThunderStoreMod> depricatedMods = mods.Where(mod => mod.is_deprecated).ToList();
-            mods = mods.Where(mod => !mod.is_deprecated).ToList();
-            mods = mods.Where(mod => mod.name != "r2modman").ToList();
-            Log.Debug($"Removed r2modman from results");
 
+            List<ThunderStoreMod> depricatedMods = mods.Where(mod => mod.is_deprecated || 
+                (DateTime.Parse(mod.date_updated) < ModManager.techtonicaReleaseDate && !ModManager.allowedMods.Contains(mod.name))).ToList();
+
+            mods = mods.Where(mod => !mod.is_deprecated && !ModManager.disallowedMods.Contains(mod.name) &&
+                (DateTime.Parse(mod.date_updated) >= ModManager.techtonicaReleaseDate || ModManager.allowedMods.Contains(mod.name))).ToList();
 
             Log.Debug($"Removed {depricatedMods.Count} deprecated mods");
 

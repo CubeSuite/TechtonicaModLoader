@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using TechtonicaModLoader.Modes;
+using TechtonicaModLoader.MyClasses;
 using TechtonicaModLoader.MyClasses.ThunderStoreResponses;
 
 namespace TechtonicaModLoader
@@ -15,6 +16,22 @@ namespace TechtonicaModLoader
     public static class ModManager
     {
         // Objects & Variables
+
+        internal static readonly DateTime techtonicaReleaseDate = new DateTime(2024, 11, 7);
+
+        internal static readonly HashSet<string> allowedMods = new HashSet<string> { 
+            "BepInExPack", 
+            "Helium",
+            "LongStackInserters",
+            "Official_BepInEx_ConfigurationManager",
+            "UnityAudio",
+            "UnityExplorer",
+        };
+
+        internal static readonly HashSet<string> disallowedMods = new HashSet<string> { 
+            "r2modman",
+            "GaleModManager",
+        };
 
         private static Dictionary<string, Mod> mods = new Dictionary<string, Mod>();
 

@@ -77,6 +77,8 @@ namespace TechtonicaModLoader
                 await ProfileManager.CreateDefaultProfiles();
             }
 
+            CleanProfiles();
+
             if(!await ModManager.CheckForUpdates()) {
                 sidePanel.Children.Remove(updateAllButton);
             }
@@ -267,6 +269,12 @@ namespace TechtonicaModLoader
             ProgramData.currentSortOption = StringUtils.GetModListSortOptionFromName(Settings.userSettings.defaultSortOption.value);
         }
 
+        private void CleanProfiles()
+        {
+            foreach (Profile profile in ProfileManager.GetAllProfiles()) {
+                profile.RemoveObsoleteMods();
+            }
+        }
 
         // Data Functions
 
