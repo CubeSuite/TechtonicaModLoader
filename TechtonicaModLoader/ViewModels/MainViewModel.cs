@@ -1,20 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Globalization;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Data;
+using TechtonicaModLoader.Models;
 using TechtonicaModLoader.MVVM.Mod;
 using TechtonicaModLoader.Services;
 using TechtonicaModLoader.Stores;
-using TechtonicaModLoader.Windows;
 
 namespace TechtonicaModLoader.MVVM
 {
@@ -22,13 +15,17 @@ namespace TechtonicaModLoader.MVVM
     {
         // Members
 
-        private ProfileManager _profileManager;
+        private readonly IProfileManager _profileManager;
+
+        // ***** TODO: _dialogService introduces View code into the ViewModel and needs to be rethought. *****
         private DialogService _dialogService;
+
         private Thunderstore _thunderStore;
 
         // Properties
 
         private Version ProgramVersion => Assembly.GetExecutingAssembly().GetName().Version ?? new Version(1, 0, 0);
+
         public string Title => $"Techtonica Mod Loader - V{ProgramVersion.Major}.{ProgramVersion.Minor}.{ProgramVersion.Build}";
 
         [ObservableProperty]
@@ -61,7 +58,7 @@ namespace TechtonicaModLoader.MVVM
 
         // Constructors
 
-        public MainViewModel(ProfileManager profileManager, DialogService dialogService, Thunderstore thunderstore) {
+        public MainViewModel(IProfileManager profileManager, DialogService dialogService, Thunderstore thunderstore) {
             _profileManager = profileManager;
             _dialogService = dialogService;
             _thunderStore = thunderstore;
@@ -69,7 +66,9 @@ namespace TechtonicaModLoader.MVVM
             _modsToShow = new ObservableCollection<ModViewModel>();
 
             _profileManager.PropertyChanged += OnProfileManagerPropertyChanged;
+            _profileManager.ProfilesList.CollectionChanged += OnProfilesListCollectionChanged;
             _thunderStore.PropertyChanged += OnThunderstorePropertyChanged;
+            _searchTerm = string.Empty;
         }
 
         // Commands
@@ -102,8 +101,17 @@ namespace TechtonicaModLoader.MVVM
 
         [RelayCommand]
         private void CreateNewProfile() {
+            // See note on _dialogService.   
             _dialogService.ShowInfoMessage("Test", "This is a test message", "Close Test Box");
             if(_dialogService.GetStringFromUser(out string name, "Enter Profile Name:", "")) {
+                if (_profileManager.ProfilesList.Select(profile => profile.Name).Contains(name)) {
+
+                    // TODO: Decision to make:
+                    // Create an message for the View to pick up and show the confirmation UX.
+                    // Alternative may be to allow for deletion of profiles and this method just invokes a refusal event here.
+
+                    return;
+                }
                 _profileManager.CreateNewProfile(name);
             }
         }
@@ -131,8 +139,11 @@ namespace TechtonicaModLoader.MVVM
         private void OnProfileManagerPropertyChanged(object? sender, PropertyChangedEventArgs e) {
             switch (e.PropertyName) {
                 case nameof(ProfileManager.ActiveProfile): OnPropertyChanged(nameof(ActiveProfile)); break;
-                case nameof(ProfileManager.ProfilesList): OnPropertyChanged(nameof(Profiles)); break;
             }
+        }
+
+        private void OnProfilesListCollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
+            OnPropertyChanged(nameof(Profiles));
         }
 
         private void OnThunderstorePropertyChanged(object? sender, PropertyChangedEventArgs e) {

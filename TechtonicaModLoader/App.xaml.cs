@@ -1,6 +1,5 @@
-﻿using System.Configuration;
-using System.Data;
-using System.Windows;
+﻿using System.Windows;
+using TechtonicaModLoader.Models;
 using TechtonicaModLoader.MVVM;
 using TechtonicaModLoader.Services;
 using TechtonicaModLoader.Stores;
@@ -16,8 +15,9 @@ namespace TechtonicaModLoader
 
         private Log? logger = null;
         private MainViewModel? mainVeiwModel = null;
-        private ProfileManager? profileManager = null;
         private DialogService? dialogService = null;
+
+        private readonly IProfileManager _profileManager = new ProfileManager();
 
         // Overrides
 
@@ -27,9 +27,9 @@ namespace TechtonicaModLoader
             DoStartupProcess();
 
             mainVeiwModel = new MainViewModel(
-                profileManager ?? new ProfileManager(dialogService), 
+                _profileManager, 
                 dialogService, 
-                new Thunderstore(profileManager ?? new ProfileManager(dialogService))
+                new Thunderstore(_profileManager)
             );
 
             mainVeiwModel.SelectedModList = Settings.UserSettings?.DefaultModList.Value;
@@ -55,8 +55,7 @@ namespace TechtonicaModLoader
             Settings.Load(dialogService ?? new DialogService());
             Log.Info("Settings loaded");
 
-            profileManager = new ProfileManager(dialogService ?? new DialogService());
-            profileManager.Load();
+            _profileManager.Load();
             Log.Info("ProfileManager loaded");
         }
     }

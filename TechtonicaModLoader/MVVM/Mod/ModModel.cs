@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using TechtonicaModLoader.Models;
 using TechtonicaModLoader.Services.ThunderstoreModels;
-using TechtonicaModLoader.Stores;
 
 namespace TechtonicaModLoader.MVVM.Mod
 {
     public class ModModel
     {
         // Members
-        private ProfileManager _profileManager;
+        private IProfileManager _profileManager;
 
         private readonly string? _id;
         private readonly string? _name;
@@ -37,9 +32,8 @@ namespace TechtonicaModLoader.MVVM.Mod
 
         // Constructors
 
-        public ModModel(ThunderStoreMod thunderStoreMod, ProfileManager profileManager) {
-            //_profileManager = profileManager;
-            _profileManager = profileManager.Instance;
+        public ModModel(ThunderStoreMod thunderStoreMod, IProfileManager profileManager) {
+            _profileManager = profileManager;
 
             _id = thunderStoreMod.uuid4;
             _name = thunderStoreMod.name;

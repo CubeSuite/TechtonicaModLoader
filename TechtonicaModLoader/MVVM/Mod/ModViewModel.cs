@@ -1,10 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using TechtonicaModLoader.Models;
 using TechtonicaModLoader.Stores;
 
 namespace TechtonicaModLoader.MVVM.Mod
@@ -12,7 +8,9 @@ namespace TechtonicaModLoader.MVVM.Mod
     public partial class ModViewModel : ObservableObject
     {
         // Members
-        private ModModel _mod;
+        private readonly ModModel _mod;
+
+        private readonly IProfileManager _profileManager;
 
         // Properties
 
@@ -30,12 +28,13 @@ namespace TechtonicaModLoader.MVVM.Mod
 
         [RelayCommand]
         private void DownloadMod() {
-            _mod.Downloaded();
+            _mod.Download();
         }
 
         // Constructors
 
-        public ModViewModel(ModModel mod, ProfileManager profileManager) {
+        public ModViewModel(ModModel mod, IProfileManager profileManager) {
+            _mod = mod;
             _profileManager = profileManager;
 
             _id = mod.ID;

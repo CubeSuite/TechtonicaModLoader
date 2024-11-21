@@ -1,15 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
+using TechtonicaModLoader.Models;
 using TechtonicaModLoader.MVVM.Mod;
 using TechtonicaModLoader.Services.ThunderstoreModels;
-using TechtonicaModLoader.Stores;
 
 namespace TechtonicaModLoader.Services
 {
@@ -17,7 +12,7 @@ namespace TechtonicaModLoader.Services
     {
         // Members
 
-        private ProfileManager _profileManager;
+        private IProfileManager _profileManager;
 
         private List<ModModel> _modCache = new List<ModModel>();
         private const string baseURL = "https://thunderstore.io/c/techtonica/api/v1";
@@ -43,7 +38,7 @@ namespace TechtonicaModLoader.Services
 
         // Constructors
 
-        public Thunderstore(ProfileManager profileManager) 
+        public Thunderstore(IProfileManager profileManager) 
         {
             _profileManager = profileManager;
             StartUpdateThread();
