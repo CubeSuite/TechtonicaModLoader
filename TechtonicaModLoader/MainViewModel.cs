@@ -20,12 +20,6 @@ namespace TechtonicaModLoader.MVVM
 {
     public partial class MainViewModel : ObservableObject
     {
-        // Members
-
-        private ProfileManager _profileManager;
-        private DialogService _dialogService;
-        private Thunderstore _thunderStore;
-
         // Properties
 
         private Version ProgramVersion => Assembly.GetExecutingAssembly().GetName().Version ?? new Version(1, 0, 0);
@@ -35,18 +29,23 @@ namespace TechtonicaModLoader.MVVM
         private bool _modUpdatesAvailable = false;
 
         public Profile ActiveProfile {
-            get => _profileManager.ActiveProfile;
+            get => ProfileManager.Instance.ActiveProfile;
             set {
-                _profileManager.ActiveProfile = value;
+                ProfileManager.Instance.ActiveProfile = value;
                 PopulateModsToShow();
             }
         }
 
-        public ObservableCollection<Profile> Profiles => _profileManager.ProfilesList;
+        public ObservableCollection<Profile> Profiles => ProfileManager.Instance.ProfilesList;
 
         [ObservableProperty]
         private ModListSource? _selectedModList = null;
-        public Array? ModLists => Settings.UserSettings.DefaultModList.Options;
+        public Array? ModLists {
+            get {
+                if (ThunderStore.Instance.Connected) return Settings.UserSettings.DefaultModList.Options;
+                else return new ModListSource[] { ModListSource.Downloaded, ModListSource.Enabled, ModListSource.Disabled };
+            }
+        }
 
         [ObservableProperty]
         private ModListSortOption? _selectedSortOption = null;
@@ -54,29 +53,25 @@ namespace TechtonicaModLoader.MVVM
         public Array? SortOptions => Settings.UserSettings.DefaultModListSortOption.Options;
 
         [ObservableProperty]
-        private string _searchTerm;
+        private string _searchTerm = "";
 
         [ObservableProperty]
         private ObservableCollection<ModViewModel> _modsToShow;
 
         // Constructors
 
-        public MainViewModel(ProfileManager profileManager, DialogService dialogService, Thunderstore thunderstore) {
-            _profileManager = profileManager;
-            _dialogService = dialogService;
-            _thunderStore = thunderstore;
-
+        public MainViewModel() {
             _modsToShow = new ObservableCollection<ModViewModel>();
 
-            _profileManager.PropertyChanged += OnProfileManagerPropertyChanged;
-            _thunderStore.PropertyChanged += OnThunderstorePropertyChanged;
+            ProfileManager.Instance.PropertyChanged += OnProfileManagerPropertyChanged;
+            ThunderStore.Instance.PropertyChanged += OnThunderstorePropertyChanged;
         }
 
         // Commands
 
         [RelayCommand]
         private void OpenSettings() {
-            _dialogService.OpenSettingsDialog();
+            DialogService.OpenSettingsDialog();
         }
 
         [RelayCommand]
@@ -97,30 +92,40 @@ namespace TechtonicaModLoader.MVVM
 
         [RelayCommand]
         private void CheckForModUpdates() {
-            // ToDo: CheckForModUpdates()
+            ThunderStore.Instance.UpdateModCache();
         }
 
         [RelayCommand]
         private void CreateNewProfile() {
-            _dialogService.ShowInfoMessage("Test", "This is a test message", "Close Test Box");
-            if(_dialogService.GetStringFromUser(out string name, "Enter Profile Name:", "")) {
-                _profileManager.CreateNewProfile(name);
+            if(DialogService.GetStringFromUser(out string name, "Enter Profile Name:", "")) {
+                ProfileManager.Instance.CreateNewProfile(name);
             }
         }
 
         [RelayCommand]
         private void DeleteProfile() {
-            string name = _profileManager.ActiveProfile.Name;
-            if(_dialogService.GetUserConfirmation("Delete Profile?", $"Are you sure you want to delete the {name} profile?\nThis cannot be undone.")) {
-                _profileManager.DeleteActiveProfile();
+            string name = ProfileManager.Instance.ActiveProfile.Name;
+            if(DialogService.GetUserConfirmation("Delete Profile?", $"Are you sure you want to delete the {name} profile?\nThis cannot be undone.")) {
+                ProfileManager.Instance.DeleteActiveProfile();
             }
         }
 
         // Events
 
-        
+        partial void OnSearchTermChanged(string value) {
+            PopulateModsToShow();
+        }
 
         partial void OnSelectedModListChanged(ModListSource? value) {
+            ModListSource[] onlineLists = new ModListSource[] { ModListSource.All, ModListSource.New, ModListSource.NotDownloaded };
+
+            if(!ThunderStore.Instance.Connected && (SelectedModList == ModListSource.All || SelectedModList == ModListSource.New || SelectedModList == ModListSource.NotDownloaded)) {
+                if (MainWindow.current == null) return;
+
+                DialogService.ShowErrorMessage("Not Connected To Thunderstore", "You can't browse online mods while in offline mode");
+                SelectedModList = ModListSource.Downloaded;
+            }
+
             PopulateModsToShow();
         }
 
@@ -136,27 +141,50 @@ namespace TechtonicaModLoader.MVVM
         }
 
         private void OnThunderstorePropertyChanged(object? sender, PropertyChangedEventArgs e) {
-            if(e.PropertyName == nameof(Thunderstore.ModCache)) {
+            if(e.PropertyName == nameof(ThunderStore.ModCache)) {
                 PopulateModsToShow();
+            }
+
+            if(e.PropertyName == nameof(ThunderStore.Connected)) {
+                if (!ThunderStore.Instance.Connected) {
+                    SelectedModList = ModListSource.Downloaded;
+                }
+                else {
+                    SelectedModList = Settings.UserSettings.DefaultModList.Value;
+                }
+
+                OnPropertyChanged(nameof(SelectedModList));
+                OnPropertyChanged(nameof(ModLists));
             }
         }
 
         // Private Functions
 
         private void PopulateModsToShow() {
-            IEnumerable<ModModel> allMods = _thunderStore.ModCache;
+            IEnumerable<ModModel> allMods = ThunderStore.Instance.ModCache.Where(mod => mod.FullName.ToLower().Contains(SearchTerm.ToLower()));
+
             switch (SelectedModList) {
                 case ModListSource.New: allMods = allMods.Where(mod => !Settings.UserSettings?.SeenMods.Value.Contains(mod.ID) ?? true); break;
-                case ModListSource.Installed: allMods = allMods.Where(mod => mod.IsDownloaded); break;
-                case ModListSource.NotInstalled: allMods = allMods.Where(mod => !mod.IsDownloaded); break;
+                case ModListSource.Downloaded: allMods = allMods.Where(mod => mod.IsDownloaded); break;
+                case ModListSource.NotDownloaded: allMods = allMods.Where(mod => !mod.IsDownloaded); break;
                 case ModListSource.Enabled: allMods = allMods.Where(mod => mod.IsDownloaded && mod.IsEnabled); break;
                 case ModListSource.Disabled: allMods = allMods.Where(mod => mod.IsDownloaded && !mod.IsEnabled); break;
             }
 
-            ModsToShow.Clear();
-            foreach(ModModel mod in allMods) {
-                ModsToShow.Add(new ModViewModel(mod, _profileManager));
+            switch (SelectedSortOption) {
+                case ModListSortOption.LastUpdated: allMods = allMods.OrderByDescending(mod => mod.LastUpdated); break;
+                case ModListSortOption.Newest: allMods = allMods.OrderByDescending(mod => mod.DateUploaded); break;
+                case ModListSortOption.Alphabetical: allMods = allMods.OrderBy(mod => mod.Name); break;
+                case ModListSortOption.Downloads: allMods = allMods.OrderByDescending(mod => mod.Downloads); break;
+                case ModListSortOption.Popularity: allMods = allMods.OrderByDescending(mod => mod.Rating); break;
             }
+
+            Application.Current.Dispatcher.Invoke(delegate () {
+                ModsToShow.Clear();
+                foreach (ModModel mod in allMods) {
+                    ModsToShow.Add(new ModViewModel(mod));
+                }
+            });
 
             OnPropertyChanged(nameof(ModsToShow));
         }

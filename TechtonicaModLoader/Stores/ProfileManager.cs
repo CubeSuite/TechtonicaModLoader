@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Bson;
 using SharpVectors.Dom.Events;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TechtonicaModLoader.MVVM.Mod;
 using TechtonicaModLoader.Services;
+using TechtonicaModLoader.Services.ThunderstoreModels;
 
 namespace TechtonicaModLoader.Stores
 {
@@ -18,13 +20,12 @@ namespace TechtonicaModLoader.Stores
     {
         // Members
 
-        [ObservableProperty]
-        private static ProfileManager _instance;
-
         private Dictionary<int, Profile> profiles = new Dictionary<int, Profile>();
-        private DialogService _dialogService;
+        private static ProfileManager _instance = new ProfileManager();
 
         // Properties
+
+        public static ProfileManager Instance => _instance;
 
         public Profile ActiveProfile {
             get => profiles[Settings.UserSettings.ActiveProfileID.Value];
@@ -37,18 +38,11 @@ namespace TechtonicaModLoader.Stores
 
         public ObservableCollection<Profile> ProfilesList { get; } = new ObservableCollection<Profile>();
 
-        // Constructors
-
-        public ProfileManager(DialogService dialogService) {
-            _instance = this;
-            _dialogService = dialogService;
-        }
-
         // Public Functions
 
         public void CreateNewProfile(string name) {
             if(ProfilesList.Select(profile => profile.Name).Contains(name)) {
-                if(!_dialogService.GetUserConfirmation("Name Taken", $"The profile name '{name}' is already taken, are you sure you want to use it again?")) {
+                if(!DialogService.GetUserConfirmation("Name Taken", $"The profile name '{name}' is already taken, are you sure you want to use it again?")) {
                     return;
                 }
             }
@@ -57,6 +51,14 @@ namespace TechtonicaModLoader.Stores
             int id = AddProfile(profile);
             ActiveProfile = profiles[id];
             Save();
+        }
+
+        public void AddMod(ThunderStoreMod thunderStoreMod) {
+            foreach (Profile profile in ProfilesList) {
+                profile.AddMod(thunderStoreMod);
+            }
+
+            ActiveProfile.ToggleMod(thunderStoreMod.uuid4);
         }
 
         public void DeleteActiveProfile() {
@@ -84,7 +86,7 @@ namespace TechtonicaModLoader.Stores
 
         // Data Functions
 
-        private void Save() {
+        public void Save() {
             string json = JsonConvert.SerializeObject(profiles.Values, Formatting.Indented);
             File.WriteAllText(ProgramData.FilePaths.profilesSaveFile, json);
         }
@@ -142,12 +144,20 @@ namespace TechtonicaModLoader.Stores
         // Public Functions
 
         public bool IsModEnabled(ModModel mod) {
-            if (!ModEnabledStates.ContainsKey(mod.ID)) {
-                Log.Error($"Tried to get enabled state for mod ({mod.Name}) that isn't in profile {this}");
-                return false;
-            }
+            if (ProfileManager.Instance.ActiveProfile.Name == "Vanilla") return false;
 
+            if (!ModEnabledStates.ContainsKey(mod.ID)) return false;
             return ModEnabledStates[mod.ID];
+        }
+
+        public void AddMod(ThunderStoreMod mod) {
+            ModEnabledStates.Add(mod.uuid4, false); // ToDo: Error handle
+            ProfileManager.Instance.Save();
+        }
+
+        public void ToggleMod(string id) {
+            ModEnabledStates[id] = !ModEnabledStates[id];
+            ProfileManager.Instance.Save();
         }
 
         // Private Functions

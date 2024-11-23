@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:TechtonicaModLoader.MVVM.Mod"
              xmlns:Converters="clr-namespace:TechtonicaModLoader.MVVM.Converters"
              xmlns:Controls="clr-namespace:TechtonicaModLoader.Controls"
+             xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
              mc:Ignorable="d" 
              Height="100" d:DesignWidth="800">
     <UserControl.Resources>
@@ -24,19 +25,43 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <CheckBox IsChecked="{Binding IsEnabled}" Margin="5" VerticalAlignment="Center" Grid.RowSpan="2" 
+            <CheckBox IsChecked="{Binding IsEnabled}" IsEnabled="{Binding AllowToggling}" Margin="5" VerticalAlignment="Center" Grid.RowSpan="2" 
                       Visibility="{Binding IsDownloaded, Converter={StaticResource falseToCollapseConverter}}"/>
-            <Controls:SvgButton Source="OnlineModPanel/Download" HandleClickCommand="{Binding DownloadCommand}"
+            <Controls:SvgButton Source="ModPanel/Download" HandleClickCommand="{Binding DownloadCommand}"
                                 Margin="5" VerticalAlignment="Center" Grid.RowSpan="2"
+                                IsEnabled="{Binding AllowDownload}"
                                 Visibility="{Binding IsDownloaded, Converter={StaticResource trueToCollapseConverter}}"/>
 
             <Image Source="{Binding IconLink}" Grid.Column="1" Grid.RowSpan="2" Margin="5"/>
-            
-            <Label Content="{Binding Name}" Style="{DynamicResource titleStyle}" FontSize="18" 
-                   VerticalAlignment="Stretch" Grid.Column="2" Margin="0,0,5,0"/>
+
+            <Label Content="{Binding Name}" Style="{DynamicResource titleStyle}" Margin="0,0,5,0" VerticalAlignment="Stretch" Grid.Column="2"/>
+            <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Right" Margin="10,0">
+                <svgc:SvgViewbox x:Name="downloadsSvg" Width="20" Height="20" Margin="5,0" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding Downloads}" Style="{DynamicResource textStyle}" VerticalAlignment="Center"/>
+                <svgc:SvgViewbox x:Name="ratingSvg" Width="20" Height="20" Margin="20,0,5,0" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding Rating}" Style="{DynamicResource textStyle}" VerticalAlignment="Center"/>
+            </StackPanel>
+
             <TextBlock Text="{Binding TagLine}" Style="{DynamicResource textStyle}" 
                        Grid.Column="2" Grid.Row="1" VerticalAlignment="Center" Margin="10,0"/>
 
+            <StackPanel Orientation="Horizontal" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Right" Margin="10,0">
+                <Controls:SvgButton Source="ModPanel/Update" HandleClickCommand="{Binding UpdateModCommand}"
+                                    Visibility="{Binding UpdateAvailable, Converter={StaticResource falseToCollapseConverter}}"/>
+                
+                <Controls:SvgButton Source="ModPanel/Donate" HandleClickCommand="{Binding DonateCommand}" Margin="5,0,0,0"
+                                    Visibility="{Binding HasDonationLink, Converter={StaticResource falseToCollapseConverter}}"/>
+                
+                <Controls:SvgButton Source="ModPanel/Configure" HandleClickCommand="{Binding ConfigureModCommand}" Margin="5,0,0,0"
+                                    Visibility="{Binding HasConfigFile, Converter={StaticResource falseToCollapseConverter}}"/>
+
+                <Controls:SvgButton Source="ModPanel/ViewModPage" HandleClickCommand="{Binding ViewModPageCommand}" Margin="5,0,0,0"/>
+
+                <Controls:SvgButton Source="ModPanel/Delete" HandleClickCommand="{Binding DeleteModCommand}" Margin="5,0,0,0"
+                                    Visibility="{Binding IsDownloaded, Converter={StaticResource falseToCollapseConverter}}"/>
+
+            </StackPanel>
+            
         </Grid>
     </Border>
 </UserControl>

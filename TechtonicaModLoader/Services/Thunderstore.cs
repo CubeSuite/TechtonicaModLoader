@@ -3,55 +3,97 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media.Imaging;
+using System.Xml.Linq;
 using TechtonicaModLoader.MVVM.Mod;
 using TechtonicaModLoader.Services.ThunderstoreModels;
 using TechtonicaModLoader.Stores;
 
 namespace TechtonicaModLoader.Services
 {
-    public partial class Thunderstore : ObservableObject
+    public partial class ThunderStore : ObservableObject
     {
         // Members
+        private IEnumerable<ThunderStoreMod> thunderStoreModCache = new List<ThunderStoreMod>();
+        private Dictionary<string, ModVersion> downloadedMods = new Dictionary<string, ModVersion>();
 
-        private ProfileManager _profileManager;
-
-        private List<ModModel> _modCache = new List<ModModel>();
+        private List<string> downloadQueue = new List<string>();
         private const string baseURL = "https://thunderstore.io/c/techtonica/api/v1";
         private string? lastJson;
 
-        internal static readonly HashSet<string> allowedMods = new HashSet<string> {
-            "BepInExPack",
-            "Helium",
-            "LongStackInserters",
-            "Official_BepInEx_ConfigurationManager",
-            "UnityAudio",
-            "UnityExplorer",
-        };
-
-        internal static readonly HashSet<string> disallowedMods = new HashSet<string> {
-            "r2modman",
-            "GaleModManager",
-        };
+        private static ThunderStore _instance = new ThunderStore();
+        private List<ModModel> _modCache = new List<ModModel>();
 
         // Properties
 
+        [ObservableProperty] private bool _connected = true;
+
+        public static ThunderStore Instance => _instance;
         public ObservableCollection<ModModel> ModCache { get; } = new ObservableCollection<ModModel>();
 
         // Constructors
 
-        public Thunderstore(ProfileManager profileManager) 
+        public ThunderStore() 
         {
-            _profileManager = profileManager;
             StartUpdateThread();
+            StartDownloadThread();
+        }
+
+        // Events
+
+        partial void OnConnectedChanging(bool value) {
+            if(!Connected && value) {
+                DialogService.ShowInfoMessage("Reconnected To Thunderstore", "Connection To ThunderStore has been restored, you can now browse online mods again");
+            }
         }
 
         // Public Functions
 
-        public async void StartUpdateThread() {
+        public async void UpdateModCache(bool fetchUpdate = true) {
+            if(fetchUpdate) await FetchModsList();
+
+            Application.Current.Dispatcher.Invoke(delegate () {
+                ModCache.Clear();
+                foreach (ThunderStoreMod mod in thunderStoreModCache) {
+                    ModCache.Add(new ModModel(mod));
+                }
+
+                OnPropertyChanged(nameof(ModCache));
+            });
+        }
+
+        public void DownloadMod(string fullName) {
+            downloadQueue.Add(fullName);
+        }
+
+        public bool IsModDownloaded(string id, ModVersion version) {
+            if (!downloadedMods.ContainsKey(id)) return false;
+            if (downloadedMods[id] < version) return false;
+            return true;
+        }
+
+        public bool SearchForMod(string fullName, out ThunderStoreMod? mod) {
+            if(thunderStoreModCache == null || thunderStoreModCache.Count() == 0) {
+                Log.Error($"ThunderStore.SearchForMod() called before thunderStoreModCache was populated");
+                mod = null;
+                return false;
+            }
+
+            mod = thunderStoreModCache.Where(cachedMod => cachedMod.AllVersionNames.Contains(fullName)).FirstOrDefault();
+            return true;
+        }
+
+        // Private Functions
+
+        private async void StartUpdateThread() {
             await Task.Run(async () => {
                 while (true) {
                     UpdateModCache();
@@ -60,20 +102,88 @@ namespace TechtonicaModLoader.Services
             });
         }
 
-        public async void UpdateModCache() {
+        private async void StartDownloadThread() {
+            await Task.Run(async () => {
+                while (true) {
+                    if(downloadQueue.Count > 0) {
+                        await DownloadZipFile(downloadQueue[0]);
+                        // ToDo: Handle false return
+                        downloadQueue.RemoveAt(0);
+                    }
+                    await Task.Delay(250);
+                }
+            });
+        }
+
+        private async Task FetchModsList() {
             Log.Debug("Fetching update from ThunderStore");
             IEnumerable<ThunderStoreMod>? thunderstoreMods = await GetAllThunderstoreMods();
             if (thunderstoreMods == null) return;
 
-            ModCache.Clear();
-            foreach(ThunderStoreMod mod in thunderstoreMods) {
-                ModCache.Add(new ModModel(mod, _profileManager));
+            thunderStoreModCache = thunderstoreMods;
+            Save();
+        } 
+
+        private async Task<bool> DownloadZipFile(string fullName) {
+            ThunderStoreMod? thunderStoreMod = thunderStoreModCache.Where(mod => mod.AllVersionNames.Contains(fullName)).FirstOrDefault();
+            if(thunderStoreMod == null) {
+                string error = $"Couldn't find mod '{fullName}' in thunderStoreModCache";
+                Log.Error(error);
+                DebugUtils.CrashIfDebug(error);
+                DialogService.ShowErrorMessage($"Couldn't Download {fullName}", "An error occured while trying to download this mod.\nPlease click the bug report button.");
+                return false;
             }
 
-            OnPropertyChanged(nameof(ModCache));
+            ModModel? model = ModCache.Where(mod => mod.FullName == fullName).FirstOrDefault();
+            if(model == null) {
+                string error = $"Couldn't find ModModel for '{fullName}'";
+                Log.Error(error);
+                DebugUtils.CrashIfDebug(error);
+            }
+            else {
+                model.IsDownloading = true;
+            }
+
+            string zipFileLocation = $"{ProgramData.FilePaths.modsFolder}\\{fullName}.zip";
+            
+            using (HttpClient client = new HttpClient()) {
+                client.DefaultRequestHeaders.Add("Accept", "text/html, application/xhtml+xml, */*");
+                client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)");
+
+                try {
+                    using (HttpResponseMessage response = await client.GetAsync(thunderStoreMod.versions[0].download_url, HttpCompletionOption.ResponseHeadersRead)) {
+                        response.EnsureSuccessStatusCode();
+
+                        using (Stream contentStream = await response.Content.ReadAsStreamAsync(),
+                            fileStream = new FileStream(zipFileLocation, FileMode.Create, FileAccess.Write, FileShare.None)) {
+                            await contentStream.CopyToAsync(fileStream);
+                        }
+                    }
+
+                    OnDownloadFinished(thunderStoreMod, zipFileLocation);
+                    return true;
+                }
+                catch (Exception ex) {
+                    string error = $"An error occurred while downloading {fullName}: {ex.Message}";
+                    Log.Error(error);
+                    DebugUtils.CrashIfDebug(error);
+                    DialogService.ShowErrorMessage($"Couldn't Download {fullName}", "An error occured while trying to download this mod.\nPlease click the bug report button.");
+                    return false;
+                }
+            }
         }
 
-        // Private Functions
+        private void OnDownloadFinished(ThunderStoreMod thunderStoreMod, string zipFileLocation) {
+            downloadedMods.Add(thunderStoreMod.uuid4, ModVersion.Parse(thunderStoreMod.versions[0].version_number));
+            Save();
+
+            ProfileManager.Instance.AddMod(thunderStoreMod);
+            UpdateModCache(false);
+
+            ModFilesManager.ProcessZipFile(zipFileLocation);
+        }
+
+        // API Functions
 
         private async Task<string> GetApiData(string apiUrl) {
             try {
@@ -81,6 +191,7 @@ namespace TechtonicaModLoader.Services
                     HttpResponseMessage response = await client.GetAsync(apiUrl);
 
                     if (response.IsSuccessStatusCode) {
+                        Connected = true;
                         return await response.Content.ReadAsStringAsync();
                     }
                     else {
@@ -103,7 +214,12 @@ namespace TechtonicaModLoader.Services
 
             string json = await GetApiData(endPoint);
             if (string.IsNullOrEmpty(json)) {
-                Log.Warning("Couldn't get mods from ThunderStore");
+                if (Connected) {
+                    DialogService.ShowErrorMessage("Couldn't connect to ThunderStore", "Couldn't fetch mods from Thunderstore. Local cache will be loaded instead.");
+                }
+
+                Log.Warning("Couldn't get mods from ThunderStore, switching to local cache");
+                Connected = false;
                 return null;
             }
 
@@ -117,8 +233,30 @@ namespace TechtonicaModLoader.Services
             }
 
             thunderstoreMods = thunderstoreMods.Where(mod => mod.PassesFilterChecks()).ToList();
-
+            
             return thunderstoreMods;
+        }
+
+        // Data Functions
+
+        private void Save() {
+            string json = JsonConvert.SerializeObject(downloadedMods, Formatting.Indented);
+            File.WriteAllText(ProgramData.FilePaths.downloadedModsFile, json);
+
+            string modCacheJson = JsonConvert.SerializeObject(thunderStoreModCache);
+            File.WriteAllText(ProgramData.FilePaths.modsCacheFile, modCacheJson);
+        }
+
+        public void Load() {
+            if (File.Exists(ProgramData.FilePaths.downloadedModsFile)) {
+                string json = File.ReadAllText(ProgramData.FilePaths.downloadedModsFile);
+                downloadedMods = JsonConvert.DeserializeObject<Dictionary<string, ModVersion>>(json ?? "{}") ?? new Dictionary<string, ModVersion>();
+            }
+
+            if (File.Exists(ProgramData.FilePaths.modsCacheFile)) {
+                string json = File.ReadAllText(ProgramData.FilePaths.modsCacheFile);
+                thunderStoreModCache = JsonConvert.DeserializeObject<List<ThunderStoreMod>>(json ?? "[]") ?? new List<ThunderStoreMod>();
+            }
         }
     }
 }

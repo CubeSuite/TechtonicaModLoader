@@ -23,6 +23,20 @@ namespace TechtonicaModLoader.Stores
         public static bool safeToSave = false;
         public const string bepInExID = "b9a5a1bd-81d8-4913-a46e-70ca7734628c";
 
+        internal static readonly HashSet<string> allowedMods = new HashSet<string> {
+            "BepInExPack",
+            "Helium",
+            "LongStackInserters",
+            "Official_BepInEx_ConfigurationManager",
+            "UnityAudio",
+            "UnityExplorer",
+        };
+
+        internal static readonly HashSet<string> disallowedMods = new HashSet<string> {
+            "r2modman",
+            "GaleModManager",
+        };
+
         public static class FilePaths
         {
             public static string rootFolder {
@@ -43,6 +57,8 @@ namespace TechtonicaModLoader.Stores
             public static string crashReportsFolder = $"{rootFolder}\\CrashReports";
             public static string modsFolder = $"{dataFolder}\\Mods";
             public static string configsFolder = $"{dataFolder}\\Configs";
+            public static string pluginsFolder = $"{dataFolder}\\Plugins";
+            public static string patchesFolder = $"{dataFolder}\\Patches";
             public static string unzipFolder = $"{rootFolder}\\Unzip";
 
             // Files
@@ -50,7 +66,8 @@ namespace TechtonicaModLoader.Stores
             public static string settingsFile = $"{dataFolder}\\Settings.json";
             public static string modsSaveFile = $"{dataFolder}\\Mods.json";
             public static string profilesSaveFile = $"{dataFolder}\\Profiles.json";
-            public static string tempZipFile = $"{dataFolder}\\Temp.zip";
+            public static string downloadedModsFile = $"{dataFolder}\\DownloadedMods.json";
+            public static string modsCacheFile = $"{dataFolder}\\ModsCache.json";
 
             // public static string gameFolder => Settings.userSettings.gameFolder.value;
             // public static string gameDataFolder => $"{gameFolder}/Techtonica_Data";
@@ -66,7 +83,7 @@ namespace TechtonicaModLoader.Stores
                     resourcesFolder,
                     $"{resourcesFolder}\\ControlBox",
                     $"{resourcesFolder}\\GUI",
-                    $"{resourcesFolder}\\OnlineModPanel",
+                    $"{resourcesFolder}\\ModPanel",
                     $"{resourcesFolder}\\InstalledModPanel",
                     dataFolder,
                     logsFolder,
@@ -96,15 +113,14 @@ namespace TechtonicaModLoader.Stores
                 GenerateErrorSVG();
                 GenerateAddSVG();
 
-                // Online Mod Panel
-                GenerateDownloadSVG();
-
-                // Installed Mod Panel
-                GenerateUpdateSVG();
-                GenerateDonateSVG();
+                // Mod Panel SVGs
                 GenerateConfigureSVG();
-                GenerateViewModPageSVG();
                 GenerateDeleteSVG();
+                GenerateDonateSVG();
+                GenerateDownloadSVG();
+                GenerateThumbSVG();
+                GenerateUpdateSVG();
+                GenerateViewModPageSVG();
 
                 // MainWindow.current.controlBox.RefreshIcons();
             }
@@ -1016,151 +1032,92 @@ namespace TechtonicaModLoader.Stores
                 GenerateSVG("GUI/Error", svg);
             }
 
-            private static void GenerateUpdateSVG() {
+            private static void GenerateAddSVG() {
                 string svg = @"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""no""?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
-   width=""512""
-   height=""512""
-   viewBox=""0 0 512 512""
+   width=""695.19214""
+   height=""695.19214""
+   viewBox=""0 0 695.19214 695.19214""
    version=""1.1""
-   id=""svg5""
-   inkscape:version=""1.1.1 (3bf5ae0d25, 2021-09-20)""
-   sodipodi:docname=""Update.svg""
+   id=""svg8""
+   inkscape:version=""1.3.2 (091e20e, 2023-11-25, custom)""
+   sodipodi:docname=""Add.svg""
    xmlns:inkscape=""http://www.inkscape.org/namespaces/inkscape""
    xmlns:sodipodi=""http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd""
    xmlns=""http://www.w3.org/2000/svg""
-   xmlns:svg=""http://www.w3.org/2000/svg"">
-  <sodipodi:namedview
-     id=""namedview7""
-     pagecolor=""#505050""
-     bordercolor=""#eeeeee""
-     borderopacity=""1""
-     inkscape:pageshadow=""0""
-     inkscape:pageopacity=""0""
-     inkscape:pagecheckerboard=""0""
-     inkscape:document-units=""px""
-     showgrid=""false""
-     units=""px""
-     showguides=""true""
-     inkscape:guide-bbox=""true""
-     inkscape:zoom=""1.1739077""
-     inkscape:cx=""126.50057""
-     inkscape:cy=""289.20501""
-     inkscape:window-width=""2560""
-     inkscape:window-height=""1009""
-     inkscape:window-x=""1912""
-     inkscape:window-y=""-8""
-     inkscape:window-maximized=""1""
-     inkscape:current-layer=""layer1"">
-    <sodipodi:guide
-       position=""434.94509,331.56314""
-       orientation=""0,-1""
-       id=""guide1388"" />
-    <sodipodi:guide
-       position=""256,311.38798""
-       orientation=""-1,0""
-       id=""guide1390""
-       inkscape:label=""""
-       inkscape:locked=""false""
-       inkscape:color=""rgb(0,0,255)"" />
-  </sodipodi:namedview>
+   xmlns:svg=""http://www.w3.org/2000/svg""
+   xmlns:rdf=""http://www.w3.org/1999/02/22-rdf-syntax-ns#""
+   xmlns:cc=""http://creativecommons.org/ns#""
+   xmlns:dc=""http://purl.org/dc/elements/1.1/"">
   <defs
      id=""defs2"" />
+  <sodipodi:namedview
+     id=""base""
+     pagecolor=""#232323""
+     bordercolor=""#666666""
+     borderopacity=""1.0""
+     inkscape:pageopacity=""0""
+     inkscape:pageshadow=""2""
+     inkscape:zoom=""0.7""
+     inkscape:cx=""17.142857""
+     inkscape:cy=""573.57143""
+     inkscape:document-units=""px""
+     inkscape:current-layer=""layer1""
+     showgrid=""false""
+     units=""px""
+     inkscape:window-width=""3440""
+     inkscape:window-height=""1351""
+     inkscape:window-x=""2391""
+     inkscape:window-y=""-9""
+     inkscape:window-maximized=""1""
+     inkscape:document-rotation=""0""
+     inkscape:pagecheckerboard=""0""
+     inkscape:showpageshadow=""0""
+     inkscape:deskcolor=""#505050"" />
+  <metadata
+     id=""metadata5"">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="""">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource=""http://purl.org/dc/dcmitype/StillImage"" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
   <g
      inkscape:label=""Layer 1""
      inkscape:groupmode=""layer""
-     id=""layer1"">
-    <path
-       id=""rect843""
-       style=""fill:#ffffff;stroke:none;stroke-width:2.85941;stroke-linecap:square;paint-order:fill markers stroke;fill-opacity:1""
-       d=""m 256.0521,1.4393963 178.89297,178.8929737 2e-5,0.10449 -357.890451,-1e-5 v -0.10451 L 255.94761,1.4393715 c 0.0289,-0.028935 0.0755,-0.02897 0.10449,2.12e-5 z""
-       sodipodi:nodetypes=""cccccssc"" />
-    <rect
-       style=""fill:#ffffff;stroke:none;stroke-width:2.87977;stroke-linecap:square;paint-order:fill markers stroke;fill-opacity:1""
-       id=""rect1306""
-       width=""125.12022""
-       height=""330.09476""
-       x=""193.4399""
-       y=""180.47275""
-       ry=""0.076415896"" />
-  </g>
-</svg>
-";
-                GenerateSVG("InstalledModPanel/Update", svg);
-            }
-
-            private static void GenerateDonateSVG() {
-                string svg = @"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""no""?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
-<svg
-   width=""512""
-   height=""512""
-   viewBox=""0 0 512 512""
-   version=""1.1""
-   id=""svg5""
-   inkscape:version=""1.1.1 (3bf5ae0d25, 2021-09-20)""
-   sodipodi:docname=""Donate.svg""
-   xmlns:inkscape=""http://www.inkscape.org/namespaces/inkscape""
-   xmlns:sodipodi=""http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd""
-   xmlns=""http://www.w3.org/2000/svg""
-   xmlns:svg=""http://www.w3.org/2000/svg"">
-  <sodipodi:namedview
-     id=""namedview7""
-     pagecolor=""#505050""
-     bordercolor=""#eeeeee""
-     borderopacity=""1""
-     inkscape:pageshadow=""0""
-     inkscape:pageopacity=""0""
-     inkscape:pagecheckerboard=""0""
-     inkscape:document-units=""px""
-     showgrid=""false""
-     units=""px""
-     showguides=""true""
-     inkscape:guide-bbox=""true""
-     inkscape:zoom=""1.1739077""
-     inkscape:cx=""56.648404""
-     inkscape:cy=""324.98295""
-     inkscape:window-width=""2560""
-     inkscape:window-height=""1009""
-     inkscape:window-x=""1912""
-     inkscape:window-y=""-8""
-     inkscape:window-maximized=""1""
-     inkscape:current-layer=""layer1"">
-    <sodipodi:guide
-       position=""434.94509,331.56314""
-       orientation=""0,-1""
-       id=""guide1388"" />
-    <sodipodi:guide
-       position=""256,311.38798""
-       orientation=""-1,0""
-       id=""guide1390""
-       inkscape:label=""""
-       inkscape:locked=""false""
-       inkscape:color=""rgb(0,0,255)"" />
-  </sodipodi:namedview>
-  <defs
-     id=""defs2"" />
-  <g
-     inkscape:label=""Layer 1""
-     inkscape:groupmode=""layer""
-     id=""layer1"">
+     id=""layer1""
+     transform=""translate(91.596055,-69.937244)"">
     <g
-       aria-label=""♥""
-       id=""text6761""
-       style=""font-size:835.519px;line-height:1.25;stroke-width:20.888;stroke:none;fill:#ffffff;fill-opacity:1"">
-      <path
-         d=""M 256.81594,512.00007 Q 244.16892,463.85982 220.50676,421.83909 197.25257,379.41039 129.93781,290.47331 80.573651,225.19839 69.15054,207.65575 50.384001,179.09798 41.816667,155.43582 q -8.159365,-24.07013 -8.159365,-48.54823 0,-45.284471 30.189651,-75.88209 30.189651,-30.59761928 74.658187,-30.59761928 44.87651,0 77.92194,31.82152328 24.88606,23.662159 40.38886,70.578506 Q 270.27889,56.7075 294.75698,32.637373 328.61835,-8.7529421e-5 373.08689,-8.7529421e-5 q 44.06057,0 74.65819,30.597618529421 30.59762,30.189651 30.59762,72.210379 0,36.71714 -17.95061,76.69803 -17.9506,39.57292 -69.3546,104.03191 -66.90679,84.44943 -97.50441,138.7092 -24.07013,42.83667 -36.71714,89.75302 z""
-         id=""path7437""
-         style=""stroke:none;fill:#ffffff;fill-opacity:1"" />
+       id=""g1431""
+       transform=""matrix(-1.3577971,0,0,-1.3577971,603.59606,984.45884)"">
+      <rect
+         style=""fill:#ffffff;stroke:none;stroke-width:9.4084;stroke-linecap:round;paint-order:fill markers stroke""
+         id=""rect1221""
+         width=""512""
+         height=""51.200001""
+         x=""0""
+         y=""391.93332""
+         ry=""25.6"" />
+      <rect
+         style=""fill:#ffffff;stroke:none;stroke-width:9.4084;stroke-linecap:round;paint-order:fill markers stroke""
+         id=""rect1221-5""
+         width=""512""
+         height=""51.200001""
+         x=""161.53333""
+         y=""-281.60001""
+         ry=""25.6""
+         transform=""rotate(90)"" />
     </g>
   </g>
 </svg>
 ";
-                GenerateSVG("InstalledModPanel/Donate", svg);
+                GenerateSVG("GUI/Add", svg);
             }
+
+            // Mod Panel SVGs
 
             private static void GenerateConfigureSVG() {
                 string svg = @"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""no""?>
@@ -1374,7 +1331,412 @@ namespace TechtonicaModLoader.Stores
   </g>
 </svg>
 ";
-                GenerateSVG("InstalledModPanel/Configure", svg);
+                GenerateSVG("ModPanel/Configure", svg);
+            }
+
+            private static void GenerateDeleteSVG() {
+                string svg = @"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""no""?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width=""512""
+   height=""512""
+   viewBox=""0 0 512 512""
+   version=""1.1""
+   id=""svg5""
+   inkscape:version=""1.1.1 (3bf5ae0d25, 2021-09-20)""
+   sodipodi:docname=""Delete.svg""
+   xmlns:inkscape=""http://www.inkscape.org/namespaces/inkscape""
+   xmlns:sodipodi=""http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd""
+   xmlns=""http://www.w3.org/2000/svg""
+   xmlns:svg=""http://www.w3.org/2000/svg"">
+  <sodipodi:namedview
+     id=""namedview7""
+     pagecolor=""#505050""
+     bordercolor=""#eeeeee""
+     borderopacity=""1""
+     inkscape:pageshadow=""0""
+     inkscape:pageopacity=""0""
+     inkscape:pagecheckerboard=""0""
+     inkscape:document-units=""px""
+     showgrid=""false""
+     units=""px""
+     showguides=""true""
+     inkscape:guide-bbox=""true""
+     inkscape:zoom=""0.83007813""
+     inkscape:cx=""143.96235""
+     inkscape:cy=""366.83294""
+     inkscape:window-width=""2560""
+     inkscape:window-height=""1009""
+     inkscape:window-x=""1912""
+     inkscape:window-y=""-8""
+     inkscape:window-maximized=""1""
+     inkscape:current-layer=""layer1"">
+    <sodipodi:guide
+       position=""434.94509,256""
+       orientation=""0,1""
+       id=""guide1388""
+       inkscape:label=""""
+       inkscape:locked=""false""
+       inkscape:color=""rgb(0,0,255)"" />
+    <sodipodi:guide
+       position=""256,311.38798""
+       orientation=""-1,0""
+       id=""guide1390""
+       inkscape:label=""""
+       inkscape:locked=""false""
+       inkscape:color=""rgb(0,0,255)"" />
+    <sodipodi:guide
+       position=""256,319.48061""
+       orientation=""0,1""
+       id=""guide8062""
+       inkscape:label=""""
+       inkscape:locked=""false""
+       inkscape:color=""rgb(0,0,255)"" />
+    <sodipodi:guide
+       position=""386.10824,128""
+       orientation=""0,1""
+       id=""guide8086""
+       inkscape:label=""""
+       inkscape:locked=""false""
+       inkscape:color=""rgb(0,0,255)"" />
+    <sodipodi:guide
+       position=""314.42824,673.43059""
+       orientation=""0,-1""
+       id=""guide9987"" />
+    <sodipodi:guide
+       position=""440.01782,432.03564""
+       orientation=""0,-1""
+       id=""guide10173"" />
+    <sodipodi:guide
+       position=""99.27496,392.5591""
+       orientation=""-1,0""
+       id=""guide10175""
+       inkscape:label=""""
+       inkscape:locked=""false""
+       inkscape:color=""rgb(0,0,255)"" />
+    <sodipodi:guide
+       position=""324.06588,414.41882""
+       orientation=""1,0""
+       id=""guide10177"" />
+  </sodipodi:namedview>
+  <defs
+     id=""defs2"" />
+  <g
+     inkscape:label=""Layer 1""
+     inkscape:groupmode=""layer""
+     id=""layer1"">
+    <rect
+       style=""fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:18.384;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke""
+       id=""rect13584""
+       width=""249.45009""
+       height=""383.3671""
+       x=""131.27496""
+       y=""119.4409""
+       ry=""0.089272805"" />
+    <rect
+       style=""fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:16.7024;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke""
+       id=""rect13688""
+       width=""385.0488""
+       height=""50.256187""
+       x=""63.475605""
+       y=""59.992672""
+       ry=""0.082174592"" />
+    <rect
+       style=""fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:13.9318;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke""
+       id=""rect13688-3""
+       width=""253.9023""
+       height=""53.026787""
+       x=""129.04886""
+       y=""6.9658899""
+       ry=""0.086704835"" />
+    <path
+       style=""fill:none;stroke:#ffffff;stroke-width:16.7396;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1""
+       d=""M 256,177.75078 V 445.58486""
+       id=""path13825"" />
+    <path
+       style=""fill:none;stroke:#ffffff;stroke-width:16.7396;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1""
+       d=""M 327.21236,177.75078 V 445.58486""
+       id=""path13825-7"" />
+    <path
+       style=""fill:none;stroke:#ffffff;stroke-width:16.7396;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1""
+       d=""M 178.48567,177.75078 V 445.58486""
+       id=""path13825-7-3"" />
+  </g>
+</svg>
+";
+                GenerateSVG("ModPanel/Delete", svg);
+            }
+
+            private static void GenerateDonateSVG() {
+                string svg = @"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""no""?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width=""512""
+   height=""512""
+   viewBox=""0 0 512 512""
+   version=""1.1""
+   id=""svg5""
+   inkscape:version=""1.1.1 (3bf5ae0d25, 2021-09-20)""
+   sodipodi:docname=""Donate.svg""
+   xmlns:inkscape=""http://www.inkscape.org/namespaces/inkscape""
+   xmlns:sodipodi=""http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd""
+   xmlns=""http://www.w3.org/2000/svg""
+   xmlns:svg=""http://www.w3.org/2000/svg"">
+  <sodipodi:namedview
+     id=""namedview7""
+     pagecolor=""#505050""
+     bordercolor=""#eeeeee""
+     borderopacity=""1""
+     inkscape:pageshadow=""0""
+     inkscape:pageopacity=""0""
+     inkscape:pagecheckerboard=""0""
+     inkscape:document-units=""px""
+     showgrid=""false""
+     units=""px""
+     showguides=""true""
+     inkscape:guide-bbox=""true""
+     inkscape:zoom=""1.1739077""
+     inkscape:cx=""56.648404""
+     inkscape:cy=""324.98295""
+     inkscape:window-width=""2560""
+     inkscape:window-height=""1009""
+     inkscape:window-x=""1912""
+     inkscape:window-y=""-8""
+     inkscape:window-maximized=""1""
+     inkscape:current-layer=""layer1"">
+    <sodipodi:guide
+       position=""434.94509,331.56314""
+       orientation=""0,-1""
+       id=""guide1388"" />
+    <sodipodi:guide
+       position=""256,311.38798""
+       orientation=""-1,0""
+       id=""guide1390""
+       inkscape:label=""""
+       inkscape:locked=""false""
+       inkscape:color=""rgb(0,0,255)"" />
+  </sodipodi:namedview>
+  <defs
+     id=""defs2"" />
+  <g
+     inkscape:label=""Layer 1""
+     inkscape:groupmode=""layer""
+     id=""layer1"">
+    <g
+       aria-label=""♥""
+       id=""text6761""
+       style=""font-size:835.519px;line-height:1.25;stroke-width:20.888;stroke:none;fill:#ffffff;fill-opacity:1"">
+      <path
+         d=""M 256.81594,512.00007 Q 244.16892,463.85982 220.50676,421.83909 197.25257,379.41039 129.93781,290.47331 80.573651,225.19839 69.15054,207.65575 50.384001,179.09798 41.816667,155.43582 q -8.159365,-24.07013 -8.159365,-48.54823 0,-45.284471 30.189651,-75.88209 30.189651,-30.59761928 74.658187,-30.59761928 44.87651,0 77.92194,31.82152328 24.88606,23.662159 40.38886,70.578506 Q 270.27889,56.7075 294.75698,32.637373 328.61835,-8.7529421e-5 373.08689,-8.7529421e-5 q 44.06057,0 74.65819,30.597618529421 30.59762,30.189651 30.59762,72.210379 0,36.71714 -17.95061,76.69803 -17.9506,39.57292 -69.3546,104.03191 -66.90679,84.44943 -97.50441,138.7092 -24.07013,42.83667 -36.71714,89.75302 z""
+         id=""path7437""
+         style=""stroke:none;fill:#ffffff;fill-opacity:1"" />
+    </g>
+  </g>
+</svg>
+";
+                GenerateSVG("ModPanel/Donate", svg);
+            }
+
+            private static void GenerateDownloadSVG() {
+                string svg = @"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""no""?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width=""512""
+   height=""512""
+   viewBox=""0 0 512 512""
+   version=""1.1""
+   id=""svg5""
+   inkscape:version=""1.1.1 (3bf5ae0d25, 2021-09-20)""
+   sodipodi:docname=""Download.svg""
+   xmlns:inkscape=""http://www.inkscape.org/namespaces/inkscape""
+   xmlns:sodipodi=""http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd""
+   xmlns=""http://www.w3.org/2000/svg""
+   xmlns:svg=""http://www.w3.org/2000/svg"">
+  <sodipodi:namedview
+     id=""namedview7""
+     pagecolor=""#505050""
+     bordercolor=""#eeeeee""
+     borderopacity=""1""
+     inkscape:pageshadow=""0""
+     inkscape:pageopacity=""0""
+     inkscape:pagecheckerboard=""0""
+     inkscape:document-units=""px""
+     showgrid=""false""
+     units=""px""
+     showguides=""true""
+     inkscape:guide-bbox=""true""
+     inkscape:zoom=""1.1739077""
+     inkscape:cx=""126.50057""
+     inkscape:cy=""289.20501""
+     inkscape:window-width=""2560""
+     inkscape:window-height=""1009""
+     inkscape:window-x=""1912""
+     inkscape:window-y=""-8""
+     inkscape:window-maximized=""1""
+     inkscape:current-layer=""layer1"">
+    <sodipodi:guide
+       position=""434.94509,331.56314""
+       orientation=""0,-1""
+       id=""guide1388"" />
+    <sodipodi:guide
+       position=""256,311.38798""
+       orientation=""-1,0""
+       id=""guide1390""
+       inkscape:label=""""
+       inkscape:locked=""false""
+       inkscape:color=""rgb(0,0,255)"" />
+  </sodipodi:namedview>
+  <defs
+     id=""defs2"" />
+  <g
+     inkscape:label=""Layer 1""
+     inkscape:groupmode=""layer""
+     id=""layer1"">
+    <g
+       id=""g1456""
+       transform=""matrix(1,0,0,-1,0,511.98516)"">
+      <path
+         id=""rect843""
+         style=""fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:2.85941;stroke-linecap:square;paint-order:fill markers stroke""
+         d=""m 256.0521,1.4393963 178.89297,178.8929737 2e-5,0.10449 -357.890451,-1e-5 v -0.10451 L 255.94761,1.4393715 c 0.0289,-0.028935 0.0755,-0.02897 0.10449,2.12e-5 z""
+         sodipodi:nodetypes=""cccccssc"" />
+      <rect
+         style=""fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:2.87977;stroke-linecap:square;paint-order:fill markers stroke""
+         id=""rect1306""
+         width=""125.12022""
+         height=""330.09476""
+         x=""193.4399""
+         y=""180.47275""
+         ry=""0.076415896"" />
+    </g>
+  </g>
+</svg>
+";
+                GenerateSVG("ModPanel/Download", svg);
+            }
+
+            private static void GenerateThumbSVG() {
+                string svg = @"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""no""?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+
+<svg
+   fill=""#000000""
+   width=""700""
+   height=""700.26599""
+   viewBox=""0 0 7 7.0026599""
+   version=""1.1""
+   id=""svg1""
+   sodipodi:docname=""Thumb.svg""
+   inkscape:version=""1.3.2 (091e20e, 2023-11-25, custom)""
+   xmlns:inkscape=""http://www.inkscape.org/namespaces/inkscape""
+   xmlns:sodipodi=""http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd""
+   xmlns=""http://www.w3.org/2000/svg""
+   xmlns:svg=""http://www.w3.org/2000/svg"">
+  <defs
+     id=""defs1"" />
+  <sodipodi:namedview
+     id=""namedview1""
+     pagecolor=""#505050""
+     bordercolor=""#ffffff""
+     borderopacity=""1""
+     inkscape:showpageshadow=""0""
+     inkscape:pageopacity=""0""
+     inkscape:pagecheckerboard=""1""
+     inkscape:deskcolor=""#505050""
+     inkscape:zoom=""1.0049755""
+     inkscape:cx=""252.24495""
+     inkscape:cy=""471.15576""
+     inkscape:window-width=""3440""
+     inkscape:window-height=""1351""
+     inkscape:window-x=""2391""
+     inkscape:window-y=""-9""
+     inkscape:window-maximized=""1""
+     inkscape:current-layer=""svg1"" />
+  <path
+     d=""m 4.47,0.00265986 c -0.19,0.02 -0.37,0.15 -0.47,0.34 -0.13,0.26 -1.09,2.19000004 -1.28,2.38000004 -0.19,0.19 -0.44,0.28 -0.72,0.28 v 4 h 3.5 c 0.21,0 0.39,-0.13 0.47,-0.31 0,0 1.03,-2.91 1.03,-3.19 0,-0.28 -0.22,-0.5 -0.5,-0.5 H 5 c -0.28,0 -0.5,-0.25 -0.5,-0.5 0,-0.25 0.39,-1.58000004 0.47,-1.84000004 0.08,-0.26 -0.05,-0.54 -0.31,-0.63 -0.07,-0.02 -0.12,-0.04 -0.19,-0.03 z M 0,3.0026599 v 4 h 1 v -4 z""
+     id=""path1""
+     style=""fill:#ffffff;fill-opacity:1;stroke:none;stroke-opacity:1"" />
+</svg>
+";
+                GenerateSVG("ModPanel/Thumb", svg);
+            }
+
+            private static void GenerateUpdateSVG() {
+                string svg = @"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""no""?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width=""512""
+   height=""512""
+   viewBox=""0 0 512 512""
+   version=""1.1""
+   id=""svg5""
+   inkscape:version=""1.1.1 (3bf5ae0d25, 2021-09-20)""
+   sodipodi:docname=""Update.svg""
+   xmlns:inkscape=""http://www.inkscape.org/namespaces/inkscape""
+   xmlns:sodipodi=""http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd""
+   xmlns=""http://www.w3.org/2000/svg""
+   xmlns:svg=""http://www.w3.org/2000/svg"">
+  <sodipodi:namedview
+     id=""namedview7""
+     pagecolor=""#505050""
+     bordercolor=""#eeeeee""
+     borderopacity=""1""
+     inkscape:pageshadow=""0""
+     inkscape:pageopacity=""0""
+     inkscape:pagecheckerboard=""0""
+     inkscape:document-units=""px""
+     showgrid=""false""
+     units=""px""
+     showguides=""true""
+     inkscape:guide-bbox=""true""
+     inkscape:zoom=""1.1739077""
+     inkscape:cx=""126.50057""
+     inkscape:cy=""289.20501""
+     inkscape:window-width=""2560""
+     inkscape:window-height=""1009""
+     inkscape:window-x=""1912""
+     inkscape:window-y=""-8""
+     inkscape:window-maximized=""1""
+     inkscape:current-layer=""layer1"">
+    <sodipodi:guide
+       position=""434.94509,331.56314""
+       orientation=""0,-1""
+       id=""guide1388"" />
+    <sodipodi:guide
+       position=""256,311.38798""
+       orientation=""-1,0""
+       id=""guide1390""
+       inkscape:label=""""
+       inkscape:locked=""false""
+       inkscape:color=""rgb(0,0,255)"" />
+  </sodipodi:namedview>
+  <defs
+     id=""defs2"" />
+  <g
+     inkscape:label=""Layer 1""
+     inkscape:groupmode=""layer""
+     id=""layer1"">
+    <path
+       id=""rect843""
+       style=""fill:#ffffff;stroke:none;stroke-width:2.85941;stroke-linecap:square;paint-order:fill markers stroke;fill-opacity:1""
+       d=""m 256.0521,1.4393963 178.89297,178.8929737 2e-5,0.10449 -357.890451,-1e-5 v -0.10451 L 255.94761,1.4393715 c 0.0289,-0.028935 0.0755,-0.02897 0.10449,2.12e-5 z""
+       sodipodi:nodetypes=""cccccssc"" />
+    <rect
+       style=""fill:#ffffff;stroke:none;stroke-width:2.87977;stroke-linecap:square;paint-order:fill markers stroke;fill-opacity:1""
+       id=""rect1306""
+       width=""125.12022""
+       height=""330.09476""
+       x=""193.4399""
+       y=""180.47275""
+       ry=""0.076415896"" />
+  </g>
+</svg>
+";
+                GenerateSVG("ModPanel/Update", svg);
             }
 
             private static void GenerateViewModPageSVG() {
@@ -1570,305 +1932,7 @@ namespace TechtonicaModLoader.Stores
   </g>
 </svg>
 ";
-                GenerateSVG("InstalledModPanel/ViewModPage", svg);
-            }
-
-            private static void GenerateDeleteSVG() {
-                string svg = @"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""no""?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
-<svg
-   width=""512""
-   height=""512""
-   viewBox=""0 0 512 512""
-   version=""1.1""
-   id=""svg5""
-   inkscape:version=""1.1.1 (3bf5ae0d25, 2021-09-20)""
-   sodipodi:docname=""Delete.svg""
-   xmlns:inkscape=""http://www.inkscape.org/namespaces/inkscape""
-   xmlns:sodipodi=""http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd""
-   xmlns=""http://www.w3.org/2000/svg""
-   xmlns:svg=""http://www.w3.org/2000/svg"">
-  <sodipodi:namedview
-     id=""namedview7""
-     pagecolor=""#505050""
-     bordercolor=""#eeeeee""
-     borderopacity=""1""
-     inkscape:pageshadow=""0""
-     inkscape:pageopacity=""0""
-     inkscape:pagecheckerboard=""0""
-     inkscape:document-units=""px""
-     showgrid=""false""
-     units=""px""
-     showguides=""true""
-     inkscape:guide-bbox=""true""
-     inkscape:zoom=""0.83007813""
-     inkscape:cx=""143.96235""
-     inkscape:cy=""366.83294""
-     inkscape:window-width=""2560""
-     inkscape:window-height=""1009""
-     inkscape:window-x=""1912""
-     inkscape:window-y=""-8""
-     inkscape:window-maximized=""1""
-     inkscape:current-layer=""layer1"">
-    <sodipodi:guide
-       position=""434.94509,256""
-       orientation=""0,1""
-       id=""guide1388""
-       inkscape:label=""""
-       inkscape:locked=""false""
-       inkscape:color=""rgb(0,0,255)"" />
-    <sodipodi:guide
-       position=""256,311.38798""
-       orientation=""-1,0""
-       id=""guide1390""
-       inkscape:label=""""
-       inkscape:locked=""false""
-       inkscape:color=""rgb(0,0,255)"" />
-    <sodipodi:guide
-       position=""256,319.48061""
-       orientation=""0,1""
-       id=""guide8062""
-       inkscape:label=""""
-       inkscape:locked=""false""
-       inkscape:color=""rgb(0,0,255)"" />
-    <sodipodi:guide
-       position=""386.10824,128""
-       orientation=""0,1""
-       id=""guide8086""
-       inkscape:label=""""
-       inkscape:locked=""false""
-       inkscape:color=""rgb(0,0,255)"" />
-    <sodipodi:guide
-       position=""314.42824,673.43059""
-       orientation=""0,-1""
-       id=""guide9987"" />
-    <sodipodi:guide
-       position=""440.01782,432.03564""
-       orientation=""0,-1""
-       id=""guide10173"" />
-    <sodipodi:guide
-       position=""99.27496,392.5591""
-       orientation=""-1,0""
-       id=""guide10175""
-       inkscape:label=""""
-       inkscape:locked=""false""
-       inkscape:color=""rgb(0,0,255)"" />
-    <sodipodi:guide
-       position=""324.06588,414.41882""
-       orientation=""1,0""
-       id=""guide10177"" />
-  </sodipodi:namedview>
-  <defs
-     id=""defs2"" />
-  <g
-     inkscape:label=""Layer 1""
-     inkscape:groupmode=""layer""
-     id=""layer1"">
-    <rect
-       style=""fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:18.384;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke""
-       id=""rect13584""
-       width=""249.45009""
-       height=""383.3671""
-       x=""131.27496""
-       y=""119.4409""
-       ry=""0.089272805"" />
-    <rect
-       style=""fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:16.7024;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke""
-       id=""rect13688""
-       width=""385.0488""
-       height=""50.256187""
-       x=""63.475605""
-       y=""59.992672""
-       ry=""0.082174592"" />
-    <rect
-       style=""fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:13.9318;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke""
-       id=""rect13688-3""
-       width=""253.9023""
-       height=""53.026787""
-       x=""129.04886""
-       y=""6.9658899""
-       ry=""0.086704835"" />
-    <path
-       style=""fill:none;stroke:#ffffff;stroke-width:16.7396;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1""
-       d=""M 256,177.75078 V 445.58486""
-       id=""path13825"" />
-    <path
-       style=""fill:none;stroke:#ffffff;stroke-width:16.7396;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1""
-       d=""M 327.21236,177.75078 V 445.58486""
-       id=""path13825-7"" />
-    <path
-       style=""fill:none;stroke:#ffffff;stroke-width:16.7396;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1""
-       d=""M 178.48567,177.75078 V 445.58486""
-       id=""path13825-7-3"" />
-  </g>
-</svg>
-";
-                GenerateSVG("InstalledModPanel/Delete", svg);
-            }
-
-            private static void GenerateDownloadSVG() {
-                string svg = @"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""no""?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
-<svg
-   width=""512""
-   height=""512""
-   viewBox=""0 0 512 512""
-   version=""1.1""
-   id=""svg5""
-   inkscape:version=""1.1.1 (3bf5ae0d25, 2021-09-20)""
-   sodipodi:docname=""Download.svg""
-   xmlns:inkscape=""http://www.inkscape.org/namespaces/inkscape""
-   xmlns:sodipodi=""http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd""
-   xmlns=""http://www.w3.org/2000/svg""
-   xmlns:svg=""http://www.w3.org/2000/svg"">
-  <sodipodi:namedview
-     id=""namedview7""
-     pagecolor=""#505050""
-     bordercolor=""#eeeeee""
-     borderopacity=""1""
-     inkscape:pageshadow=""0""
-     inkscape:pageopacity=""0""
-     inkscape:pagecheckerboard=""0""
-     inkscape:document-units=""px""
-     showgrid=""false""
-     units=""px""
-     showguides=""true""
-     inkscape:guide-bbox=""true""
-     inkscape:zoom=""1.1739077""
-     inkscape:cx=""126.50057""
-     inkscape:cy=""289.20501""
-     inkscape:window-width=""2560""
-     inkscape:window-height=""1009""
-     inkscape:window-x=""1912""
-     inkscape:window-y=""-8""
-     inkscape:window-maximized=""1""
-     inkscape:current-layer=""layer1"">
-    <sodipodi:guide
-       position=""434.94509,331.56314""
-       orientation=""0,-1""
-       id=""guide1388"" />
-    <sodipodi:guide
-       position=""256,311.38798""
-       orientation=""-1,0""
-       id=""guide1390""
-       inkscape:label=""""
-       inkscape:locked=""false""
-       inkscape:color=""rgb(0,0,255)"" />
-  </sodipodi:namedview>
-  <defs
-     id=""defs2"" />
-  <g
-     inkscape:label=""Layer 1""
-     inkscape:groupmode=""layer""
-     id=""layer1"">
-    <g
-       id=""g1456""
-       transform=""matrix(1,0,0,-1,0,511.98516)"">
-      <path
-         id=""rect843""
-         style=""fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:2.85941;stroke-linecap:square;paint-order:fill markers stroke""
-         d=""m 256.0521,1.4393963 178.89297,178.8929737 2e-5,0.10449 -357.890451,-1e-5 v -0.10451 L 255.94761,1.4393715 c 0.0289,-0.028935 0.0755,-0.02897 0.10449,2.12e-5 z""
-         sodipodi:nodetypes=""cccccssc"" />
-      <rect
-         style=""fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:2.87977;stroke-linecap:square;paint-order:fill markers stroke""
-         id=""rect1306""
-         width=""125.12022""
-         height=""330.09476""
-         x=""193.4399""
-         y=""180.47275""
-         ry=""0.076415896"" />
-    </g>
-  </g>
-</svg>
-";
-                GenerateSVG("OnlineModPanel/Download", svg);
-            }
-
-            private static void GenerateAddSVG() {
-                string svg = @"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""no""?>
-<svg
-   width=""695.19214""
-   height=""695.19214""
-   viewBox=""0 0 695.19214 695.19214""
-   version=""1.1""
-   id=""svg8""
-   inkscape:version=""1.3.2 (091e20e, 2023-11-25, custom)""
-   sodipodi:docname=""Add.svg""
-   xmlns:inkscape=""http://www.inkscape.org/namespaces/inkscape""
-   xmlns:sodipodi=""http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd""
-   xmlns=""http://www.w3.org/2000/svg""
-   xmlns:svg=""http://www.w3.org/2000/svg""
-   xmlns:rdf=""http://www.w3.org/1999/02/22-rdf-syntax-ns#""
-   xmlns:cc=""http://creativecommons.org/ns#""
-   xmlns:dc=""http://purl.org/dc/elements/1.1/"">
-  <defs
-     id=""defs2"" />
-  <sodipodi:namedview
-     id=""base""
-     pagecolor=""#232323""
-     bordercolor=""#666666""
-     borderopacity=""1.0""
-     inkscape:pageopacity=""0""
-     inkscape:pageshadow=""2""
-     inkscape:zoom=""0.7""
-     inkscape:cx=""17.142857""
-     inkscape:cy=""573.57143""
-     inkscape:document-units=""px""
-     inkscape:current-layer=""layer1""
-     showgrid=""false""
-     units=""px""
-     inkscape:window-width=""3440""
-     inkscape:window-height=""1351""
-     inkscape:window-x=""2391""
-     inkscape:window-y=""-9""
-     inkscape:window-maximized=""1""
-     inkscape:document-rotation=""0""
-     inkscape:pagecheckerboard=""0""
-     inkscape:showpageshadow=""0""
-     inkscape:deskcolor=""#505050"" />
-  <metadata
-     id=""metadata5"">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="""">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource=""http://purl.org/dc/dcmitype/StillImage"" />
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <g
-     inkscape:label=""Layer 1""
-     inkscape:groupmode=""layer""
-     id=""layer1""
-     transform=""translate(91.596055,-69.937244)"">
-    <g
-       id=""g1431""
-       transform=""matrix(-1.3577971,0,0,-1.3577971,603.59606,984.45884)"">
-      <rect
-         style=""fill:#ffffff;stroke:none;stroke-width:9.4084;stroke-linecap:round;paint-order:fill markers stroke""
-         id=""rect1221""
-         width=""512""
-         height=""51.200001""
-         x=""0""
-         y=""391.93332""
-         ry=""25.6"" />
-      <rect
-         style=""fill:#ffffff;stroke:none;stroke-width:9.4084;stroke-linecap:round;paint-order:fill markers stroke""
-         id=""rect1221-5""
-         width=""512""
-         height=""51.200001""
-         x=""161.53333""
-         y=""-281.60001""
-         ry=""25.6""
-         transform=""rotate(90)"" />
-    </g>
-  </g>
-</svg>
-";
-                GenerateSVG("GUI/Add", svg);
+                GenerateSVG("ModPanel/ViewModPage", svg);
             }
         }
     }

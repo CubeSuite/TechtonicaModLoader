@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TechtonicaModLoader.Stores;
 
 namespace TechtonicaModLoader.MVVM.Mod
 {
@@ -23,6 +24,8 @@ namespace TechtonicaModLoader.MVVM.Mod
         public ModView()
         {
             InitializeComponent();
+            downloadsSvg.Source = new Uri($"{ProgramData.FilePaths.resourcesFolder}\\ModPanel\\Download.svg");
+            ratingSvg.Source = new Uri($"{ProgramData.FilePaths.resourcesFolder}\\ModPanel\\Thumb.svg");
         }
     }
 }

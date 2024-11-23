@@ -16,21 +16,13 @@ namespace TechtonicaModLoader
 
         private Log? logger = null;
         private MainViewModel? mainVeiwModel = null;
-        private ProfileManager? profileManager = null;
-        private DialogService? dialogService = null;
 
         // Overrides
 
         protected override void OnStartup(StartupEventArgs e) {
-            dialogService = new DialogService();
-            
             DoStartupProcess();
 
-            mainVeiwModel = new MainViewModel(
-                profileManager ?? new ProfileManager(dialogService), 
-                dialogService, 
-                new Thunderstore(profileManager ?? new ProfileManager(dialogService))
-            );
+            mainVeiwModel = new MainViewModel();
 
             mainVeiwModel.SelectedModList = Settings.UserSettings?.DefaultModList.Value;
             mainVeiwModel.SelectedSortOption = Settings.UserSettings?.DefaultModListSortOption.Value;
@@ -52,11 +44,13 @@ namespace TechtonicaModLoader
             Log.Info("Created folder structure");
             ProgramData.FilePaths.GenerateResources();
             Log.Info("Generated resources");
-            Settings.Load(dialogService ?? new DialogService());
+            Settings.Load();
             Log.Info("Settings loaded");
 
-            profileManager = new ProfileManager(dialogService ?? new DialogService());
-            profileManager.Load();
+            ThunderStore.Instance.Load();
+            Log.Info($"ThunderStore loaded");
+
+            ProfileManager.Instance.Load();
             Log.Info("ProfileManager loaded");
         }
     }

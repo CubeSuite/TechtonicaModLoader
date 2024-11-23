@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TechtonicaModLoader.Stores;
 
 namespace TechtonicaModLoader.Services.ThunderstoreModels
 {
@@ -21,15 +22,24 @@ namespace TechtonicaModLoader.Services.ThunderstoreModels
         public List<string> categories = new List<string>();
         public List<ThunderStoreVersion> versions = new List<ThunderStoreVersion>();
 
+        // Properties
+
+        public IEnumerable<string> AllVersionNames => versions.Select(version => version.full_name);
+
         // Public Functions
 
         public bool PassesFilterChecks() {
             if (is_deprecated) return false;
-            if (Thunderstore.allowedMods.Contains(name)) return true;
-            if (Thunderstore.disallowedMods.Contains(name)) return false;
+            if (ProgramData.allowedMods.Contains(name)) return true;
+            if (ProgramData.disallowedMods.Contains(name)) return false;
             if (DateTime.Parse(date_updated) < new DateTime(2024, 11, 7)) return false;
 
             return true;
+        }
+
+        public int GetNumDownloads() {
+            if (versions.Count == 0) return 0;
+            return versions.Sum(version => version.downloads);
         }
     }
 }

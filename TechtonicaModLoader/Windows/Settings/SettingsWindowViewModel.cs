@@ -17,7 +17,6 @@ namespace TechtonicaModLoader.Windows.Settings
         // Members
 
         private SettingsWindow _view;
-        private DialogService _dialogService;
 
         // Properties
 
@@ -33,9 +32,9 @@ namespace TechtonicaModLoader.Windows.Settings
 
         [RelayCommand]
         private void RestoreDefaults() {
-
-            // ToDo: GetConfirmation
-            Stores.Settings.RestoreDefaults();
+            if(DialogService.GetUserConfirmation("Restore Defaults?", "Are you sure you want to restore the default settings? This cannot be undone.")) {
+                Stores.Settings.RestoreDefaults();
+            }
         }
 
         [RelayCommand]
@@ -61,12 +60,11 @@ namespace TechtonicaModLoader.Windows.Settings
 
         // Constructors
 
-        public SettingsWindowViewModel(SettingsWindow view, DialogService dialogService)
+        public SettingsWindowViewModel(SettingsWindow view)
         {
             Stores.Settings.UserSettings.SettingsUpdatedExternally += OnSettingsUpdatedExternally;
             
             _view = view;
-            _dialogService = dialogService;
 
             SelectedItem = "General";
             PopulateSettingsToShow("General");

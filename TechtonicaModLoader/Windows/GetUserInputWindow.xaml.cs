@@ -21,7 +21,10 @@ namespace TechtonicaModLoader.Windows
     {
         public GetUserInputWindow()
         {
-            Owner = Application.Current.MainWindow;
+            if(Application.Current.MainWindow is MainWindow mainWindow) {
+                Owner = mainWindow;
+            }
+
             InitializeComponent();
         }
 

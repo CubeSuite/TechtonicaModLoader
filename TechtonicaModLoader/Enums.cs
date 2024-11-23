@@ -18,11 +18,11 @@ namespace TechtonicaModLoader
         [Description("New")]
         New,
 
-        [Description("Installed")]
-        Installed,
+        [Description("Downloaded")]
+        Downloaded,
 
-        [Description("Not Installed")]
-        NotInstalled,
+        [Description("Not Downloaded")]
+        NotDownloaded,
 
         [Description("Enabled")]
         Enabled,
@@ -31,13 +31,29 @@ namespace TechtonicaModLoader
         Disabled
     }
 
+    public enum OfflineModListSource
+    {
+        [Description("Downloaded")]
+        Downloaded,
+
+        [Description("Enabled")]
+        Enabled,
+
+        [Description("Disabled")]
+        Disabled,
+
+    }
+
     public enum ModListSortOption
     {
-        [Description("Alphabetical")]
-        Alphabetical,
-
         [Description("Last Updated")]
         LastUpdated,
+
+        [Description("Newest")]
+        Newest,
+
+        [Description("Alphabetical")]
+        Alphabetical,
 
         [Description("Downloads")]
         Downloads,

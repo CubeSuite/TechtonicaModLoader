@@ -98,7 +98,7 @@ namespace TechtonicaModLoader.Stores
                         UserSettings.SettingsUpdatedExternally?.Invoke();
                     }
                     else {
-                        UserSettings._dialogService.ShowErrorMessage("Wrong File Selected", "You need to select the file 'Techtonica.exe'");
+                        DialogService.ShowErrorMessage("Wrong File Selected", "You need to select the file 'Techtonica.exe'");
                     }
                 }
             }
@@ -146,9 +146,8 @@ namespace TechtonicaModLoader.Stores
 
         // Members
 
-        private static Settings? _userSettings = null;
+        private static Settings _userSettings = new Settings();
         private static bool _loaded = false;
-        private DialogService _dialogService;
 
         // Events
 
@@ -160,7 +159,7 @@ namespace TechtonicaModLoader.Stores
 
         public static bool Loaded => _loaded;
 
-        public static Settings? UserSettings => _userSettings;
+        public static Settings UserSettings => _userSettings;
 
         public static List<SettingBase> VisibleSettings => new List<SettingBase>() {
             // General
@@ -181,10 +180,6 @@ namespace TechtonicaModLoader.Stores
         // Constructors
 
         public Settings(){}
-
-        public Settings(DialogService dialogService) {
-            _dialogService = dialogService;
-        }
 
         // Public Functions
 
@@ -211,16 +206,15 @@ namespace TechtonicaModLoader.Stores
             File.WriteAllText(ProgramData.FilePaths.settingsFile, json);
         }
 
-        public static void Load(DialogService dialogService) {
+        public static void Load() {
             if (!File.Exists(ProgramData.FilePaths.settingsFile)) {
-                _userSettings = new Settings(dialogService);
+                _userSettings = new Settings();
                 Save();
                 return;
             }
 
             string json = File.ReadAllText(ProgramData.FilePaths.settingsFile);
-            _userSettings = JsonConvert.DeserializeObject<Settings>(json) ?? new Settings(dialogService);
-            _userSettings._dialogService = dialogService;
+            _userSettings = JsonConvert.DeserializeObject<Settings>(json) ?? new Settings();
             _loaded = true;
         }
     }

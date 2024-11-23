@@ -80,7 +80,7 @@
             </Border>
             
             <!--Search Bar-->
-            <TextBox x:Name="searchBar" Text="{Binding SearchTerm, Mode=TwoWay}" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" Margin="0,10,5,0"/>
+            <TextBox x:Name="searchBar" Text="{Binding SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Delay=200}" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" Margin="0,10,5,0"/>
             <TextBlock Text="Search..." Foreground="{DynamicResource textBrush}" Opacity="0.5"
                        Grid.Column="1" Grid.Row="1" Margin="5,17,0,0" IsHitTestVisible="False"
                        VerticalAlignment="Top" HorizontalAlignment="Left"
