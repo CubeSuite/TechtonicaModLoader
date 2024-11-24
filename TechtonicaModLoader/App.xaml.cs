@@ -1,6 +1,4 @@
-﻿using System.Configuration;
-using System.Data;
-using System.Windows;
+﻿using System.Windows;
 using TechtonicaModLoader.MVVM;
 using TechtonicaModLoader.Services;
 using TechtonicaModLoader.Stores;
@@ -15,28 +13,33 @@ namespace TechtonicaModLoader
         // Members
 
         private Log? logger = null;
-        private MainViewModel? mainVeiwModel = null;
-        private ProfileManager? profileManager = null;
-        private DialogService? dialogService = null;
+        private readonly MainViewModel _mainVeiwModel;
+        private readonly ProfileManager _profileManager;
+        private readonly IDialogService _dialogService;
+
+        // Constructor
+
+        public App() {
+            _dialogService = new DialogService();
+            _profileManager = new ProfileManager(_dialogService);
+            _mainVeiwModel = new MainViewModel(
+                _profileManager,
+                _dialogService,
+                new Thunderstore(_profileManager)
+            );
+        }
 
         // Overrides
 
         protected override void OnStartup(StartupEventArgs e) {
-            dialogService = new DialogService();
             
             DoStartupProcess();
 
-            mainVeiwModel = new MainViewModel(
-                profileManager ?? new ProfileManager(dialogService), 
-                dialogService, 
-                new Thunderstore(profileManager ?? new ProfileManager(dialogService))
-            );
-
-            mainVeiwModel.SelectedModList = Settings.UserSettings?.DefaultModList.Value;
-            mainVeiwModel.SelectedSortOption = Settings.UserSettings?.DefaultModListSortOption.Value;
+            _mainVeiwModel.SelectedModList = Settings.UserSettings?.DefaultModList.Value;
+            _mainVeiwModel.SelectedSortOption = Settings.UserSettings?.DefaultModListSortOption.Value;
 
             MainWindow = new MainWindow() {
-                DataContext = mainVeiwModel
+                DataContext = _mainVeiwModel
             };
 
             MainWindow.Show();
@@ -52,11 +55,10 @@ namespace TechtonicaModLoader
             Log.Info("Created folder structure");
             ProgramData.FilePaths.GenerateResources();
             Log.Info("Generated resources");
-            Settings.Load(dialogService ?? new DialogService());
+            Settings.Load(_dialogService);
             Log.Info("Settings loaded");
 
-            profileManager = new ProfileManager(dialogService ?? new DialogService());
-            profileManager.Load();
+            _profileManager.Load();
             Log.Info("ProfileManager loaded");
         }
     }

@@ -22,7 +22,7 @@ namespace TechtonicaModLoader.Stores
         private static ProfileManager _instance;
 
         private Dictionary<int, Profile> profiles = new Dictionary<int, Profile>();
-        private DialogService _dialogService;
+        private IDialogService _dialogService;
 
         // Properties
 
@@ -39,7 +39,7 @@ namespace TechtonicaModLoader.Stores
 
         // Constructors
 
-        public ProfileManager(DialogService dialogService) {
+        public ProfileManager(IDialogService dialogService) {
             _instance = this;
             _dialogService = dialogService;
         }

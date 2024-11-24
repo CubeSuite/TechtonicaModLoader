@@ -148,7 +148,7 @@ namespace TechtonicaModLoader.Stores
 
         private static Settings? _userSettings = null;
         private static bool _loaded = false;
-        private DialogService _dialogService;
+        private IDialogService _dialogService;
 
         // Events
 
@@ -180,9 +180,7 @@ namespace TechtonicaModLoader.Stores
 
         // Constructors
 
-        public Settings(){}
-
-        public Settings(DialogService dialogService) {
+        public Settings(IDialogService dialogService) {
             _dialogService = dialogService;
         }
 
@@ -211,7 +209,7 @@ namespace TechtonicaModLoader.Stores
             File.WriteAllText(ProgramData.FilePaths.settingsFile, json);
         }
 
-        public static void Load(DialogService dialogService) {
+        public static void Load(IDialogService dialogService) {
             if (!File.Exists(ProgramData.FilePaths.settingsFile)) {
                 _userSettings = new Settings(dialogService);
                 Save();

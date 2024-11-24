@@ -23,7 +23,7 @@ namespace TechtonicaModLoader.MVVM
         // Members
 
         private ProfileManager _profileManager;
-        private DialogService _dialogService;
+        private IDialogService _dialogService;
         private Thunderstore _thunderStore;
 
         // Properties
@@ -61,7 +61,7 @@ namespace TechtonicaModLoader.MVVM
 
         // Constructors
 
-        public MainViewModel(ProfileManager profileManager, DialogService dialogService, Thunderstore thunderstore) {
+        public MainViewModel(ProfileManager profileManager, IDialogService dialogService, Thunderstore thunderstore) {
             _profileManager = profileManager;
             _dialogService = dialogService;
             _thunderStore = thunderstore;

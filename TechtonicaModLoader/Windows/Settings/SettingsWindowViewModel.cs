@@ -17,7 +17,7 @@ namespace TechtonicaModLoader.Windows.Settings
         // Members
 
         private SettingsWindow _view;
-        private DialogService _dialogService;
+        private IDialogService _dialogService;
 
         // Properties
 
@@ -61,7 +61,7 @@ namespace TechtonicaModLoader.Windows.Settings
 
         // Constructors
 
-        public SettingsWindowViewModel(SettingsWindow view, DialogService dialogService)
+        public SettingsWindowViewModel(SettingsWindow view, IDialogService dialogService)
         {
             Stores.Settings.UserSettings.SettingsUpdatedExternally += OnSettingsUpdatedExternally;
             

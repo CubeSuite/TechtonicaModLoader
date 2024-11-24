@@ -14,6 +14,8 @@ namespace TechtonicaModLoader.MVVM.Mod
         // Members
         private ModModel _mod;
 
+        private readonly ProfileManager _profileManager;
+
         // Properties
 
         [ObservableProperty] private string _id;
@@ -30,7 +32,7 @@ namespace TechtonicaModLoader.MVVM.Mod
 
         [RelayCommand]
         private void DownloadMod() {
-            _mod.Downloaded();
+            _mod.Download();
         }
 
         // Constructors
