@@ -11,6 +11,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using TechtonicaModLoader.Services;
+using TechtonicaModLoader.Stores;
 using TechtonicaModLoader.Windows.Settings;
 
 namespace TechtonicaModLoader.Windows
@@ -20,10 +22,18 @@ namespace TechtonicaModLoader.Windows
     /// </summary>
     public partial class SettingsWindow : Window
     {
-        public SettingsWindow()
+        public SettingsWindow(UserSettings userSettings, IDialogService dialogService)
         {
             Owner = Application.Current.MainWindow;
             InitializeComponent();
+
+            SettingsWindowViewModel viewModel = new SettingsWindowViewModel(userSettings, dialogService);
+            viewModel.CloseButtonClicked += OnCloseButtonClicked;
+            DataContext = viewModel;
+        }
+
+        private void OnCloseButtonClicked() {
+            Close();
         }
     }
 }

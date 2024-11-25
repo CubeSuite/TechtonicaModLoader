@@ -35,6 +35,9 @@ namespace TechtonicaModLoader.MVVM.Mod
 
         private readonly List<ModModel> dependencies = new List<ModModel>();
 
+        private ThunderStore thunderStore;
+        private ProfileManager profileManager;
+
         // Properties
 
         public string ID => _id ?? "";
@@ -53,7 +56,7 @@ namespace TechtonicaModLoader.MVVM.Mod
         
         public bool IsDownloaded => _isDownloaded ?? false;
         
-        public bool IsEnabled => ProfileManager.Instance.ActiveProfile.IsModEnabled(this);
+        public bool IsEnabled => profileManager.ActiveProfile.IsModEnabled(this);
         public bool UpdateAvailable => _updateAvailable ?? false;
         public bool HasConfigFile => _hasConfigFile ?? false;
 
@@ -69,7 +72,10 @@ namespace TechtonicaModLoader.MVVM.Mod
 
         // Constructors
 
-        public ModModel(ThunderStoreMod thunderStoreMod) {
+        public ModModel(ThunderStoreMod thunderStoreMod, ThunderStore thunderStore, ProfileManager profileManager) {
+            this.thunderStore = thunderStore;
+            this.profileManager = profileManager;
+
             _id = thunderStoreMod.uuid4;
             _name = thunderStoreMod.name;
             _fullName = thunderStoreMod.versions[0].full_name;
@@ -82,11 +88,11 @@ namespace TechtonicaModLoader.MVVM.Mod
             _iconLink = thunderStoreMod.versions[0].icon;
             _donationLink = thunderStoreMod.donation_link;
             
-            _isDownloaded = ThunderStore.Instance.IsModDownloaded(_id, Version);
+            _isDownloaded = thunderStore.IsModDownloaded(_id, Version);
 
             foreach(string dependency in thunderStoreMod.versions[0].dependencies) {
-                if(ThunderStore.Instance.SearchForMod(dependency, out ThunderStoreMod? mod) && mod != null) {
-                    dependencies.Add(new ModModel(mod));
+                if(thunderStore.SearchForMod(dependency, out ThunderStoreMod? mod) && mod != null) {
+                    dependencies.Add(new ModModel(mod, thunderStore, profileManager));
                 }
                 else {
                     string error = $"Failed to find dependency '{dependency}'";
@@ -110,20 +116,16 @@ namespace TechtonicaModLoader.MVVM.Mod
             }
         }
 
-        // Events
-
         // Public Functions
 
         public void Download() {
             foreach(ModModel dependency in dependencies) {
-                if (ThunderStore.Instance.IsModDownloaded(dependency.ID, dependency.Version)) continue;
-                ThunderStore.Instance.DownloadMod(dependency.FullName);
+                if (thunderStore.IsModDownloaded(dependency.ID, dependency.Version)) continue;
+                thunderStore.DownloadMod(dependency.FullName);
             }
 
-            ThunderStore.Instance.DownloadMod(FullName);
+            thunderStore.DownloadMod(FullName);
         }
-
-        // Private Functions
 
         // Overrides
 

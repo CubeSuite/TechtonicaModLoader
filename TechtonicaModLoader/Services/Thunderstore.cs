@@ -24,25 +24,27 @@ namespace TechtonicaModLoader.Services
         // Members
         private IEnumerable<ThunderStoreMod> thunderStoreModCache = new List<ThunderStoreMod>();
         private Dictionary<string, ModVersion> downloadedMods = new Dictionary<string, ModVersion>();
-
         private List<string> downloadQueue = new List<string>();
         private const string baseURL = "https://thunderstore.io/c/techtonica/api/v1";
         private string? lastJson;
+        
+        private IDialogService dialogService;
+        private ProfileManager profileManager;
 
-        private static ThunderStore _instance = new ThunderStore();
         private List<ModModel> _modCache = new List<ModModel>();
 
         // Properties
 
         [ObservableProperty] private bool _connected = true;
 
-        public static ThunderStore Instance => _instance;
         public ObservableCollection<ModModel> ModCache { get; } = new ObservableCollection<ModModel>();
 
         // Constructors
 
-        public ThunderStore() 
+        public ThunderStore(IDialogService dialogService, ProfileManager profileManager) 
         {
+            this.dialogService = dialogService;
+            this.profileManager = profileManager;
             StartUpdateThread();
             StartDownloadThread();
         }
@@ -51,7 +53,7 @@ namespace TechtonicaModLoader.Services
 
         partial void OnConnectedChanging(bool value) {
             if(!Connected && value) {
-                DialogService.ShowInfoMessage("Reconnected To Thunderstore", "Connection To ThunderStore has been restored, you can now browse online mods again");
+                dialogService.ShowInfoMessage("Reconnected To Thunderstore", "Connection To ThunderStore has been restored, you can now browse online mods again");
             }
         }
 
@@ -63,7 +65,7 @@ namespace TechtonicaModLoader.Services
             Application.Current.Dispatcher.Invoke(delegate () {
                 ModCache.Clear();
                 foreach (ThunderStoreMod mod in thunderStoreModCache) {
-                    ModCache.Add(new ModModel(mod));
+                    ModCache.Add(new ModModel(mod, this, profileManager));
                 }
 
                 OnPropertyChanged(nameof(ModCache));
@@ -130,7 +132,7 @@ namespace TechtonicaModLoader.Services
                 string error = $"Couldn't find mod '{fullName}' in thunderStoreModCache";
                 Log.Error(error);
                 DebugUtils.CrashIfDebug(error);
-                DialogService.ShowErrorMessage($"Couldn't Download {fullName}", "An error occured while trying to download this mod.\nPlease click the bug report button.");
+                dialogService.ShowErrorMessage($"Couldn't Download {fullName}", "An error occured while trying to download this mod.\nPlease click the bug report button.");
                 return false;
             }
 
@@ -167,7 +169,7 @@ namespace TechtonicaModLoader.Services
                     string error = $"An error occurred while downloading {fullName}: {ex.Message}";
                     Log.Error(error);
                     DebugUtils.CrashIfDebug(error);
-                    DialogService.ShowErrorMessage($"Couldn't Download {fullName}", "An error occured while trying to download this mod.\nPlease click the bug report button.");
+                    dialogService.ShowErrorMessage($"Couldn't Download {fullName}", "An error occured while trying to download this mod.\nPlease click the bug report button.");
                     return false;
                 }
             }
@@ -177,10 +179,11 @@ namespace TechtonicaModLoader.Services
             downloadedMods.Add(thunderStoreMod.uuid4, ModVersion.Parse(thunderStoreMod.versions[0].version_number));
             Save();
 
-            ProfileManager.Instance.AddMod(thunderStoreMod);
+            profileManager.AddMod(thunderStoreMod);
             UpdateModCache(false);
 
-            ModFilesManager.ProcessZipFile(zipFileLocation);
+            // ModFilesManager.ProcessZipFile(zipFileLocation);
+            // ToDo: DI this
         }
 
         // API Functions
@@ -215,7 +218,7 @@ namespace TechtonicaModLoader.Services
             string json = await GetApiData(endPoint);
             if (string.IsNullOrEmpty(json)) {
                 if (Connected) {
-                    DialogService.ShowErrorMessage("Couldn't connect to ThunderStore", "Couldn't fetch mods from Thunderstore. Local cache will be loaded instead.");
+                    dialogService.ShowErrorMessage("Couldn't connect to ThunderStore", "Couldn't fetch mods from Thunderstore. Local cache will be loaded instead.");
                 }
 
                 Log.Warning("Couldn't get mods from ThunderStore, switching to local cache");

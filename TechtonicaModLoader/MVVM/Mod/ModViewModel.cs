@@ -16,6 +16,8 @@ namespace TechtonicaModLoader.MVVM.Mod
         // Members
         private ModModel _mod;
 
+        private ProfileManager profileManager;
+
         // Properties
 
         [ObservableProperty] private string _id;
@@ -36,11 +38,13 @@ namespace TechtonicaModLoader.MVVM.Mod
 
         public bool HasDonationLink => !string.IsNullOrEmpty(DonationLink);
 
-        public bool AllowToggling => ProfileManager.Instance.ActiveProfile.Name != "Vanilla";
+        public bool AllowToggling => profileManager.ActiveProfile.Name != "Vanilla";
 
         // Constructors
 
-        public ModViewModel(ModModel mod) {
+        public ModViewModel(ModModel mod, ProfileManager profileManager) {
+            this.profileManager = profileManager;
+            
             _mod = mod;
             _mod.IsDownloadingChanged += OnModModelIsDownloadingChanged;
 
@@ -59,14 +63,13 @@ namespace TechtonicaModLoader.MVVM.Mod
             _updateAvailable = mod.UpdateAvailable;
             _hasConfigFile = mod.HasConfigFile;
 
-            Settings.UserSettings?.SeenMods.Value.Add(_id);
-            Settings.Save();
+            // ToDo: Add to seen mods
         }
 
         // Events
 
         partial void OnIsEnabledChanged(bool value) {
-            ProfileManager.Instance.ActiveProfile.ToggleMod(_mod.ID);
+            profileManager.ActiveProfile.ToggleMod(_mod.ID);
         }
 
         private void OnModModelIsDownloadingChanged() {

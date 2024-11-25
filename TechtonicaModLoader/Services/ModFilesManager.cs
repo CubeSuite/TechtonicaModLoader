@@ -10,9 +10,20 @@ using TechtonicaModLoader.Services;
 
 namespace TechtonicaModLoader.Stores
 {
-    public static class ModFilesManager
+    public class ModFilesManager
     {
-        public static bool ProcessZipFile(string zipFileLocation) {
+        // Members
+        private IDialogService dialogService;
+
+        // Constructors
+
+        public ModFilesManager(IDialogService dialogService) {
+            this.dialogService = dialogService;
+        }
+
+        // Public Functions
+
+        public bool ProcessZipFile(string zipFileLocation) {
             if (!File.Exists(zipFileLocation)) {
                 string error = $"zip file does not exist: '{zipFileLocation}'";
                 Log.Error(error);
@@ -26,7 +37,7 @@ namespace TechtonicaModLoader.Stores
 
         // Private Functions
 
-        private static bool UnzipToTemp(string zipFileLocation) {
+        private bool UnzipToTemp(string zipFileLocation) {
             string zipName = Path.GetFileNameWithoutExtension(zipFileLocation);
             try {
                 Log.Debug($"Unzipping '{zipName}'");
@@ -49,8 +60,8 @@ namespace TechtonicaModLoader.Stores
                 DebugUtils.CrashIfDebug(error);
 
                 if (!ProgramData.isDebugBuild) {
-                    DialogService.ShowErrorMessage("Error Occurred While Unzipping Mod", "Please click the bug report button.");
-                    // ToDo: Auto open bug-report View
+                    dialogService.ShowErrorMessage("Error Occurred While Unzipping Mod", "Please click the bug report button.");
+                    // ToDo: Auto open and populate bug-report View
                 }
 
                 return false;

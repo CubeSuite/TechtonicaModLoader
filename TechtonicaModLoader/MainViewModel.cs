@@ -15,63 +15,69 @@ using TechtonicaModLoader.MVVM.Mod;
 using TechtonicaModLoader.Services;
 using TechtonicaModLoader.Stores;
 using TechtonicaModLoader.Windows;
+using TechtonicaModLoader.Windows.Settings;
 
 namespace TechtonicaModLoader.MVVM
 {
     public partial class MainViewModel : ObservableObject
     {
+        // Members
+
+        private IDialogService dialogService;
+        private UserSettings userSettings;
+        private ProfileManager profileManager;
+        private ThunderStore thunderStore;
+
         // Properties
 
-        private Version ProgramVersion => Assembly.GetExecutingAssembly().GetName().Version ?? new Version(1, 0, 0);
+        private Version ProgramVersion => ProgramData.ProgramVersion;
         public string Title => $"Techtonica Mod Loader - V{ProgramVersion.Major}.{ProgramVersion.Minor}.{ProgramVersion.Build}";
 
-        [ObservableProperty]
-        private bool _modUpdatesAvailable = false;
+        [ObservableProperty] private bool _modUpdatesAvailable = false;
+        [ObservableProperty] private ModListSource? _selectedModList = null;
+        [ObservableProperty] private ModListSortOption? _selectedSortOption = null;
+        [ObservableProperty] private string _searchTerm = "";
+        [ObservableProperty] private ObservableCollection<ModViewModel> _modsToShow;
 
         public Profile ActiveProfile {
-            get => ProfileManager.Instance.ActiveProfile;
+            get => profileManager.ActiveProfile;
             set {
-                ProfileManager.Instance.ActiveProfile = value;
+                profileManager.ActiveProfile = value;
                 PopulateModsToShow();
             }
         }
 
-        public ObservableCollection<Profile> Profiles => ProfileManager.Instance.ProfilesList;
+        public ObservableCollection<Profile> Profiles => profileManager.ProfilesList;
 
-        [ObservableProperty]
-        private ModListSource? _selectedModList = null;
         public Array? ModLists {
             get {
-                if (ThunderStore.Instance.Connected) return Settings.UserSettings.DefaultModList.Options;
+                if (thunderStore.Connected) return userSettings.DefaultModList.Options;
                 else return new ModListSource[] { ModListSource.Downloaded, ModListSource.Enabled, ModListSource.Disabled };
             }
         }
 
-        [ObservableProperty]
-        private ModListSortOption? _selectedSortOption = null;
-
-        public Array? SortOptions => Settings.UserSettings.DefaultModListSortOption.Options;
-
-        [ObservableProperty]
-        private string _searchTerm = "";
-
-        [ObservableProperty]
-        private ObservableCollection<ModViewModel> _modsToShow;
+        public Array? SortOptions => userSettings.DefaultModListSortOption.Options;
 
         // Constructors
 
-        public MainViewModel() {
+        public MainViewModel(IDialogService dialogService, UserSettings userSettings, ProfileManager profileManager, ThunderStore thunderStore) {
             _modsToShow = new ObservableCollection<ModViewModel>();
+            this.dialogService = dialogService;
+            this.userSettings = userSettings;
+            this.profileManager = profileManager;
+            this.thunderStore = thunderStore;
 
-            ProfileManager.Instance.PropertyChanged += OnProfileManagerPropertyChanged;
-            ThunderStore.Instance.PropertyChanged += OnThunderstorePropertyChanged;
+            profileManager.PropertyChanged += OnProfileManagerPropertyChanged;
+            thunderStore.PropertyChanged += OnThunderstorePropertyChanged;
         }
 
         // Commands
 
         [RelayCommand]
         private void OpenSettings() {
-            DialogService.OpenSettingsDialog();
+            // ToDo: Move this
+            SettingsWindow window = new SettingsWindow(userSettings, dialogService);
+            window.ShowDialog();
         }
 
         [RelayCommand]
@@ -92,21 +98,21 @@ namespace TechtonicaModLoader.MVVM
 
         [RelayCommand]
         private void CheckForModUpdates() {
-            ThunderStore.Instance.UpdateModCache();
+            thunderStore.UpdateModCache();
         }
 
         [RelayCommand]
         private void CreateNewProfile() {
-            if(DialogService.GetStringFromUser(out string name, "Enter Profile Name:", "")) {
-                ProfileManager.Instance.CreateNewProfile(name);
+            if(dialogService.GetStringFromUser(out string name, "Enter Profile Name:", "")) {
+                profileManager.CreateNewProfile(name);
             }
         }
 
         [RelayCommand]
         private void DeleteProfile() {
-            string name = ProfileManager.Instance.ActiveProfile.Name;
-            if(DialogService.GetUserConfirmation("Delete Profile?", $"Are you sure you want to delete the {name} profile?\nThis cannot be undone.")) {
-                ProfileManager.Instance.DeleteActiveProfile();
+            string name = profileManager.ActiveProfile.Name;
+            if(dialogService.GetUserConfirmation("Delete Profile?", $"Are you sure you want to delete the {name} profile?\nThis cannot be undone.")) {
+                profileManager.DeleteActiveProfile();
             }
         }
 
@@ -119,10 +125,10 @@ namespace TechtonicaModLoader.MVVM
         partial void OnSelectedModListChanged(ModListSource? value) {
             ModListSource[] onlineLists = new ModListSource[] { ModListSource.All, ModListSource.New, ModListSource.NotDownloaded };
 
-            if(!ThunderStore.Instance.Connected && (SelectedModList == ModListSource.All || SelectedModList == ModListSource.New || SelectedModList == ModListSource.NotDownloaded)) {
+            if(!thunderStore.Connected && (SelectedModList == ModListSource.All || SelectedModList == ModListSource.New || SelectedModList == ModListSource.NotDownloaded)) {
                 if (MainWindow.current == null) return;
 
-                DialogService.ShowErrorMessage("Not Connected To Thunderstore", "You can't browse online mods while in offline mode");
+                dialogService.ShowErrorMessage("Not Connected To Thunderstore", "You can't browse online mods while in offline mode");
                 SelectedModList = ModListSource.Downloaded;
             }
 
@@ -146,11 +152,11 @@ namespace TechtonicaModLoader.MVVM
             }
 
             if(e.PropertyName == nameof(ThunderStore.Connected)) {
-                if (!ThunderStore.Instance.Connected) {
+                if (!thunderStore.Connected) {
                     SelectedModList = ModListSource.Downloaded;
                 }
                 else {
-                    SelectedModList = Settings.UserSettings.DefaultModList.Value;
+                    SelectedModList = userSettings.DefaultModList.Value;
                 }
 
                 OnPropertyChanged(nameof(SelectedModList));
@@ -161,10 +167,10 @@ namespace TechtonicaModLoader.MVVM
         // Private Functions
 
         private void PopulateModsToShow() {
-            IEnumerable<ModModel> allMods = ThunderStore.Instance.ModCache.Where(mod => mod.FullName.ToLower().Contains(SearchTerm.ToLower()));
+            IEnumerable<ModModel> allMods = thunderStore.ModCache.Where(mod => mod.FullName.ToLower().Contains(SearchTerm.ToLower()));
 
             switch (SelectedModList) {
-                case ModListSource.New: allMods = allMods.Where(mod => !Settings.UserSettings?.SeenMods.Value.Contains(mod.ID) ?? true); break;
+                case ModListSource.New: allMods = allMods.Where(mod => !userSettings?.SeenMods.Value.Contains(mod.ID) ?? true); break;
                 case ModListSource.Downloaded: allMods = allMods.Where(mod => mod.IsDownloaded); break;
                 case ModListSource.NotDownloaded: allMods = allMods.Where(mod => !mod.IsDownloaded); break;
                 case ModListSource.Enabled: allMods = allMods.Where(mod => mod.IsDownloaded && mod.IsEnabled); break;
@@ -182,7 +188,7 @@ namespace TechtonicaModLoader.MVVM
             Application.Current.Dispatcher.Invoke(delegate () {
                 ModsToShow.Clear();
                 foreach (ModModel mod in allMods) {
-                    ModsToShow.Add(new ModViewModel(mod));
+                    ModsToShow.Add(new ModViewModel(mod, profileManager));
                 }
             });
 

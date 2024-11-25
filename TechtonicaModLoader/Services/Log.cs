@@ -23,12 +23,11 @@ namespace TechtonicaModLoader
 
         private static string LogPath => ProgramData.FilePaths.logFile;
         private static bool IsLogPathSet => !string.IsNullOrEmpty(LogPath);
-        private static bool LogDebugToFile {
-            get {
-                if (ProgramData.isDebugBuild) return true;
-                if (!Settings.Loaded) return true;
-                return Settings.UserSettings.LogDebugMessages.Value;
-            }
+
+        private static bool _logDebugToFile = true;
+        public static bool LogDebugToFile {
+            get => _logDebugToFile || ProgramData.isDebugBuild;
+            set => _logDebugToFile = value;
         }
 
         // Constructors

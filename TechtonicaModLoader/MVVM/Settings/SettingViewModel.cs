@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows;
 using TechtonicaModLoader.Stores;
 using CommunityToolkit.Mvvm.Input;
+using TechtonicaModLoader.MVVM.Settings;
 
 namespace TechtonicaModLoader.Windows.Settings.Setting
 {
@@ -20,38 +21,28 @@ namespace TechtonicaModLoader.Windows.Settings.Setting
         private EnumSetting<ModListSortOption>? _modListSortSetting = null;
         private EnumSetting<ModListSource>? _modListSourceSetting = null;
 
+        private UserSettings userSettings;
+
         // Properties
 
         // Normal settings
 
-        [ObservableProperty]
-        private Type _type;
-
-        [ObservableProperty]
-        private string _name;
-
-        [ObservableProperty]
-        private string _description;
-
-        [ObservableProperty]
-        private object? _value;
+        [ObservableProperty] private Type _type;
+        [ObservableProperty] private string _name;
+        [ObservableProperty] private string _description;
+        [ObservableProperty] private object? _value;
 
         // Button settings
-
-        [ObservableProperty]
-        private string _buttonText = "";
-
-        [ObservableProperty]
-        private Action? _onClick = null;
+        [ObservableProperty] private string _buttonText = "";
+        [ObservableProperty] private Action<UserSettings>? _onClick = null;
 
         // Enum settings
-
-        [ObservableProperty]
-        private Array? _enumOptions;
+        [ObservableProperty] private Array? _enumOptions;
 
         // Constructors
 
-        public SettingViewModel(Setting<bool> boolSetting) {
+        public SettingViewModel(Setting<bool> boolSetting, UserSettings userSettings) {
+            this.userSettings = userSettings;
             _name = boolSetting.Name;
             _description = boolSetting.Description;
             _value = boolSetting.Value;
@@ -60,7 +51,8 @@ namespace TechtonicaModLoader.Windows.Settings.Setting
             _boolSetting = boolSetting;
         }
 
-        public SettingViewModel(Setting<string> stringSetting) {
+        public SettingViewModel(Setting<string> stringSetting, UserSettings userSettings) {
+            this.userSettings = userSettings;
             _name = stringSetting.Name;
             _description = stringSetting.Description;
             _value = stringSetting.Value;
@@ -69,7 +61,8 @@ namespace TechtonicaModLoader.Windows.Settings.Setting
             _stringSetting = stringSetting;
         }
 
-        public SettingViewModel(ButtonSetting buttonSetting) {
+        public SettingViewModel(ButtonSetting buttonSetting, UserSettings userSettings) {
+            this.userSettings = userSettings;
             _name = buttonSetting.Name;
             _description = buttonSetting.Description;
             _buttonText = buttonSetting.ButtonText;
@@ -78,7 +71,8 @@ namespace TechtonicaModLoader.Windows.Settings.Setting
             _value = null;
         }
 
-        public SettingViewModel(EnumSetting<ModListSortOption> modListSortSetting) {
+        public SettingViewModel(EnumSetting<ModListSortOption> modListSortSetting, UserSettings userSettings) {
+            this.userSettings = userSettings;
             _name = modListSortSetting.Name;
             _description = modListSortSetting.Description;
             _modListSortSetting = modListSortSetting;
@@ -87,7 +81,8 @@ namespace TechtonicaModLoader.Windows.Settings.Setting
             _type = typeof(ModListSortOption);
         }
 
-        public SettingViewModel(EnumSetting<ModListSource> modListSourceSetting) {
+        public SettingViewModel(EnumSetting<ModListSource> modListSourceSetting, UserSettings userSettings) {
+            this.userSettings = userSettings;
             _name = modListSourceSetting.Name;
             _description = modListSourceSetting.Description;
             _modListSourceSetting = modListSourceSetting;
@@ -111,7 +106,7 @@ namespace TechtonicaModLoader.Windows.Settings.Setting
 
         [RelayCommand]
         private void ExecuteButtonAction() {
-            OnClick?.Invoke();
+            OnClick?.Invoke(userSettings);
         }
     }
 

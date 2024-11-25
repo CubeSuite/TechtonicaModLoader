@@ -16,16 +16,15 @@ namespace TechtonicaModLoader
 
         private Log? logger = null;
         private MainViewModel? mainVeiwModel = null;
+        private IDialogService? dialogService;
+        private UserSettings? userSettings;
+        private ProfileManager? profileManager;
+        private ThunderStore? thunderStore;
 
         // Overrides
 
         protected override void OnStartup(StartupEventArgs e) {
             DoStartupProcess();
-
-            mainVeiwModel = new MainViewModel();
-
-            mainVeiwModel.SelectedModList = Settings.UserSettings?.DefaultModList.Value;
-            mainVeiwModel.SelectedSortOption = Settings.UserSettings?.DefaultModListSortOption.Value;
 
             MainWindow = new MainWindow() {
                 DataContext = mainVeiwModel
@@ -44,14 +43,26 @@ namespace TechtonicaModLoader
             Log.Info("Created folder structure");
             ProgramData.FilePaths.GenerateResources();
             Log.Info("Generated resources");
-            Settings.Load();
+
+            dialogService = new DialogService();
+
+            userSettings = new UserSettings(dialogService);
+            userSettings.Load();
             Log.Info("Settings loaded");
 
-            ThunderStore.Instance.Load();
+            profileManager = new ProfileManager(dialogService, userSettings);
+            profileManager.Load();
+            Log.Info("ProfileManager loaded");
+
+            thunderStore = new ThunderStore(dialogService, profileManager);
+            thunderStore.Load();
             Log.Info($"ThunderStore loaded");
 
-            ProfileManager.Instance.Load();
-            Log.Info("ProfileManager loaded");
+            mainVeiwModel = new MainViewModel(dialogService, userSettings, profileManager, thunderStore);
+            mainVeiwModel.SelectedModList = userSettings?.DefaultModList.Value;
+            mainVeiwModel.SelectedSortOption = userSettings?.DefaultModListSortOption.Value;
+            Log.Info($"MainViewModel loaded");
+            Log.Info($"Running V{ProgramData.ProgramVersion.Major}.{ProgramData.ProgramVersion.Minor}.{ProgramData.ProgramVersion.Build}");
         }
     }
 

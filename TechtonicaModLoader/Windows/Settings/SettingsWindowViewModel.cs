@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TechtonicaModLoader.MVVM.Settings;
 using TechtonicaModLoader.Services;
 using TechtonicaModLoader.Stores;
 using TechtonicaModLoader.Windows.Settings.Setting;
@@ -16,36 +17,50 @@ namespace TechtonicaModLoader.Windows.Settings
     {
         // Members
 
-        private SettingsWindow _view;
+        private UserSettings userSettings;
+        private IDialogService dialogService;
 
         // Properties
 
-        [ObservableProperty]
-        private ObservableCollection<SettingViewModel> _settingsToShow = new ObservableCollection<SettingViewModel>();
+        [ObservableProperty] private ObservableCollection<SettingViewModel> _settingsToShow;
+        [ObservableProperty] private object? _selectedItem;
 
-        [ObservableProperty]
-        private object _selectedItem;
+        public IEnumerable<string> Categories => userSettings.GetCategories();
 
-        public IEnumerable<string> Categories => Stores.Settings.GetCategories();
+        // Events
+
+        public event Action CloseButtonClicked;
+
+        // Constructors
+
+        public SettingsWindowViewModel(UserSettings userSettings, IDialogService dialogService) {
+            this.userSettings = userSettings;
+            this.dialogService = dialogService;
+            _settingsToShow = new ObservableCollection<SettingViewModel>();
+            userSettings.SettingsUpdatedExternally += OnSettingsUpdatedExternally;
+
+            SelectedItem = "General";
+            PopulateSettingsToShow("General");
+        }
 
         // Commands
 
         [RelayCommand]
         private void RestoreDefaults() {
-            if(DialogService.GetUserConfirmation("Restore Defaults?", "Are you sure you want to restore the default settings? This cannot be undone.")) {
-                Stores.Settings.RestoreDefaults();
+            if(dialogService.GetUserConfirmation("Restore Defaults?", "Are you sure you want to restore the default settings? This cannot be undone.")) {
+                userSettings.RestoreDefaults();
             }
         }
 
         [RelayCommand]
-        private void CloseSettings() {
-            _view.Close();
+        private void CloseDialog() {
+            CloseButtonClicked?.Invoke();
         }
 
         // Events
 
-        partial void OnSelectedItemChanged(object value) {
-            string category = value.ToString() ?? "Null Category";
+        partial void OnSelectedItemChanged(object? value) {
+            string category = value?.ToString() ?? "Null Category";
             Log.Debug($"Show settings under category {category}");
             PopulateSettingsToShow(category);
         }
@@ -58,29 +73,17 @@ namespace TechtonicaModLoader.Windows.Settings
             PopulateSettingsToShow(SelectedItem?.ToString() ?? "General");
         }
 
-        // Constructors
-
-        public SettingsWindowViewModel(SettingsWindow view)
-        {
-            Stores.Settings.UserSettings.SettingsUpdatedExternally += OnSettingsUpdatedExternally;
-            
-            _view = view;
-
-            SelectedItem = "General";
-            PopulateSettingsToShow("General");
-        }
-
         // Private Functions
 
         private void PopulateSettingsToShow(string category) {
             SettingsToShow.Clear();
-            IEnumerable<SettingBase> settingsToShow = Stores.Settings.GetSettingsInCategory(category);
+            IEnumerable<SettingBase> settingsToShow = userSettings.GetSettingsInCategory(category);
             foreach (SettingBase setting in settingsToShow) {
-                if (setting is Setting<bool> boolSetting) SettingsToShow.Add(new SettingViewModel(boolSetting));
-                else if (setting is Setting<string> stringSetting) SettingsToShow.Add(new SettingViewModel(stringSetting));
-                else if (setting is ButtonSetting buttonSetting) SettingsToShow.Add(new SettingViewModel(buttonSetting));
-                else if (setting is EnumSetting<ModListSortOption> modListSortSetting) SettingsToShow.Add(new SettingViewModel(modListSortSetting));
-                else if (setting is EnumSetting<ModListSource> modListSourceSetting) SettingsToShow.Add(new SettingViewModel(modListSourceSetting));
+                if (setting is Setting<bool> boolSetting) SettingsToShow.Add(new SettingViewModel(boolSetting, userSettings));
+                else if (setting is Setting<string> stringSetting) SettingsToShow.Add(new SettingViewModel(stringSetting, userSettings));
+                else if (setting is ButtonSetting buttonSetting) SettingsToShow.Add(new SettingViewModel(buttonSetting, userSettings));
+                else if (setting is EnumSetting<ModListSortOption> modListSortSetting) SettingsToShow.Add(new SettingViewModel(modListSortSetting, userSettings));
+                else if (setting is EnumSetting<ModListSource> modListSourceSetting) SettingsToShow.Add(new SettingViewModel(modListSourceSetting, userSettings));
             }
         }
     }

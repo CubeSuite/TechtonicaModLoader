@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -22,6 +23,7 @@ namespace TechtonicaModLoader.Stores
         public static bool runUnitTests = true;
         public static bool safeToSave = false;
         public const string bepInExID = "b9a5a1bd-81d8-4913-a46e-70ca7734628c";
+        public static Version ProgramVersion => Assembly.GetExecutingAssembly().GetName().Version ?? new Version(1, 0, 0);
 
         internal static readonly HashSet<string> allowedMods = new HashSet<string> {
             "BepInExPack",

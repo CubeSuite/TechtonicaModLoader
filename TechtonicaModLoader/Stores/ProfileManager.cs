@@ -21,33 +21,40 @@ namespace TechtonicaModLoader.Stores
         // Members
 
         private Dictionary<int, Profile> profiles = new Dictionary<int, Profile>();
-        private static ProfileManager _instance = new ProfileManager();
+        
+        private IDialogService dialogService;
+        private UserSettings userSettings;
 
         // Properties
 
-        public static ProfileManager Instance => _instance;
-
         public Profile ActiveProfile {
-            get => profiles[Settings.UserSettings.ActiveProfileID.Value];
+            get => profiles[userSettings.ActiveProfileID.Value];
             set {
                 if (value == null) return;
-                Settings.UserSettings.ActiveProfileID.Value = value.Id;
+                userSettings.ActiveProfileID.Value = value.Id;
                 OnPropertyChanged(nameof(ActiveProfile));
             }
         }
 
         public ObservableCollection<Profile> ProfilesList { get; } = new ObservableCollection<Profile>();
 
+        // Constructors
+
+        public ProfileManager(IDialogService dialogService, UserSettings userSettings) {
+            this.dialogService = dialogService;
+            this.userSettings = userSettings;
+        }
+
         // Public Functions
 
         public void CreateNewProfile(string name) {
             if(ProfilesList.Select(profile => profile.Name).Contains(name)) {
-                if(!DialogService.GetUserConfirmation("Name Taken", $"The profile name '{name}' is already taken, are you sure you want to use it again?")) {
+                if(!dialogService.GetUserConfirmation("Name Taken", $"The profile name '{name}' is already taken, are you sure you want to use it again?")) {
                     return;
                 }
             }
 
-            Profile profile = new Profile(name);
+            Profile profile = new Profile(this, name);
             int id = AddProfile(profile);
             ActiveProfile = profiles[id];
             Save();
@@ -102,16 +109,17 @@ namespace TechtonicaModLoader.Stores
 
             List<Profile> savedProfiles = JsonConvert.DeserializeObject<List<Profile>>(json ?? "[]") ?? new List<Profile>();
             foreach(Profile profile in savedProfiles) {
+                profile.ProfileManager = this;
                 AddProfile(profile);
             }
         }
 
         private void CreateDefaultProfiles() {
-            AddProfile(new Profile("Modded", true));
-            AddProfile(new Profile("Development", true));
-            AddProfile(new Profile("Vanilla", true));
+            AddProfile(new Profile(this, "Modded", true));
+            AddProfile(new Profile(this, "Development", true));
+            AddProfile(new Profile(this, "Vanilla", true));
 
-            Settings.UserSettings.ActiveProfileID.Value = 0;
+            userSettings.ActiveProfileID.Value = 0;
 
             Save();
         }
@@ -121,21 +129,26 @@ namespace TechtonicaModLoader.Stores
     {
         // Members
 
-        [ObservableProperty]
-        private int _id = -1;
+        ProfileManager _profileManager;
 
-        [ObservableProperty]
-        private string _name;
+        // Properties
 
-        [ObservableProperty]
-        private Dictionary<string, bool> _modEnabledStates;
+        [ObservableProperty] private int _id = -1;
+        [ObservableProperty] private string _name;
+        [ObservableProperty] private Dictionary<string, bool> _modEnabledStates;
 
         private bool _isDefault;
         public bool IsDefault => _isDefault;
 
+        [JsonIgnore] public ProfileManager ProfileManager {
+            get => _profileManager;
+            set => _profileManager = value;
+        }
+
         // Constructors
 
-        public Profile(string name, bool isDefault = false) {
+        public Profile(ProfileManager profileManager, string name, bool isDefault = false) {
+            this._profileManager = profileManager;
             _name = name;
             _isDefault = IsDefault;
             _modEnabledStates = new Dictionary<string, bool>();
@@ -144,7 +157,7 @@ namespace TechtonicaModLoader.Stores
         // Public Functions
 
         public bool IsModEnabled(ModModel mod) {
-            if (ProfileManager.Instance.ActiveProfile.Name == "Vanilla") return false;
+            if (_profileManager.ActiveProfile.Name == "Vanilla") return false;
 
             if (!ModEnabledStates.ContainsKey(mod.ID)) return false;
             return ModEnabledStates[mod.ID];
@@ -152,15 +165,13 @@ namespace TechtonicaModLoader.Stores
 
         public void AddMod(ThunderStoreMod mod) {
             ModEnabledStates.Add(mod.uuid4, false); // ToDo: Error handle
-            ProfileManager.Instance.Save();
+            _profileManager.Save();
         }
 
         public void ToggleMod(string id) {
             ModEnabledStates[id] = !ModEnabledStates[id];
-            ProfileManager.Instance.Save();
+            _profileManager.Save();
         }
-
-        // Private Functions
 
         // Overrides
 
