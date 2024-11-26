@@ -1,42 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TechtonicaModLoader.MVVM.Settings
+﻿
+namespace TechtonicaModLoader.MVVM.Settings.ViewModels
 {
     public class Setting<T> : SettingBase
     {
         // Members
-
-        private T _value;
-        private T _defaultValue;
-
-        private static readonly Type[] typesToCheck = [typeof(int), typeof(float), typeof(double)];
+        private readonly Func<T> _getValue;
+        private readonly Action<T> _setValue;
 
 
         // Properties
 
         public T Value {
-            get => _value;
-            set {
-                _value = value;
-                FireSettingUpdated();
-            }
+            get => _getValue();
+            set => _setValue(value);
         }
 
         // Constructors
 
-        public Setting(string name, string description, string category, T defaultValue) : base(name, description, category) {
-            _value = defaultValue;
-            _defaultValue = defaultValue;
+        public Setting(string name, string description, string category, Func<T> getValue, Action<T> setValue, bool isVisible) : base(name, description, category, isVisible) {
+            _getValue = getValue;
+            _setValue = setValue;
         }
 
         // Public Functions
 
         public override void RestoreDefault() {
-            Value = _defaultValue;
         }
     }
 }

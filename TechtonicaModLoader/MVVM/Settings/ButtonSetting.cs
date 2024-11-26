@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TechtonicaModLoader.Stores;
+﻿using TechtonicaModLoader.Stores;
 
-namespace TechtonicaModLoader.MVVM.Settings
+namespace TechtonicaModLoader.MVVM.Settings.ViewModels
 {
     public class ButtonSetting : SettingBase
     {
@@ -23,7 +18,7 @@ namespace TechtonicaModLoader.MVVM.Settings
 
         // Constructors
 
-        public ButtonSetting(string name, string description, string category, string buttonText, Action<UserSettings> onClick) : base(name, description, category) {
+        public ButtonSetting(string name, string description, string category, string buttonText, Action<UserSettings> onClick, bool isVisible) : base(name, description, category, isVisible) {
             _buttonText = buttonText;
             _onClick = onClick;
         }

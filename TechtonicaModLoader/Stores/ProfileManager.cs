@@ -8,8 +8,6 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
 using TechtonicaModLoader.MVVM.Mod;
 using TechtonicaModLoader.Services;
 using TechtonicaModLoader.Services.ThunderstoreModels;
@@ -28,10 +26,10 @@ namespace TechtonicaModLoader.Stores
         // Properties
 
         public Profile ActiveProfile {
-            get => profiles[userSettings.ActiveProfileID.Value];
+            get => profiles[userSettings.ActiveProfileID];
             set {
                 if (value == null) return;
-                userSettings.ActiveProfileID.Value = value.Id;
+                userSettings.ActiveProfileID = value.Id;
                 OnPropertyChanged(nameof(ActiveProfile));
             }
         }
@@ -119,7 +117,7 @@ namespace TechtonicaModLoader.Stores
             AddProfile(new Profile(this, "Development", true));
             AddProfile(new Profile(this, "Vanilla", true));
 
-            userSettings.ActiveProfileID.Value = 0;
+            userSettings.ActiveProfileID = 0;
 
             Save();
         }

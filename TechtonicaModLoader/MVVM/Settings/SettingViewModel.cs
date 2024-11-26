@@ -1,16 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows;
 using TechtonicaModLoader.Stores;
 using CommunityToolkit.Mvvm.Input;
-using TechtonicaModLoader.MVVM.Settings;
 
-namespace TechtonicaModLoader.Windows.Settings.Setting
+namespace TechtonicaModLoader.MVVM.Settings.ViewModels
 {
     public partial class SettingViewModel : ObservableObject
     {
@@ -21,7 +15,7 @@ namespace TechtonicaModLoader.Windows.Settings.Setting
         private EnumSetting<ModListSortOption>? _modListSortSetting = null;
         private EnumSetting<ModListSource>? _modListSourceSetting = null;
 
-        private UserSettings userSettings;
+        private UserSettings _userSettings;
 
         // Properties
 
@@ -42,7 +36,7 @@ namespace TechtonicaModLoader.Windows.Settings.Setting
         // Constructors
 
         public SettingViewModel(Setting<bool> boolSetting, UserSettings userSettings) {
-            this.userSettings = userSettings;
+            _userSettings = userSettings;
             _name = boolSetting.Name;
             _description = boolSetting.Description;
             _value = boolSetting.Value;
@@ -52,7 +46,7 @@ namespace TechtonicaModLoader.Windows.Settings.Setting
         }
 
         public SettingViewModel(Setting<string> stringSetting, UserSettings userSettings) {
-            this.userSettings = userSettings;
+            _userSettings = userSettings;
             _name = stringSetting.Name;
             _description = stringSetting.Description;
             _value = stringSetting.Value;
@@ -62,7 +56,7 @@ namespace TechtonicaModLoader.Windows.Settings.Setting
         }
 
         public SettingViewModel(ButtonSetting buttonSetting, UserSettings userSettings) {
-            this.userSettings = userSettings;
+            _userSettings = userSettings;
             _name = buttonSetting.Name;
             _description = buttonSetting.Description;
             _buttonText = buttonSetting.ButtonText;
@@ -72,7 +66,7 @@ namespace TechtonicaModLoader.Windows.Settings.Setting
         }
 
         public SettingViewModel(EnumSetting<ModListSortOption> modListSortSetting, UserSettings userSettings) {
-            this.userSettings = userSettings;
+            _userSettings = userSettings;
             _name = modListSortSetting.Name;
             _description = modListSortSetting.Description;
             _modListSortSetting = modListSortSetting;
@@ -82,7 +76,7 @@ namespace TechtonicaModLoader.Windows.Settings.Setting
         }
 
         public SettingViewModel(EnumSetting<ModListSource> modListSourceSetting, UserSettings userSettings) {
-            this.userSettings = userSettings;
+            _userSettings = userSettings;
             _name = modListSourceSetting.Name;
             _description = modListSourceSetting.Description;
             _modListSourceSetting = modListSourceSetting;
@@ -106,7 +100,7 @@ namespace TechtonicaModLoader.Windows.Settings.Setting
 
         [RelayCommand]
         private void ExecuteButtonAction() {
-            OnClick?.Invoke(userSettings);
+            OnClick?.Invoke(_userSettings);
         }
     }
 

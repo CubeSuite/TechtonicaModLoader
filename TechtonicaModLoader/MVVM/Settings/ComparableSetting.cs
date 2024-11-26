@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TechtonicaModLoader.MVVM.Settings
+﻿namespace TechtonicaModLoader.MVVM.Settings.ViewModels
 {
     public class ComparableSetting<T> : SettingBase where T : IComparable<T>
     {
@@ -41,7 +35,7 @@ namespace TechtonicaModLoader.MVVM.Settings
 
         // Constructors
 
-        public ComparableSetting(string name, string description, string category, T defaultValue, T min, T max) : base(name, description, category) {
+        public ComparableSetting(string name, string description, string category, T defaultValue, T min, T max, bool isVisible) : base(name, description, category, isVisible) {
             _value = defaultValue;
             _defaultValue = defaultValue;
             _min = min;

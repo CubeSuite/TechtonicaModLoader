@@ -1,11 +1,6 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace TechtonicaModLoader.MVVM.Settings
+namespace TechtonicaModLoader.MVVM.Settings.ViewModels
 {
     public abstract class SettingBase
     {
@@ -13,12 +8,14 @@ namespace TechtonicaModLoader.MVVM.Settings
         private string _name;
         private string _description;
         private string _category;
+        private bool _isVisible;
 
         // Properties
 
         [JsonIgnore] public string Name => _name;
         [JsonIgnore] public string Description => _description;
         [JsonIgnore] public string Category => _category;
+        [JsonIgnore] public bool IsVisible => _isVisible = false;
 
         // Events
 
@@ -26,10 +23,11 @@ namespace TechtonicaModLoader.MVVM.Settings
 
         // Constructors
 
-        public SettingBase(string name, string description, string category) {
+        public SettingBase(string name, string description, string category, bool isVisible) {
             _name = name;
             _description = description;
             _category = category;
+            _isVisible = isVisible;
         }
 
         // Public Functions

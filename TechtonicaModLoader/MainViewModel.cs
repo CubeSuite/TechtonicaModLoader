@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using TechtonicaModLoader.MVVM.Mod;
+using TechtonicaModLoader.MVVM.Settings.ViewModels;
 using TechtonicaModLoader.Services;
 using TechtonicaModLoader.Stores;
 using TechtonicaModLoader.Windows;
@@ -24,7 +25,7 @@ namespace TechtonicaModLoader.MVVM
         // Members
 
         private IDialogService dialogService;
-        private UserSettings userSettings;
+        private readonly SettingsWindowViewModel _settingsViewModel;
         private ProfileManager profileManager;
         private ThunderStore thunderStore;
 
@@ -51,19 +52,19 @@ namespace TechtonicaModLoader.MVVM
 
         public Array? ModLists {
             get {
-                if (thunderStore.Connected) return userSettings.DefaultModList.Options;
+                if (thunderStore.Connected) return _settingsViewModel.DefaultModList.Options;
                 else return new ModListSource[] { ModListSource.Downloaded, ModListSource.Enabled, ModListSource.Disabled };
             }
         }
 
-        public Array? SortOptions => userSettings.DefaultModListSortOption.Options;
+        public Array? SortOptions => _settingsViewModel.DefaultModListSortOption.Options;
 
         // Constructors
 
-        public MainViewModel(IDialogService dialogService, UserSettings userSettings, ProfileManager profileManager, ThunderStore thunderStore) {
+        public MainViewModel(IDialogService dialogService, SettingsWindowViewModel settingsViewModel, ProfileManager profileManager, ThunderStore thunderStore) {
             _modsToShow = new ObservableCollection<ModViewModel>();
             this.dialogService = dialogService;
-            this.userSettings = userSettings;
+            this._settingsViewModel = settingsViewModel;
             this.profileManager = profileManager;
             this.thunderStore = thunderStore;
 
@@ -76,7 +77,7 @@ namespace TechtonicaModLoader.MVVM
         [RelayCommand]
         private void OpenSettings() {
             // ToDo: Move this
-            SettingsWindow window = new SettingsWindow(userSettings, dialogService);
+            SettingsWindow window = new SettingsWindow(_settingsViewModel, dialogService);
             window.ShowDialog();
         }
 
@@ -156,7 +157,7 @@ namespace TechtonicaModLoader.MVVM
                     SelectedModList = ModListSource.Downloaded;
                 }
                 else {
-                    SelectedModList = userSettings.DefaultModList.Value;
+                    SelectedModList = _settingsViewModel.DefaultModList.Value;
                 }
 
                 OnPropertyChanged(nameof(SelectedModList));
@@ -170,7 +171,7 @@ namespace TechtonicaModLoader.MVVM
             IEnumerable<ModModel> allMods = thunderStore.ModCache.Where(mod => mod.FullName.ToLower().Contains(SearchTerm.ToLower()));
 
             switch (SelectedModList) {
-                case ModListSource.New: allMods = allMods.Where(mod => !userSettings?.SeenMods.Value.Contains(mod.ID) ?? true); break;
+                case ModListSource.New: allMods = allMods.Where(mod => !_settingsViewModel.SeenMods.Value.Contains(mod.ID)); break;
                 case ModListSource.Downloaded: allMods = allMods.Where(mod => mod.IsDownloaded); break;
                 case ModListSource.NotDownloaded: allMods = allMods.Where(mod => !mod.IsDownloaded); break;
                 case ModListSource.Enabled: allMods = allMods.Where(mod => mod.IsDownloaded && mod.IsEnabled); break;

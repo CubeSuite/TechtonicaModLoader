@@ -1,25 +1,11 @@
-﻿using Accessibility;
-using CommunityToolkit.Mvvm.Input;
-using Microsoft.Win32;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using Newtonsoft.Json;
 using System.IO;
-using System.Linq;
-using System.Security.RightsManagement;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
-using TechtonicaModLoader.MVVM.Settings;
-using TechtonicaModLoader.Services;
+using TechtonicaModLoader.MVVM.Settings.ViewModels;
 
 namespace TechtonicaModLoader.Stores
 {
     public class UserSettings
     {
-        #region Settings
-
         // To add a new setting:
         // 1 - Create _myNewSetting = new Setting<type>() below
         //   1.1 - For int, float, double, use ComparableSetting<type>()
@@ -40,164 +26,61 @@ namespace TechtonicaModLoader.Stores
 
         // General
 
-        public Setting<bool> LogDebugMessages => _logDebugMessages;
-        private Setting<bool> _logDebugMessages = new Setting<bool>(
-            "Log Debug Messages",
-            "Whether Debug messages should be logged to file.",
-            "General",
-            false
-        );
-
-        [JsonIgnore]
-        public ButtonSetting ShowLogInExplorer => _showLogInExplorer;
-        private ButtonSetting _showLogInExplorer = new ButtonSetting(
-            "Show Log In Explorer",
-            "Opens the folder that contains Techtonica Mod Loader's log file.",
-            "General",
-            "Show In Explorer",
-            delegate (UserSettings settings) {
-                Process.Start(new ProcessStartInfo() {
-                    FileName = ProgramData.FilePaths.logsFolder,
-                    UseShellExecute = true,
-                    Verb = "open"
-                });
+        public bool LogDebugMessages { 
+            get => _logDebugMessages;
+            set {
+                _logDebugMessages = value;
+                Save();
             }
-        );
-
-        // Game Folder
-
-        public Setting<string> GameFolder => _gameFolder;
-        private Setting<string> _gameFolder = new Setting<string>(
-            "Game Folder",
-            "Techtonica's installation location",
-            "Game Folder",
-            ""
-        );
-
-        [JsonIgnore]
-        public ButtonSetting FindGameFolder => _findGameFolder;
-        private ButtonSetting _findGameFolder = new ButtonSetting(
-            "Find Game Folder",
-            "Have TML search for your Techtonica installation folder.",
-            "Game Folder",
-            "Find",
-            delegate (UserSettings settings) {
-                // ToDo: Find game folder
-            }
-        );
-
-        [JsonIgnore]
-        public ButtonSetting BrowseForGameFolder => _browseForGameFolder;
-        private ButtonSetting _browseForGameFolder = new ButtonSetting(
-            "Browse For Game Folder",
-            "Manually browse for Techtonica's installation folder.",
-            "Game Folder",
-            "Browse",
-            delegate (UserSettings settings) {
-                OpenFileDialog browser = new OpenFileDialog { Filter = ("Techtonica.exe|*.exe") };
-                if (browser.ShowDialog() == true) {
-                    if (browser.FileName.EndsWith("Techtonica.exe")) {
-                        settings.GameFolder.Value = Path.GetDirectoryName(browser.FileName) ?? "";
-                        settings.SettingsUpdatedExternally?.Invoke();
-                    }
-                    else {
-                        settings.dialogService.ShowErrorMessage("Wrong File Selected", "You need to select the file 'Techtonica.exe'");
-                    }
-                }
-            }
-        );
-
-        // Mod Lists
-
-        public EnumSetting<ModListSource> DefaultModList => _defaultModList;
-        private EnumSetting<ModListSource> _defaultModList = new EnumSetting<ModListSource>(
-            "Default Mod List",
-            "The mod list that is displayed when you open Techtonica Mod Loader",
-            "Mod Lists",
-            ModListSource.New
-        );
-
-        public EnumSetting<ModListSortOption> DefaultModListSortOption => _defaultModListSortOption;
-        private EnumSetting<ModListSortOption> _defaultModListSortOption = new EnumSetting<ModListSortOption>(
-            "Default Sort Option",
-            "The default sort option to apply to mod lists.",
-            "Mod Lists",
-            ModListSortOption.Alphabetical
-        );
-
-        // Hidden
-
-        public ComparableSetting<int> ActiveProfileID => _activeProfileID;
-        private ComparableSetting<int> _activeProfileID = new ComparableSetting<int>(
-            "Active Profile ID",
-            "The ID of the user's current profile",
-            "General",
-            0,
-            0,
-            int.MaxValue
-        );
-
-        public Setting<List<string>> SeenMods => _seenMods;
-        private Setting<List<string>> _seenMods = new Setting<List<string>>(
-            "Seen Mods",
-            "Mods that have appeared in TML",
-            "General",
-            new List<string>()
-        );
-
-        #endregion
-
-        // Members
-
-        private IDialogService dialogService;
-
-        // Events
-
-        public event Action SettingsUpdatedExternally;
-
-        // Properties
-
-        private static bool _loaded = false;
-        [JsonIgnore] public bool Loaded => _loaded;
-
-        [JsonIgnore]
-        public List<SettingBase> VisibleSettings => new List<SettingBase>() {
-            // General
-            _logDebugMessages,
-            _showLogInExplorer,
-
-            // Game Folder
-            _gameFolder,
-            _findGameFolder,
-            _browseForGameFolder,
-
-            // Mod Lists
-            _defaultModList,
-            _defaultModListSortOption,
-        };
-
-        // Constructors
-
-        public UserSettings(){}
-        public UserSettings(IDialogService dialogService) {
-            this.dialogService = dialogService;
         }
+        private bool _logDebugMessages = false;
 
-        // Events
-
-        private void OnSettingUpdated() {
-            if(Loaded) Save();
+        public string GameFolder { 
+            get => _gameFolder;
+            set {
+                _gameFolder = value;
+                Save();
+            }
         }
+        private string _gameFolder = string.Empty;
+
+        public ModListSource DefaultModList { 
+            get => _defaultModList;
+            set {
+                _defaultModList = value;
+                Save();
+            }
+        }
+        private ModListSource _defaultModList = ModListSource.New;
+
+        public ModListSortOption DefaultModListSortOption { 
+            get => _defaultModListSortOption;
+            set {
+                _defaultModListSortOption = value;
+                Save();
+            }
+        }
+        private ModListSortOption _defaultModListSortOption = ModListSortOption.Alphabetical;
+
+        public int ActiveProfileID { 
+            get => _activeProfileID;
+            set {
+                _activeProfileID = value;
+                Save();
+            }
+        }
+        private int _activeProfileID = int.MaxValue;
+
+        public List<string> SeenMods { 
+            get => _seenMods;
+            set {
+                _seenMods = value;
+                Save();
+            }
+        }
+        private List<string> _seenMods = new();
 
         // Public Functions
-
-        public void RestoreDefaults() {
-            _loaded = false;
-            foreach (SettingBase setting in VisibleSettings) {
-                setting.RestoreDefault();
-            }
-            _loaded = true;
-        }
 
         public IEnumerable<string> GetCategories() {
             return VisibleSettings.Select(setting => setting.Category).Distinct();
@@ -221,34 +104,22 @@ namespace TechtonicaModLoader.Stores
             }
 
             string json = File.ReadAllText(ProgramData.FilePaths.settingsFile);
-            UserSettings settingsFromFile = JsonConvert.DeserializeObject<UserSettings>(json) ?? new UserSettings(dialogService);
+            UserSettings settingsFromFile = JsonConvert.DeserializeObject<UserSettings>(json) ?? new UserSettings();
 
             // General
-            LogDebugMessages.Value = settingsFromFile.LogDebugMessages.Value;
-            Log.LogDebugToFile = LogDebugMessages.Value;
+            _logDebugMessages = settingsFromFile.LogDebugMessages;
+            Log.LogDebugToFile = LogDebugMessages;
 
             // Game Folder
-            GameFolder.Value = settingsFromFile.GameFolder.Value;
+            _gameFolder = settingsFromFile.GameFolder;
 
             // Mod Lists
-            DefaultModList.Value = settingsFromFile.DefaultModList.Value;
-            DefaultModListSortOption.Value = settingsFromFile.DefaultModListSortOption.Value;
+            _defaultModList = settingsFromFile.DefaultModList;
+            _defaultModListSortOption = settingsFromFile.DefaultModListSortOption;
 
             // Hidden
-            ActiveProfileID.Value = settingsFromFile.ActiveProfileID.Value;
-            SeenMods.Value = settingsFromFile.SeenMods.Value;
-
-            _loaded = true;
-
-            _logDebugMessages.SettingUpdated += OnSettingUpdated;
-
-            _gameFolder.SettingUpdated += OnSettingUpdated;
-
-            _defaultModList.SettingUpdated += OnSettingUpdated;
-            _defaultModListSortOption.SettingUpdated += OnSettingUpdated;
-
-            _activeProfileID.SettingUpdated += OnSettingUpdated;
-            _seenMods.SettingUpdated += OnSettingUpdated;
+            _activeProfileID = settingsFromFile.ActiveProfileID;
+            _seenMods = settingsFromFile.SeenMods;
         }
     }
 }
