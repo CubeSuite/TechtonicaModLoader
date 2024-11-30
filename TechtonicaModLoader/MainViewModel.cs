@@ -11,7 +11,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
-using TechtonicaModLoader.MVVM.Mod;
+using TechtonicaModLoader.MVVM.Models;
+using TechtonicaModLoader.MVVM.ViewModels;
 using TechtonicaModLoader.Services;
 using TechtonicaModLoader.Stores;
 using TechtonicaModLoader.Windows;
@@ -23,10 +24,12 @@ namespace TechtonicaModLoader.MVVM
     {
         // Members
 
+        private SettingsWindowViewModel settingsWindowViewModel;
+        
         private IDialogService dialogService;
-        private UserSettings userSettings;
-        private ProfileManager profileManager;
-        private ThunderStore thunderStore;
+        private IProfileManager profileManager;
+        private IThunderStore thunderStore;
+        private IModFilesManager modFilesManager;
 
         // Properties
 
@@ -51,32 +54,49 @@ namespace TechtonicaModLoader.MVVM
 
         public Array? ModLists {
             get {
-                if (thunderStore.Connected) return userSettings.DefaultModList.Options;
+                if (thunderStore.Connected) return settingsWindowViewModel.DefaultModList.Options;
                 else return new ModListSource[] { ModListSource.Downloaded, ModListSource.Enabled, ModListSource.Disabled };
             }
         }
 
-        public Array? SortOptions => userSettings.DefaultModListSortOption.Options;
+        public Array? SortOptions => settingsWindowViewModel.DefaultModListSortOption.Options;
+
+        public bool DeployNeeded => settingsWindowViewModel.DeployNeeded;
+        public string LaunchButtonText => DeployNeeded ? "Deploy & Launch Game" : "Launch Game";
 
         // Constructors
 
-        public MainViewModel(IDialogService dialogService, UserSettings userSettings, ProfileManager profileManager, ThunderStore thunderStore) {
+        public MainViewModel(IDialogService dialogService, SettingsWindowViewModel settingsWindowViewModel, IProfileManager profileManager, IThunderStore thunderStore, IModFilesManager modFilesManager) {
             _modsToShow = new ObservableCollection<ModViewModel>();
             this.dialogService = dialogService;
-            this.userSettings = userSettings;
+            this.settingsWindowViewModel = settingsWindowViewModel;
             this.profileManager = profileManager;
             this.thunderStore = thunderStore;
+            this.modFilesManager = modFilesManager;
 
             profileManager.PropertyChanged += OnProfileManagerPropertyChanged;
             thunderStore.PropertyChanged += OnThunderstorePropertyChanged;
+            settingsWindowViewModel.PropertyChanged += OnSettingsWindowViewModelPropertyChanged;
         }
 
         // Commands
 
         [RelayCommand]
+        private void DeployMods() {
+            if (modFilesManager.DeployMods()) {
+                settingsWindowViewModel.DeployNeeded = false;
+            }
+        }
+
+        [RelayCommand]
+        private void LaunchGame() {
+            if (DeployNeeded) DeployMods();
+        }
+
+        [RelayCommand]
         private void OpenSettings() {
             // ToDo: Move this
-            SettingsWindow window = new SettingsWindow(userSettings, dialogService);
+            SettingsWindow window = new SettingsWindow(settingsWindowViewModel);
             window.ShowDialog();
         }
 
@@ -156,7 +176,7 @@ namespace TechtonicaModLoader.MVVM
                     SelectedModList = ModListSource.Downloaded;
                 }
                 else {
-                    SelectedModList = userSettings.DefaultModList.Value;
+                    SelectedModList = settingsWindowViewModel.DefaultModList.Value;
                 }
 
                 OnPropertyChanged(nameof(SelectedModList));
@@ -164,13 +184,24 @@ namespace TechtonicaModLoader.MVVM
             }
         }
 
+        private void OnSettingsWindowViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName == nameof(SettingsWindowViewModel.DeployNeeded)) {
+                OnPropertyChanged(nameof(DeployNeeded));
+            }
+        }
+
+        private void OnProgramDataPropertyChanged(object? sender, PropertyChangedEventArgs e) {
+            OnPropertyChanged(nameof(DeployNeeded));
+            OnPropertyChanged(nameof(LaunchButtonText));
+        }
+
         // Private Functions
 
         private void PopulateModsToShow() {
-            IEnumerable<ModModel> allMods = thunderStore.ModCache.Where(mod => mod.FullName.ToLower().Contains(SearchTerm.ToLower()));
+            IEnumerable<Mod> allMods = thunderStore.ModCache.Where(mod => mod.FullName.ToLower().Contains(SearchTerm.ToLower()));
 
             switch (SelectedModList) {
-                case ModListSource.New: allMods = allMods.Where(mod => !userSettings?.SeenMods.Value.Contains(mod.ID) ?? true); break;
+                case ModListSource.New: allMods = allMods.Where(mod => !settingsWindowViewModel.SeenMods.Value.Contains(mod.ID)); break;
                 case ModListSource.Downloaded: allMods = allMods.Where(mod => mod.IsDownloaded); break;
                 case ModListSource.NotDownloaded: allMods = allMods.Where(mod => !mod.IsDownloaded); break;
                 case ModListSource.Enabled: allMods = allMods.Where(mod => mod.IsDownloaded && mod.IsEnabled); break;
@@ -187,8 +218,8 @@ namespace TechtonicaModLoader.MVVM
 
             Application.Current.Dispatcher.Invoke(delegate () {
                 ModsToShow.Clear();
-                foreach (ModModel mod in allMods) {
-                    ModsToShow.Add(new ModViewModel(mod, profileManager));
+                foreach (Mod mod in allMods) {
+                    ModsToShow.Add(new ModViewModel(mod, profileManager, thunderStore));
                 }
             });
 

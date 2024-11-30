@@ -22,17 +22,14 @@ namespace TechtonicaModLoader.Windows
     /// </summary>
     public partial class SettingsWindow : Window
     {
-        public SettingsWindow(UserSettings userSettings, IDialogService dialogService)
+        public SettingsWindow(SettingsWindowViewModel settingsWindowViewModel)
         {
             Owner = Application.Current.MainWindow;
             InitializeComponent();
-
-            SettingsWindowViewModel viewModel = new SettingsWindowViewModel(userSettings, dialogService);
-            viewModel.CloseButtonClicked += OnCloseButtonClicked;
-            DataContext = viewModel;
+            DataContext = settingsWindowViewModel;
         }
 
-        private void OnCloseButtonClicked() {
+        private void OnCloseClicked(object sender, EventArgs e) {
             Close();
         }
     }

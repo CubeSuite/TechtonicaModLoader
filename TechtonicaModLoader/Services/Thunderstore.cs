@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -13,13 +14,35 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Xml.Linq;
-using TechtonicaModLoader.MVVM.Mod;
+using TechtonicaModLoader.MVVM.Models;
 using TechtonicaModLoader.Services.ThunderstoreModels;
 using TechtonicaModLoader.Stores;
+using TechtonicaModLoader.Windows.Settings;
 
 namespace TechtonicaModLoader.Services
 {
-    public partial class ThunderStore : ObservableObject
+    public interface IThunderStore 
+    {
+        // Properties
+        public bool Connected { get; set; }
+        public ObservableCollection<Mod> ModCache { get; }
+
+        // Events
+
+        event PropertyChangedEventHandler PropertyChanged;
+
+        // Public Functions
+
+        void UpdateModCache(bool fetchUpdate = true);
+        void DownloadMod(string fullName);
+        bool IsModDownloading(string fullName);
+        bool IsModDownloaded(string id, ModVersion version);
+        bool SearchForMod(string fullName, out ThunderStoreMod? mod);
+
+        void Load();
+    }
+
+    public partial class ThunderStore : ObservableObject, IThunderStore
     {
         // Members
         private IEnumerable<ThunderStoreMod> thunderStoreModCache = new List<ThunderStoreMod>();
@@ -29,22 +52,26 @@ namespace TechtonicaModLoader.Services
         private string? lastJson;
         
         private IDialogService dialogService;
-        private ProfileManager profileManager;
+        private IProfileManager profileManager;
+        private IModFilesManager modFilesManager;
+        private SettingsWindowViewModel settingsWindowViewModel;
 
-        private List<ModModel> _modCache = new List<ModModel>();
+        private List<Mod> _modCache = new List<Mod>();
 
         // Properties
 
         [ObservableProperty] private bool _connected = true;
 
-        public ObservableCollection<ModModel> ModCache { get; } = new ObservableCollection<ModModel>();
+        public ObservableCollection<Mod> ModCache { get; } = new ObservableCollection<Mod>();
 
         // Constructors
 
-        public ThunderStore(IDialogService dialogService, ProfileManager profileManager) 
+        public ThunderStore(IDialogService dialogService, IProfileManager profileManager, IModFilesManager modFilesManager, SettingsWindowViewModel settingsWindowViewModel) 
         {
             this.dialogService = dialogService;
             this.profileManager = profileManager;
+            this.modFilesManager = modFilesManager;
+            this.settingsWindowViewModel = settingsWindowViewModel;
             StartUpdateThread();
             StartDownloadThread();
         }
@@ -57,6 +84,18 @@ namespace TechtonicaModLoader.Services
             }
         }
 
+        private void OnDownloadFinished(ThunderStoreMod thunderStoreMod, string zipFileLocation) {
+            downloadedMods.Add(thunderStoreMod.uuid4, ModVersion.Parse(thunderStoreMod.versions[0].version_number));
+            Save();
+
+            profileManager.AddMod(thunderStoreMod);
+            UpdateModCache(false);
+
+            modFilesManager.ProcessZipFile(zipFileLocation, thunderStoreMod);
+
+            settingsWindowViewModel.DeployNeeded = true;
+        }
+
         // Public Functions
 
         public async void UpdateModCache(bool fetchUpdate = true) {
@@ -65,7 +104,7 @@ namespace TechtonicaModLoader.Services
             Application.Current.Dispatcher.Invoke(delegate () {
                 ModCache.Clear();
                 foreach (ThunderStoreMod mod in thunderStoreModCache) {
-                    ModCache.Add(new ModModel(mod, this, profileManager));
+                    ModCache.Add(new Mod(mod, this, profileManager));
                 }
 
                 OnPropertyChanged(nameof(ModCache));
@@ -74,6 +113,10 @@ namespace TechtonicaModLoader.Services
 
         public void DownloadMod(string fullName) {
             downloadQueue.Add(fullName);
+        }
+
+        public bool IsModDownloading(string fullName) {
+            return downloadQueue.Contains(fullName);
         }
 
         public bool IsModDownloaded(string id, ModVersion version) {
@@ -136,7 +179,7 @@ namespace TechtonicaModLoader.Services
                 return false;
             }
 
-            ModModel? model = ModCache.Where(mod => mod.FullName == fullName).FirstOrDefault();
+            Mod? model = ModCache.Where(mod => mod.FullName == fullName).FirstOrDefault();
             if(model == null) {
                 string error = $"Couldn't find ModModel for '{fullName}'";
                 Log.Error(error);
@@ -146,7 +189,7 @@ namespace TechtonicaModLoader.Services
                 model.IsDownloading = true;
             }
 
-            string zipFileLocation = $"{ProgramData.FilePaths.modsFolder}\\{fullName}.zip";
+            string zipFileLocation = $"{ProgramData.FilePaths.ModsFolder}\\{fullName}.zip";
             
             using (HttpClient client = new HttpClient()) {
                 client.DefaultRequestHeaders.Add("Accept", "text/html, application/xhtml+xml, */*");
@@ -161,9 +204,6 @@ namespace TechtonicaModLoader.Services
                             await contentStream.CopyToAsync(fileStream);
                         }
                     }
-
-                    OnDownloadFinished(thunderStoreMod, zipFileLocation);
-                    return true;
                 }
                 catch (Exception ex) {
                     string error = $"An error occurred while downloading {fullName}: {ex.Message}";
@@ -172,18 +212,10 @@ namespace TechtonicaModLoader.Services
                     dialogService.ShowErrorMessage($"Couldn't Download {fullName}", "An error occured while trying to download this mod.\nPlease click the bug report button.");
                     return false;
                 }
+
+                OnDownloadFinished(thunderStoreMod, zipFileLocation);
+                return true;
             }
-        }
-
-        private void OnDownloadFinished(ThunderStoreMod thunderStoreMod, string zipFileLocation) {
-            downloadedMods.Add(thunderStoreMod.uuid4, ModVersion.Parse(thunderStoreMod.versions[0].version_number));
-            Save();
-
-            profileManager.AddMod(thunderStoreMod);
-            UpdateModCache(false);
-
-            // ModFilesManager.ProcessZipFile(zipFileLocation);
-            // ToDo: DI this
         }
 
         // API Functions
@@ -244,20 +276,20 @@ namespace TechtonicaModLoader.Services
 
         private void Save() {
             string json = JsonConvert.SerializeObject(downloadedMods, Formatting.Indented);
-            File.WriteAllText(ProgramData.FilePaths.downloadedModsFile, json);
+            File.WriteAllText(ProgramData.FilePaths.DownloadedModsFile, json);
 
             string modCacheJson = JsonConvert.SerializeObject(thunderStoreModCache);
-            File.WriteAllText(ProgramData.FilePaths.modsCacheFile, modCacheJson);
+            File.WriteAllText(ProgramData.FilePaths.ModsCacheFile, modCacheJson);
         }
 
         public void Load() {
-            if (File.Exists(ProgramData.FilePaths.downloadedModsFile)) {
-                string json = File.ReadAllText(ProgramData.FilePaths.downloadedModsFile);
+            if (File.Exists(ProgramData.FilePaths.DownloadedModsFile)) {
+                string json = File.ReadAllText(ProgramData.FilePaths.DownloadedModsFile);
                 downloadedMods = JsonConvert.DeserializeObject<Dictionary<string, ModVersion>>(json ?? "{}") ?? new Dictionary<string, ModVersion>();
             }
 
-            if (File.Exists(ProgramData.FilePaths.modsCacheFile)) {
-                string json = File.ReadAllText(ProgramData.FilePaths.modsCacheFile);
+            if (File.Exists(ProgramData.FilePaths.ModsCacheFile)) {
+                string json = File.ReadAllText(ProgramData.FilePaths.ModsCacheFile);
                 thunderStoreModCache = JsonConvert.DeserializeObject<List<ThunderStoreMod>>(json ?? "[]") ?? new List<ThunderStoreMod>();
             }
         }

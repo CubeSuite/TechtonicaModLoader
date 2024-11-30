@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TechtonicaModLoader"
         xmlns:Controls="clr-namespace:TechtonicaModLoader.Controls"
         xmlns:Converters="clr-namespace:TechtonicaModLoader.MVVM.Converters"
-        xmlns:ModView="clr-namespace:TechtonicaModLoader.MVVM.Mod"
+        xmlns:Views="clr-namespace:TechtonicaModLoader.MVVM.Views"
         mc:Ignorable="d"
         Title="MainWindow" Height="675" Width="1600"
         WindowStyle="None" WindowStartupLocation="CenterScreen"
@@ -36,7 +36,9 @@
             
             <!--Control Box-->
             <StackPanel Orientation="Horizontal" Grid.Column="1" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Top">
-                <Button Content="Launch Game" Padding="5,0" Margin="0,0,5,0"/>
+                <Button Content="Deploy" Padding="5,0" Margin="0,0,5,0" Command="{Binding DeployModsCommand}"
+                        Visibility="{Binding DeployNeeded, Converter={StaticResource falseToCollapseConverter}}"/>
+                <Button Content="{Binding LaunchButtonText}" Padding="5,0" Margin="0,0,5,0" Command="{Binding LaunchGameCommand}"/>
                 <Controls:SvgButton Source="ControlBox/Settings" HandleClickCommand="{Binding OpenSettingsCommand}" Margin="0,0,5,0"/>
                 <Controls:SvgButton Source="ControlBox/Minimise" HandleClickCommand="{Binding MinimiseProgramCommand}" Margin="0,0,5,0"/>
                 <Controls:SvgButton Source="ControlBox/Close" HandleClickCommand="{Binding CloseProgramCommand}"/>
@@ -103,7 +105,7 @@
                     </ListView.ItemContainerStyle>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <ModView:ModView Margin="0,0,5,10"/>
+                            <Views:ModView Margin="0,0,5,10"/>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>

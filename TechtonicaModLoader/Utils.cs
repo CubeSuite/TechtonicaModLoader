@@ -10,7 +10,7 @@ namespace TechtonicaModLoader
     public static class DebugUtils
     {
         public static void CrashIfDebug(string message) {
-            if (ProgramData.isDebugBuild) throw new Exception(message);
+            if (ProgramData.IsDebugBuild) throw new Exception(message);
         }
 
         public static void Assert(bool condition, string message) {

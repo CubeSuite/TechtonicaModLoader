@@ -6,17 +6,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Animation;
+using TechtonicaModLoader.MVVM.Models;
 using TechtonicaModLoader.Services;
 using TechtonicaModLoader.Stores;
 
-namespace TechtonicaModLoader.MVVM.Mod
+namespace TechtonicaModLoader.MVVM.ViewModels
 {
     public partial class ModViewModel : ObservableObject
     {
         // Members
-        private ModModel _mod;
+        private Mod _mod;
 
-        private ProfileManager profileManager;
+        private IProfileManager profileManager;
+        private IThunderStore thunderStore;
 
         // Properties
 
@@ -39,11 +41,13 @@ namespace TechtonicaModLoader.MVVM.Mod
         public bool HasDonationLink => !string.IsNullOrEmpty(DonationLink);
 
         public bool AllowToggling => profileManager.ActiveProfile.Name != "Vanilla";
+        // ToDo: disable toggling for dependent mods
 
         // Constructors
 
-        public ModViewModel(ModModel mod, ProfileManager profileManager) {
+        public ModViewModel(Mod mod, IProfileManager profileManager, IThunderStore thunderStore) {
             this.profileManager = profileManager;
+            this.thunderStore = thunderStore;
             
             _mod = mod;
             _mod.IsDownloadingChanged += OnModModelIsDownloadingChanged;
@@ -55,15 +59,18 @@ namespace TechtonicaModLoader.MVVM.Mod
             _rating = mod.Rating;
 
             _iconLink = mod.IconLink;
+            _donationLink = mod.DonationLink;
 
-            AllowDownload = true;
+            AllowDownload = !thunderStore?.IsModDownloading(mod.FullName) ?? true;
             _isDownloaded = mod.IsDownloaded;
 
             _isEnabled = _isDownloaded ? mod.IsEnabled : false;
             _updateAvailable = mod.UpdateAvailable;
             _hasConfigFile = mod.HasConfigFile;
 
-            // ToDo: Add to seen mods
+            if (!ProgramData.ModsSeenThisSession.Contains(mod.ID)) {
+                ProgramData.ModsSeenThisSession.Add(mod.ID);
+            }
         }
 
         // Events

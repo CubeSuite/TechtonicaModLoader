@@ -10,38 +10,46 @@ using TechtonicaModLoader.Stores;
 
 namespace TechtonicaModLoader
 {
-    public class Log
+    public interface ILoggerService 
     {
-        // Members
+        void Debug(string message, bool shortenPath);
+        void Info(string messasge, bool shortenPath);
+        void Warning(string message);
+        void Error(string message);
 
-        private static ConcurrentQueue<string> queue = new ConcurrentQueue<string>();
+        bool LogDebugToFile { get; set; }
+    }
+
+    public class LoggerService : ILoggerService
+    {
+        private ConcurrentQueue<string> queue = new ConcurrentQueue<string>();
         private const int paddingSize = 10;
         private bool missingLogPathNotified = false;
-        private static readonly object consoleLock = new object();
+        private readonly object consoleLock = new object();
 
         // Properties
 
-        private static string LogPath => ProgramData.FilePaths.logFile;
-        private static bool IsLogPathSet => !string.IsNullOrEmpty(LogPath);
+        private string LogPath => ProgramData.FilePaths.LogFile;
+        private bool IsLogPathSet => !string.IsNullOrEmpty(LogPath);
 
-        private static bool _logDebugToFile = true;
-        public static bool LogDebugToFile {
-            get => _logDebugToFile || ProgramData.isDebugBuild;
+        private bool _logDebugToFile = true;
+        public bool LogDebugToFile {
+            get => _logDebugToFile || ProgramData.IsDebugBuild;
             set => _logDebugToFile = value;
         }
 
         // Constructors
 
-        public Log()
-        {
+        public LoggerService() {
             if (File.Exists(LogPath)) File.Delete(LogPath);
             StartLoggingThread();
         }
 
-        // Log Functions
+        // Public Functions
 
-        public static void Debug(string message) {
+        public void Debug(string message, bool shortenPath) {
             lock (consoleLock) {
+                if (shortenPath) message = message.Replace(ProgramData.FilePaths.RootFolder, "");
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.Write("[Debug]".PadRight(paddingSize));
                 WriteMessageToConsole(message);
@@ -51,8 +59,9 @@ namespace TechtonicaModLoader
             }
         }
 
-        public static void Info(string message) {
+        public void Info(string message, bool shortenPath) {
             lock (consoleLock) {
+                if (shortenPath) message = message.Replace(ProgramData.FilePaths.RootFolder, "");
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.Write("[Info]".PadRight(paddingSize));
                 WriteMessageToConsole(message);
@@ -60,7 +69,7 @@ namespace TechtonicaModLoader
             }
         }
 
-        public static void Warning(string message) {
+        public void Warning(string message) {
             lock (consoleLock) {
                 Console.ForegroundColor = ConsoleColor.Blue;
                 Console.Write("[Warning]".PadRight(paddingSize));
@@ -69,22 +78,12 @@ namespace TechtonicaModLoader
             }
         }
 
-        public static void Error(string message) {
+        public void Error(string message) {
             lock (consoleLock) {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.Write("[Error]".PadRight(paddingSize));
                 WriteMessageToConsole(message);
                 WriteMessageToFile("Error", message);
-            }
-        }
-
-        // Public Functions
-
-        public static void WriteQueuedMessages() {
-            if (queue.Count == 0) return;
-            lock (queue) {
-                File.AppendAllLines(LogPath, queue);
-                queue.Clear();
             }
         }
 
@@ -105,15 +104,57 @@ namespace TechtonicaModLoader
             });
         }
 
-        private static void WriteMessageToConsole(string message) {
+        private void WriteQueuedMessages() {
+            if (queue.Count == 0) return;
+            lock (queue) {
+                File.AppendAllLines(LogPath, queue);
+                queue.Clear();
+            }
+        }
+
+        private void WriteMessageToConsole(string message) {
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine($"| {message}");
         }
 
-        private static void WriteMessageToFile(string level, string message) {
+        private void WriteMessageToFile(string level, string message) {
             level = $"[{level}]".PadRight(paddingSize);
             string line = $"{level}| {message}";
             queue.Enqueue(line);
+        }
+    }
+
+    public static class Log 
+    {
+        private static ILoggerService? logger;
+
+        public static bool LogDebugToFile {
+            get => logger?.LogDebugToFile ?? false;
+            set {
+                if (logger != null) logger.LogDebugToFile = value;
+            }
+        }
+
+        // Public Functions
+
+        public static void Initialise(ILoggerService logger) {
+            Log.logger = logger;
+        }
+
+        public static void Debug(string message, bool shortenPath = true) {
+            logger?.Debug(message, shortenPath);
+        }
+
+        public static void Info(string message, bool shortenPath = true) {
+            logger?.Info(message, shortenPath);
+        }
+
+        public static void Warning(string message) {
+            logger?.Warning(message);
+        }
+
+        public static void Error(string message) {
+            logger?.Error(message);
         }
     }
 }

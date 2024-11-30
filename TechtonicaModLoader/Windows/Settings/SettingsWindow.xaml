@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TechtonicaModLoader.Windows"
         xmlns:Controls="clr-namespace:TechtonicaModLoader.Controls"
-        xmlns:SettingViewModel="clr-namespace:TechtonicaModLoader.Windows.Settings.Setting"
+        xmlns:SettingVMs="clr-namespace:TechtonicaModLoader.MVVM.ViewModels.Settings"
+        xmlns:Views="clr-namespace:TechtonicaModLoader.MVVM.Views"
         mc:Ignorable="d"
         Title="SettingsWindow" Height="675" Width="1600"
         Background="Transparent" AllowsTransparency="True"
@@ -29,7 +30,7 @@
             <Label Content="Settings" Style="{DynamicResource titleStyle}" Grid.ColumnSpan="2" Margin="7,2,7,0"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="5,5,7,5" Grid.Column="1">
                 <Button Content="Restore Defaults" Margin="0,0,5,0" Height="30" Command="{Binding RestoreDefaultsCommand}"/>
-                <Controls:SvgButton Source="ControlBox/Close" HandleClickCommand="{Binding CloseDialogCommand}"/>
+                <Controls:SvgButton Source="ControlBox/Close" Clicked="OnCloseClicked"/>
             </StackPanel>
 
             <!--Categories Panel-->
@@ -60,7 +61,7 @@
                 </ListView.ItemContainerStyle>
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <SettingViewModel:SettingView Margin="0,0,0,10"/>
+                        <Views:SettingView Margin="0,0,0,10"/>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>

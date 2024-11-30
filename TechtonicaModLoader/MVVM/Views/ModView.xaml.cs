@@ -12,17 +12,20 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TechtonicaModLoader.Stores;
 
-namespace TechtonicaModLoader.Windows.Settings.Setting
+namespace TechtonicaModLoader.MVVM.Views
 {
     /// <summary>
-    /// Interaction logic for SettingView.xaml
+    /// Interaction logic for ModView.xaml
     /// </summary>
-    public partial class SettingView : UserControl
+    public partial class ModView : UserControl
     {
-        public SettingView()
+        public ModView()
         {
             InitializeComponent();
+            downloadsSvg.Source = new Uri($"{ProgramData.FilePaths.ResourcesFolder}\\ModPanel\\Download.svg");
+            ratingSvg.Source = new Uri($"{ProgramData.FilePaths.ResourcesFolder}\\ModPanel\\Thumb.svg");
         }
     }
 }

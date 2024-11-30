@@ -42,7 +42,7 @@ namespace TechtonicaModLoader.Controls
         }
 
         public static void OnSourceChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
-            ((SvgButton)obj).svg.Source = new Uri($"{ProgramData.FilePaths.resourcesFolder}\\{((SvgButton)obj).Source}.svg");
+            ((SvgButton)obj).svg.Source = new Uri($"{ProgramData.FilePaths.ResourcesFolder}\\{((SvgButton)obj).Source}.svg");
         }
 
         #endregion
@@ -69,9 +69,15 @@ namespace TechtonicaModLoader.Controls
 
         #endregion
 
+        // Custom Events
+
+        public event EventHandler Clicked;
+
         // Events
 
         private void OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
+            Clicked?.Invoke(this, EventArgs.Empty);
+            
             if (HandleClickCommand == null) return;
             HandleClickCommand.Execute(null);
         }

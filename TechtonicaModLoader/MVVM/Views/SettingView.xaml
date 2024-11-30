@@ -1,11 +1,12 @@
-﻿<UserControl x:Class="TechtonicaModLoader.Windows.Settings.Setting.SettingView"
+﻿<UserControl x:Class="TechtonicaModLoader.MVVM.Views.SettingView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:TechtonicaModLoader.Windows.Settings.Setting"
              xmlns:root="clr-namespace:TechtonicaModLoader"
+             xmlns:local="clr-namespace:TechtonicaModLoader.MVVM.Views"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:SettingsViewModels="clr-namespace:TechtonicaModLoader.MVVM.ViewModels.Settings"
              mc:Ignorable="d" 
              Height="100" d:DesignWidth="800">
     <Grid>
@@ -28,7 +29,7 @@
 
             <root:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
             <DataTemplate x:Key="EnumTemplate">
-                <ComboBox ItemsSource="{Binding EnumOptions}" 
+                <ComboBox ItemsSource="{Binding Options}" 
                           SelectedItem="{Binding Value, Mode=TwoWay}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
