@@ -195,7 +195,7 @@ namespace TechtonicaModLoader.MVVM
             IEnumerable<Mod> allMods = thunderStore.ModCache.Where(mod => mod.FullName.ToLower().Contains(SearchTerm.ToLower()));
 
             switch (SelectedModList) {
-                case ModListSource.New: allMods = allMods.Where(mod => !settingsWindowViewModel.SeenMods.Contains(mod.ID)); break;
+                case ModListSource.New: allMods = allMods.Where(mod => !userSettings.SeenMods.Contains(mod.ID)); break;
                 case ModListSource.Downloaded: allMods = allMods.Where(mod => mod.IsDownloaded); break;
                 case ModListSource.NotDownloaded: allMods = allMods.Where(mod => !mod.IsDownloaded); break;
                 case ModListSource.Enabled: allMods = allMods.Where(mod => mod.IsDownloaded && mod.IsEnabled); break;

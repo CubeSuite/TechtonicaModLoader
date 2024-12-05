@@ -35,10 +35,6 @@ namespace TechtonicaModLoader.Windows.Settings
 
         public List<SettingBase> SettingViewModels => settingViewModelHelper.SettingViewModels;
 
-        public int ActiveProfileID => userSettings.ActiveProfileID;
-        public bool DeployNeededSetting => userSettings.DeployNeeded;
-        public List<string> SeenMods => userSettings.SeenMods;
-
         [ObservableProperty] string _selectedItem = defaultCategory;
         [ObservableProperty] bool _deployNeeded = false;
 
@@ -46,7 +42,7 @@ namespace TechtonicaModLoader.Windows.Settings
 
         public SettingsWindowViewModel(UserSettings userSettings, IDialogService dialogService) {
             this.userSettings = userSettings;
-            settingViewModelHelper = new(this.userSettings, dialogService, SettingChanged, defaultCategory: "General");
+            settingViewModelHelper = new(this.userSettings, dialogService, SettingChanged, defaultCategory);
         }
 
         // Commands
