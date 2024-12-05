@@ -30,8 +30,8 @@ namespace TechtonicaModLoader.MVVM
         public string Title => $"Techtonica Mod Loader - V{ProgramVersion.Major}.{ProgramVersion.Minor}.{ProgramVersion.Build}";
 
         [ObservableProperty] private bool _modUpdatesAvailable = false;
-        [ObservableProperty] private ModListSource _selectedModList = ModListSource.New;
-        [ObservableProperty] private ModListSortOption _selectedSortOption = ModListSortOption.Newest;
+        [ObservableProperty] private ModListSource _selectedModList;
+        [ObservableProperty] private ModListSortOption _selectedSortOption;
         [ObservableProperty] private string _searchTerm = "";
         [ObservableProperty] private ObservableCollection<ModViewModel> _modsToShow;
 
@@ -67,6 +67,9 @@ namespace TechtonicaModLoader.MVVM
             this.thunderStore = thunderStore;
             this.modFilesManager = modFilesManager;
             this.userSettings = userSettings;
+
+            _selectedModList = userSettings.DefaultModList;
+            _selectedSortOption = userSettings.DefaultModListSortOption;
 
             profileManager.PropertyChanged += OnProfileManagerPropertyChanged;
             thunderStore.PropertyChanged += OnThunderstorePropertyChanged;

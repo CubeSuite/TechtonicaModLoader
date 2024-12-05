@@ -85,8 +85,6 @@ namespace TechtonicaModLoader
             Log.Info($"ThunderStore loaded");
 
             mainVeiwModel = new MainViewModel(dialogService, settingsWindowViewModel, userSettings, profileManager, thunderStore, modFilesManager);
-            mainVeiwModel.SelectedModList = userSettings.DefaultModList;
-            mainVeiwModel.SelectedSortOption = userSettings.DefaultModListSortOption;
             Log.Info($"MainViewModel loaded");
             Log.Info($"Running V{ProgramData.ProgramVersion.Major}.{ProgramData.ProgramVersion.Minor}.{ProgramData.ProgramVersion.Build}");
         }
