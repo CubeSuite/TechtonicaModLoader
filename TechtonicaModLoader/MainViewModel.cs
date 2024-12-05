@@ -1,16 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Data;
 using TechtonicaModLoader.MVVM.Models;
 using TechtonicaModLoader.MVVM.ViewModels;
 using TechtonicaModLoader.Services;
@@ -24,12 +16,13 @@ namespace TechtonicaModLoader.MVVM
     {
         // Members
 
-        private SettingsWindowViewModel settingsWindowViewModel;
+        private readonly SettingsWindowViewModel settingsWindowViewModel;
         
-        private IDialogService dialogService;
-        private IProfileManager profileManager;
-        private IThunderStore thunderStore;
-        private IModFilesManager modFilesManager;
+        private readonly IDialogService dialogService;
+        private readonly IProfileManager profileManager;
+        private readonly IThunderStore thunderStore;
+        private readonly IModFilesManager modFilesManager;
+        private readonly IUserSettings userSettings;
 
         // Properties
 
@@ -37,8 +30,8 @@ namespace TechtonicaModLoader.MVVM
         public string Title => $"Techtonica Mod Loader - V{ProgramVersion.Major}.{ProgramVersion.Minor}.{ProgramVersion.Build}";
 
         [ObservableProperty] private bool _modUpdatesAvailable = false;
-        [ObservableProperty] private ModListSource? _selectedModList = null;
-        [ObservableProperty] private ModListSortOption? _selectedSortOption = null;
+        [ObservableProperty] private ModListSource _selectedModList = ModListSource.New;
+        [ObservableProperty] private ModListSortOption _selectedSortOption = ModListSortOption.Newest;
         [ObservableProperty] private string _searchTerm = "";
         [ObservableProperty] private ObservableCollection<ModViewModel> _modsToShow;
 
@@ -52,27 +45,28 @@ namespace TechtonicaModLoader.MVVM
 
         public ObservableCollection<Profile> Profiles => profileManager.ProfilesList;
 
-        public Array? ModLists {
+        public Array ModLists {
             get {
-                if (thunderStore.Connected) return settingsWindowViewModel.DefaultModList.Options;
+                if (thunderStore.Connected) return Enum.GetValues<ModListSource>();
                 else return new ModListSource[] { ModListSource.Downloaded, ModListSource.Enabled, ModListSource.Disabled };
             }
         }
 
-        public Array? SortOptions => settingsWindowViewModel.DefaultModListSortOption.Options;
+        public Array SortOptions => Enum.GetValues<ModListSortOption>();
 
-        public bool DeployNeeded => settingsWindowViewModel.DeployNeeded;
+        public bool DeployNeeded => userSettings.DeployNeeded;
         public string LaunchButtonText => DeployNeeded ? "Deploy & Launch Game" : "Launch Game";
 
         // Constructors
 
-        public MainViewModel(IDialogService dialogService, SettingsWindowViewModel settingsWindowViewModel, IProfileManager profileManager, IThunderStore thunderStore, IModFilesManager modFilesManager) {
+        public MainViewModel(IDialogService dialogService, SettingsWindowViewModel settingsWindowViewModel, IUserSettings userSettings, IProfileManager profileManager, IThunderStore thunderStore, IModFilesManager modFilesManager) {
             _modsToShow = new ObservableCollection<ModViewModel>();
             this.dialogService = dialogService;
             this.settingsWindowViewModel = settingsWindowViewModel;
             this.profileManager = profileManager;
             this.thunderStore = thunderStore;
             this.modFilesManager = modFilesManager;
+            this.userSettings = userSettings;
 
             profileManager.PropertyChanged += OnProfileManagerPropertyChanged;
             thunderStore.PropertyChanged += OnThunderstorePropertyChanged;
@@ -84,7 +78,7 @@ namespace TechtonicaModLoader.MVVM
         [RelayCommand]
         private void DeployMods() {
             if (modFilesManager.DeployMods()) {
-                settingsWindowViewModel.DeployNeeded = false;
+                userSettings.DeployNeeded = false;
             }
         }
 
@@ -142,7 +136,7 @@ namespace TechtonicaModLoader.MVVM
             PopulateModsToShow();
         }
 
-        partial void OnSelectedModListChanged(ModListSource? value) {
+        partial void OnSelectedModListChanged(ModListSource value) {
             ModListSource[] onlineLists = new ModListSource[] { ModListSource.All, ModListSource.New, ModListSource.NotDownloaded };
 
             if(!thunderStore.Connected && (SelectedModList == ModListSource.All || SelectedModList == ModListSource.New || SelectedModList == ModListSource.NotDownloaded)) {
@@ -155,7 +149,7 @@ namespace TechtonicaModLoader.MVVM
             PopulateModsToShow();
         }
 
-        partial void OnSelectedSortOptionChanged(ModListSortOption? value) {
+        partial void OnSelectedSortOptionChanged(ModListSortOption value) {
             PopulateModsToShow();
         }
 
@@ -176,7 +170,7 @@ namespace TechtonicaModLoader.MVVM
                     SelectedModList = ModListSource.Downloaded;
                 }
                 else {
-                    SelectedModList = settingsWindowViewModel.DefaultModList.Value;
+                    SelectedModList = userSettings.DefaultModList;
                 }
 
                 OnPropertyChanged(nameof(SelectedModList));

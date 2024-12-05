@@ -35,21 +35,6 @@ namespace TechtonicaModLoader.Windows.Settings
 
         public List<SettingBase> SettingViewModels => settingViewModelHelper.SettingViewModels;
 
-        // TODO: Follow up to see if these can be removed and dependencies can consume IUserSettings instead.
-        //   The View only consumes the SettingViewModels property above so removing access to the individual VMs would reduce complexity.
-
-        public Setting<bool> LogDebugMessages => settingViewModelHelper.LogDebugMessages;
-        public ButtonSetting ShowLogInExplorer => settingViewModelHelper.ShowLogInExplorer;
-        
-        public Setting<string> GameFolder => settingViewModelHelper.GameFolder;
-        public ButtonSetting FindGameFolder => settingViewModelHelper.FindGameFolder;
-        public ButtonSetting BrowseForGameFolder => settingViewModelHelper.BrowseForGameFolder;
-        
-        public EnumSetting<ModListSource> DefaultModList => settingViewModelHelper.DefaultModList;
-        public EnumSetting<ModListSortOption> DefaultModListSortOption => settingViewModelHelper.DefaultModListSortOption;
-
-
-
         public int ActiveProfileID => userSettings.ActiveProfileID;
         public bool DeployNeededSetting => userSettings.DeployNeeded;
         public List<string> SeenMods => userSettings.SeenMods;
