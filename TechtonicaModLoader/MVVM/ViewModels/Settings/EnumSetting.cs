@@ -23,7 +23,7 @@ namespace TechtonicaModLoader.MVVM.ViewModels.Settings
 
         // Constructors
 
-        public EnumSetting(string name, string description, string category, bool isVisible, Func<T> getValueFunc, Action<T> setValueFunc) : base(name, description, category, isVisible) {
+        public EnumSetting(string name, string description, string category, Func<T> getValueFunc, Action<T> setValueFunc) : base(name, description, category) {
             getValue = getValueFunc;
             setValue = setValueFunc;
         }

@@ -42,7 +42,7 @@ namespace TechtonicaModLoader.MVVM.ViewModels.Settings
 
         // Constructors
 
-        public ComparableSetting(string name, string description, string category, bool isVisible, Func<T> getValueFunc, Action<T> setValueFunc, T min, T max) : base(name, description, category, isVisible) {
+        public ComparableSetting(string name, string description, string category, Func<T> getValueFunc, Action<T> setValueFunc, T min, T max) : base(name, description, category) {
             getValue = getValueFunc;
             setValue = setValueFunc;
 

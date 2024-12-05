@@ -21,7 +21,7 @@ namespace TechtonicaModLoader.MVVM.ViewModels.Settings
 
         // Constructors
 
-        public Setting(string name, string description, string category, bool isVisible, Func<T> getValueFunc, Action<T> setValueFunc) : base(name, description, category, isVisible) {
+        public Setting(string name, string description, string category, Func<T> getValueFunc, Action<T> setValueFunc) : base(name, description, category) {
             getValue = getValueFunc;
             setValue = setValueFunc;
         }

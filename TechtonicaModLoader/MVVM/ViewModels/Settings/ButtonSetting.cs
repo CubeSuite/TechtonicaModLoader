@@ -28,7 +28,7 @@ namespace TechtonicaModLoader.MVVM.ViewModels.Settings
 
         // Constructors
 
-        public ButtonSetting(string name, string description, string category, bool isVisible, string buttonText, Action<UserSettings> onClick, UserSettings userSettings) : base(name, description, category, isVisible) {
+        public ButtonSetting(string name, string description, string category, string buttonText, Action<UserSettings> onClick, UserSettings userSettings) : base(name, description, category) {
             ButtonText = buttonText;
             OnClick = onClick;
             this.userSettings = userSettings;
