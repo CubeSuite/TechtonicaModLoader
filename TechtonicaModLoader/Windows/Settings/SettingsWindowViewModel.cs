@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Collections.ObjectModel;
 using TechtonicaModLoader.MVVM.ViewModels.Settings;
 using TechtonicaModLoader.Services;
 using TechtonicaModLoader.Stores;

@@ -1,18 +1,12 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace TechtonicaModLoader.MVVM.ViewModels.Settings
 {
     public class ComparableSetting<T> : SettingBase where T : IComparable
     {
         // Members
         
-        private Func<T> getValue;
-        private Action<T> setValue;
+        private readonly Func<T> getValue;
+        private readonly Action<T> setValue;
 
         private static readonly Type[] typesToCheck = [typeof(int), typeof(float), typeof(double)];
 

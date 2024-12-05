@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace TechtonicaModLoader.MVVM.ViewModels.Settings
 {
     public class EnumSetting<T> : SettingBase where T : Enum
     {
         // Members
-        private Func<T> getValue;
-        private Action<T> setValue;
+        private readonly Func<T> getValue;
+        private readonly Action<T> setValue;
 
         // Properties
 
