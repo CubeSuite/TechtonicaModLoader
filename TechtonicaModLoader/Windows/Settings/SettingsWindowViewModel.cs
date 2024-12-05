@@ -49,13 +49,6 @@ namespace TechtonicaModLoader.Windows.Settings
 
         [RelayCommand]
         private void RestoreDefaults() {
-            if(userSettings == null) {
-                string error = "Can't restore defaults for null userSettings";
-                Log.Error(error);
-                DebugUtils.CrashIfDebug(error);
-                return;
-            }
-
             userSettings.RestoreDefaults();
             OnPropertyChanged(nameof(SettingsToShow));
         }
