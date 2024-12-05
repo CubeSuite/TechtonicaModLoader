@@ -1,23 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Configuration;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media.Imaging;
-using System.Xml.Linq;
 using TechtonicaModLoader.MVVM.Models;
 using TechtonicaModLoader.Services.ThunderstoreModels;
 using TechtonicaModLoader.Stores;
-using TechtonicaModLoader.Windows.Settings;
 
 namespace TechtonicaModLoader.Services
 {
@@ -54,7 +44,7 @@ namespace TechtonicaModLoader.Services
         private IDialogService dialogService;
         private IProfileManager profileManager;
         private IModFilesManager modFilesManager;
-        private SettingsWindowViewModel settingsWindowViewModel;
+        private IUserSettings userSettings;
 
         private List<Mod> _modCache = new List<Mod>();
 
@@ -66,12 +56,12 @@ namespace TechtonicaModLoader.Services
 
         // Constructors
 
-        public ThunderStore(IDialogService dialogService, IProfileManager profileManager, IModFilesManager modFilesManager, SettingsWindowViewModel settingsWindowViewModel) 
+        public ThunderStore(IDialogService dialogService, IProfileManager profileManager, IModFilesManager modFilesManager, IUserSettings settings) 
         {
             this.dialogService = dialogService;
             this.profileManager = profileManager;
             this.modFilesManager = modFilesManager;
-            this.settingsWindowViewModel = settingsWindowViewModel;
+            userSettings = settings;
             StartUpdateThread();
             StartDownloadThread();
         }
@@ -93,7 +83,7 @@ namespace TechtonicaModLoader.Services
 
             modFilesManager.ProcessZipFile(zipFileLocation, thunderStoreMod);
 
-            settingsWindowViewModel.DeployNeeded = true;
+            userSettings.DeployNeeded = true;
         }
 
         // Public Functions

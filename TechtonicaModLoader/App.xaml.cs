@@ -80,7 +80,7 @@ namespace TechtonicaModLoader
             modFilesManager = new ModFilesManager(dialogService, profileManager);
             Log.Info("ModFilesManager loaded");
 
-            thunderStore = new ThunderStore(dialogService, profileManager, modFilesManager, settingsWindowViewModel);
+            thunderStore = new ThunderStore(dialogService, profileManager, modFilesManager, userSettings);
             thunderStore.Load();
             Log.Info($"ThunderStore loaded");
 
