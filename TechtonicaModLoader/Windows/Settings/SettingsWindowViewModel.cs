@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TechtonicaModLoader.MVVM.ViewModels.Settings;
+using TechtonicaModLoader.Resources;
 using TechtonicaModLoader.Services;
 using TechtonicaModLoader.Stores;
 
@@ -19,8 +20,6 @@ namespace TechtonicaModLoader.Windows.Settings
     public partial class SettingsWindowViewModel : ObservableObject
     {
         // Members
-
-        private const string defaultCategory = "General";
 
         private readonly ILoggerService logger;
         private readonly IUserSettings userSettings;
@@ -50,7 +49,7 @@ namespace TechtonicaModLoader.Windows.Settings
             }
         }
 
-        [ObservableProperty] string _selectedItem = defaultCategory;
+        [ObservableProperty] string _selectedItem;
         [ObservableProperty] bool _deployNeeded = false;
         [ObservableProperty] string _closeSource;
 
@@ -65,6 +64,7 @@ namespace TechtonicaModLoader.Windows.Settings
 
             settingViewModelHelper = new SettingViewModelHelper(serviceProvider, OnSettingChanged);
 
+            _selectedItem = StringResources.CategoryGeneral;
             _closeSource = $"{programData.FilePaths.ResourcesFolder}\\ControlBox\\Close.svg";
         }
 

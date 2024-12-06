@@ -4,9 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using TechtonicaModLoader.Resources;
 using TechtonicaModLoader.Services;
 using TechtonicaModLoader.Stores;
 
@@ -14,9 +12,6 @@ namespace TechtonicaModLoader.MVVM.ViewModels.Settings
 {
     public class SettingViewModelHelper
     {
-        // Members
-        public const string defaultCategory = "General";
-        
         // Properties
         public List<SettingBase> SettingViewModels { get; } = [];
 
@@ -30,18 +25,18 @@ namespace TechtonicaModLoader.MVVM.ViewModels.Settings
             // General
 
             SettingViewModels.Add(new Setting<bool>(
-                name: "Log Debug Messages",
-                description: "Whether debug messages should be logged to file. Enable to gather info for a bug report.",
-                category: defaultCategory,
+                name: StringResources.LogDebugMessagesName,
+                description: StringResources.LogDebugMessagesDisplay,
+                category: StringResources.CategoryGeneral,
                 getValueFunc: () => userSettings.LogDebugMessages,
                 setValueFunc: value => userSettings.LogDebugMessages = value
             ));
 
             SettingViewModels.Add(new ButtonSetting(
-                name: "Show Log In Explorer",
-                description: "Opens the folder that contains Techtonica Mod Loader's log file.",
-                category: defaultCategory,
-                buttonText: "Show In Explorer",
+                name: StringResources.ShowLogInExplorerButtonName,
+                description: StringResources.ShowLogInExplorerButtonDescription,
+                category: StringResources.CategoryGeneral,
+                buttonText: StringResources.ShowLogInExplorerButtonText,
                 onClick: delegate () {
                     Process.Start(new ProcessStartInfo() {
                         FileName = programData.FilePaths.LogsFolder,
@@ -54,28 +49,28 @@ namespace TechtonicaModLoader.MVVM.ViewModels.Settings
             // Game Folder
 
             SettingViewModels.Add(new Setting<string>(
-                name: "Game Folder",
-                description: "Techtonica's Installation Location.",
-                category: "Game Folder",
+                name: StringResources.GameFolderName,
+                description: StringResources.GameFolderDescription,
+                category: StringResources.CategoryGameFolder,
                 getValueFunc: () => userSettings.GameFolder,
                 setValueFunc: value => userSettings.GameFolder = value
             ));
 
             SettingViewModels.Add(new ButtonSetting(
-                name: "Find Game Folder",
-                description: "Have Techtonica Mod Loader search for your Techtonica installation folder.",
-                category: "Game Folder",
-                buttonText: "Find",
+                name: StringResources.FindGameFolderButtonName,
+                description: StringResources.FindGameFolderButtonDescription,
+                category: StringResources.CategoryGameFolder,
+                buttonText: StringResources.FindGameFolderButtonText,
                 onClick: delegate () {
                     // ToDo: Find Game Folder
                 }
             ));
 
             SettingViewModels.Add(new ButtonSetting(
-                name: "Browse For Game Folder",
-                description: "Manually browse for Techtonica's installation location.",
-                category: "Game Folder",
-                buttonText: "Browse",
+                name: StringResources.BrowseForGameFolderButtonName,
+                description: StringResources.BrowseForGameFolderButtonDescription,
+                category: StringResources.CategoryGameFolder,
+                buttonText: StringResources.BrowseForGameFolderButtonText,
                 onClick: delegate () {
                     // ToDo: Move to dialogService
                     OpenFileDialog browser = new() { Filter = "Techtonica.exe|*.exe" };
@@ -85,7 +80,7 @@ namespace TechtonicaModLoader.MVVM.ViewModels.Settings
                             onSettingChanged();
                         }
                         else {
-                            dialogService.ShowErrorMessage("Wrong File Selected", "You need to select the file 'Techtonica.exe'");
+                            dialogService.ShowErrorMessage(StringResources.WrongFileTitle, StringResources.WrongFileMessage);
                         }
                     }
                 }
@@ -94,17 +89,17 @@ namespace TechtonicaModLoader.MVVM.ViewModels.Settings
             // Mod List
 
             SettingViewModels.Add(new EnumSetting<ModListSource>(
-                name: "Default Mod List",
-                description: "The mod list that is displayed when you open Techtonica Mod Loader.",
-                category: "Mod List",
+                name: StringResources.DefaultModListName,
+                description: StringResources.DefaultModListDescription,
+                category: StringResources.CategoryModList,
                 getValueFunc: () => userSettings.DefaultModList,
                 setValueFunc: value => userSettings.DefaultModList = value
             ));
 
             SettingViewModels.Add(new EnumSetting<ModListSortOption>(
-                name: "Default Sort Option",
-                description: "The default sort option to apply to the mod list.",
-                category: "Mod List",
+                name: StringResources.DefaultSortOptionName,
+                description: StringResources.DefaultSortOptionDescription,
+                category: StringResources.CategoryModList,
                 getValueFunc: () => userSettings.DefaultModListSortOption,
                 setValueFunc: value => userSettings.DefaultModListSortOption = value
             ));

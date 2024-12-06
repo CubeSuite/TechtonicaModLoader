@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using TechtonicaModLoader.MVVM.Models;
+using TechtonicaModLoader.Resources;
 using TechtonicaModLoader.Services;
 using TechtonicaModLoader.Services.ThunderstoreModels;
 
@@ -231,7 +232,7 @@ namespace TechtonicaModLoader.Stores
                     debugUtils.CrashIfDebug(error);
 
                     if (!programData.IsDebugBuild) {
-                        dialogService.ShowErrorMessage("Couldn't Deploy Mods", "An error occurred while trying to deply mods. Please click the bug report button.");
+                        dialogService.ShowErrorMessage(StringResources.DeployModsErrorTitle, StringResources.DeployModsErrorMessage);
                         // ToDo: Auto open and populate bug report view
                     }
 
@@ -267,8 +268,8 @@ namespace TechtonicaModLoader.Stores
                 logger.Error(error);
                 logger.Debug(e.StackTrace ?? "Couldn't log StackTrace, is null");
 
-                if (!programData.IsDebugBuild) {
-                    dialogService.ShowErrorMessage($"Couldn't Delete Folder", "TML couldn't delete the folder '{folder}'.\nPlease manually delete it and report this issue.");
+                if (!ProgramData.IsDebugBuild) {
+                    dialogService.ShowErrorMessage(StringResources.DeleteFolderErrorTitle, StringResources.DeployModsErrorMessage);
                     // ToDo: Open bug report view
                 }
             }
