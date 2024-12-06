@@ -64,7 +64,7 @@ namespace TechtonicaModLoader.Stores
 
         public void CreateNewProfile(string name) {
             if (ProfilesList.Select(profile => profile.Name).Contains(name)) {
-                if (!dialogService.GetUserConfirmation("Name Taken", $"The profile name '{name}' is already taken, are you sure you want to use it again?")) {
+                if (!dialogService.GetUserConfirmation(StringResources.ProfileNameConfirmationTitle, string.Format(StringResources.ProfileNameConfirmationMessage, name))) {
                     return;
                 }
             }

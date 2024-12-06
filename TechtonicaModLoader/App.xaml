@@ -181,8 +181,6 @@
         
         <!--#region ComboBox-->
 
-        <local:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
-
         <SolidColorBrush x:Key="TextBox.Static.Background" Color="{DynamicResource uiBackgroundColour}"/>
         <Style x:Key="ComboBoxEditableTextBox" TargetType="{x:Type TextBox}">
             <Setter Property="OverridesDefaultStyle" Value="true"/>
@@ -443,7 +441,7 @@
             <Setter Property="ItemTemplate">
                 <Setter.Value>
                     <DataTemplate>
-                        <TextBlock Text="{Binding ., Converter={StaticResource EnumDescriptionConverter}}"/>
+                        <TextBlock Text="{Binding Path=Value}"/>
                     </DataTemplate>
                 </Setter.Value>
             </Setter>

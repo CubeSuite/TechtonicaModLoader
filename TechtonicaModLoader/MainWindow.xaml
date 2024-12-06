@@ -6,7 +6,9 @@
         xmlns:local="clr-namespace:TechtonicaModLoader"
         xmlns:Controls="clr-namespace:TechtonicaModLoader.Controls"
         xmlns:Converters="clr-namespace:TechtonicaModLoader.MVVM.Converters"
-        xmlns:Views="clr-namespace:TechtonicaModLoader.MVVM.Views"
+        xmlns:Views="clr-namespace:TechtonicaModLoader.MVVM.Views" 
+        xmlns:mvvm="clr-namespace:TechtonicaModLoader.MVVM" 
+        d:DataContext="{d:DesignInstance Type=mvvm:MainViewModel}"
         mc:Ignorable="d"
         Title="MainWindow" Height="675" Width="1600"
         WindowStyle="None" WindowStartupLocation="CenterScreen"
@@ -72,11 +74,19 @@
                     
                     <!--Mod List-->
                     <Label Content="Mod List" Style="{DynamicResource titleStyle}" FontSize="16"/>
-                    <ComboBox Margin="0,5,0,0" ItemsSource="{Binding ModLists}" SelectedItem="{Binding SelectedModList, Mode=TwoWay}"/>
+                    <ComboBox Margin="0,5,0,0" 
+                              ItemsSource="{Binding ModLists}" 
+                              DisplayMemberPath="Value" 
+                              SelectedValuePath="Key"
+                              SelectedValue="{Binding SelectedModList, Mode=TwoWay}"/>
                     
                     <!--Sort By-->
                     <Label Content="Sort By" Style="{DynamicResource titleStyle}" FontSize="16"/>
-                    <ComboBox Margin="0,5,0,0" ItemsSource="{Binding SortOptions}" SelectedItem="{Binding SelectedSortOption, Mode=TwoWay}"/>
+                    <ComboBox Margin="0,5,0,0" 
+                              ItemsSource="{Binding SortOptions}" 
+                              DisplayMemberPath="Value" 
+                              SelectedValuePath="Key"
+                              SelectedValue="{Binding SelectedSortOption, Mode=TwoWay}"/>
 
                 </StackPanel>
             </Border>

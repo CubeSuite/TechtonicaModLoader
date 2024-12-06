@@ -214,6 +214,33 @@ namespace TechtonicaModLoader.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete the {0} profile?\nThis cannot be undone..
+        /// </summary>
+        internal static string DeleteProfileMessage {
+            get {
+                return ResourceManager.GetString("DeleteProfileMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Profile?.
+        /// </summary>
+        internal static string DeleteProfileTitle {
+            get {
+                return ResourceManager.GetString("DeleteProfileTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deploy &amp; Launch Game.
+        /// </summary>
+        internal static string DeployAndLaunchGame {
+            get {
+                return ResourceManager.GetString("DeployAndLaunchGame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to An error occurred while trying to deply mods. Please click the bug report button..
         /// </summary>
         internal static string DeployModsErrorMessage {
@@ -273,6 +300,15 @@ namespace TechtonicaModLoader.Resources {
         internal static string GameFolderName {
             get {
                 return ResourceManager.GetString("GameFolderName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Launch Game.
+        /// </summary>
+        internal static string LaunchGame {
+            get {
+                return ResourceManager.GetString("LaunchGame", resourceCulture);
             }
         }
         
@@ -412,6 +448,33 @@ namespace TechtonicaModLoader.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Please click the bug report button..
+        /// </summary>
+        internal static string ModUnzipErrorMessage {
+            get {
+                return ResourceManager.GetString("ModUnzipErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error Occurred While Unzipping Mod.
+        /// </summary>
+        internal static string ModUnzipErrorTitle {
+            get {
+                return ResourceManager.GetString("ModUnzipErrorTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter Profile Name:.
+        /// </summary>
+        internal static string NewProfileTitle {
+            get {
+                return ResourceManager.GetString("NewProfileTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Disabled.
         /// </summary>
         internal static string OfflineModListSourceDisabled {
@@ -453,6 +516,24 @@ namespace TechtonicaModLoader.Resources {
         internal static string ProfileModded {
             get {
                 return ResourceManager.GetString("ProfileModded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The profile name &apos;{0}&apos; is already taken, are you sure you want to use it again?.
+        /// </summary>
+        internal static string ProfileNameConfirmationMessage {
+            get {
+                return ResourceManager.GetString("ProfileNameConfirmationMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name Taken.
+        /// </summary>
+        internal static string ProfileNameConfirmationTitle {
+            get {
+                return ResourceManager.GetString("ProfileNameConfirmationTitle", resourceCulture);
             }
         }
         
@@ -511,6 +592,24 @@ namespace TechtonicaModLoader.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You can&apos;t browse online mods while in offline mode.
+        /// </summary>
+        internal static string ThunderstoreOfflineMessage {
+            get {
+                return ResourceManager.GetString("ThunderstoreOfflineMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not Connected To Thunderstore.
+        /// </summary>
+        internal static string ThunderstoreOfflineTitle {
+            get {
+                return ResourceManager.GetString("ThunderstoreOfflineTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Connection To ThunderStore has been restored, you can now browse online mods again..
         /// </summary>
         internal static string ThunderstoreReconnectMessage {
@@ -525,6 +624,33 @@ namespace TechtonicaModLoader.Resources {
         internal static string ThunderstoreReconnectTitle {
             get {
                 return ResourceManager.GetString("ThunderstoreReconnectTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error: .
+        /// </summary>
+        internal static string WarningLevelError {
+            get {
+                return ResourceManager.GetString("WarningLevelError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Info: .
+        /// </summary>
+        internal static string WarningLevelInfo {
+            get {
+                return ResourceManager.GetString("WarningLevelInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warning: .
+        /// </summary>
+        internal static string WarningLevelWarning {
+            get {
+                return ResourceManager.GetString("WarningLevelWarning", resourceCulture);
             }
         }
         

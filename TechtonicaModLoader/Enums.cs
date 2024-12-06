@@ -1,64 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 
 namespace TechtonicaModLoader
 {
     public enum ModListSource
     {
-        [Description("All")]
         All,
-
-        [Description("New")]
         New,
-
-        [Description("Downloaded")]
         Downloaded,
-
-        [Description("Not Downloaded")]
         NotDownloaded,
-
-        [Description("Enabled")]
         Enabled,
-
-        [Description("Disabled")]
         Disabled
     }
 
     public enum OfflineModListSource
     {
-        [Description("Downloaded")]
         Downloaded,
-
-        [Description("Enabled")]
         Enabled,
-
-        [Description("Disabled")]
         Disabled,
-
     }
 
     public enum ModListSortOption
     {
-        [Description("Last Updated")]
         LastUpdated,
-
-        [Description("Newest")]
         Newest,
-
-        [Description("Alphabetical")]
         Alphabetical,
-
-        [Description("Downloads")]
         Downloads,
-
-        [Description("Popularity")]
         Popularity,
 
     }

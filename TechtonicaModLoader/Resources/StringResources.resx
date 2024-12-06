@@ -279,4 +279,46 @@
   <data name="ModListSortOptionPopularity" xml:space="preserve">
     <value>Popularity</value>
   </data>
+  <data name="DeployAndLaunchGame" xml:space="preserve">
+    <value>Deploy &amp; Launch Game</value>
+  </data>
+  <data name="LaunchGame" xml:space="preserve">
+    <value>Launch Game</value>
+  </data>
+  <data name="NewProfileTitle" xml:space="preserve">
+    <value>Enter Profile Name:</value>
+  </data>
+  <data name="DeleteProfileTitle" xml:space="preserve">
+    <value>Delete Profile?</value>
+  </data>
+  <data name="DeleteProfileMessage" xml:space="preserve">
+    <value>Are you sure you want to delete the {0} profile?\nThis cannot be undone.</value>
+  </data>
+  <data name="ThunderstoreOfflineTitle" xml:space="preserve">
+    <value>Not Connected To Thunderstore</value>
+  </data>
+  <data name="ThunderstoreOfflineMessage" xml:space="preserve">
+    <value>You can't browse online mods while in offline mode</value>
+  </data>
+  <data name="WarningLevelInfo" xml:space="preserve">
+    <value>Info: </value>
+  </data>
+  <data name="WarningLevelWarning" xml:space="preserve">
+    <value>Warning: </value>
+  </data>
+  <data name="WarningLevelError" xml:space="preserve">
+    <value>Error: </value>
+  </data>
+  <data name="ModUnzipErrorTitle" xml:space="preserve">
+    <value>Error Occurred While Unzipping Mod</value>
+  </data>
+  <data name="ModUnzipErrorMessage" xml:space="preserve">
+    <value>Please click the bug report button.</value>
+  </data>
+  <data name="ProfileNameConfirmationTitle" xml:space="preserve">
+    <value>Name Taken</value>
+  </data>
+  <data name="ProfileNameConfirmationMessage" xml:space="preserve">
+    <value>The profile name '{0}' is already taken, are you sure you want to use it again?</value>
+  </data>
 </root>

@@ -15,6 +15,7 @@ using System.Windows;
 using System.Windows.Data;
 using TechtonicaModLoader.MVVM.Models;
 using TechtonicaModLoader.MVVM.ViewModels;
+using TechtonicaModLoader.Resources;
 using TechtonicaModLoader.Services;
 using TechtonicaModLoader.Stores;
 using TechtonicaModLoader.Windows;
@@ -34,6 +35,7 @@ namespace TechtonicaModLoader.MVVM
         private IModFilesManager modFilesManager;
         private IProgramData programData;
         private IUserSettings userSettings;
+        private SortedDictionary<ModListSource, string>? offlineModListSourceStrings = null;
 
         // Properties
 
@@ -61,17 +63,24 @@ namespace TechtonicaModLoader.MVVM
 
         public ObservableCollection<Profile> Profiles => profileManager.ProfilesList;
 
-        public Array? ModLists {
+        public IReadOnlyCollection<KeyValuePair<ModListSource, string>> ModLists {
             get {
-                if (thunderStore.Connected) return Enum.GetValues(typeof(ModListSource));
-                else return new ModListSource[] { ModListSource.Downloaded, ModListSource.Enabled, ModListSource.Disabled };
+                if (thunderStore.Connected) return ModListSourceDisplay.Strings;
+                else {
+                    offlineModListSourceStrings ??= new() {
+                            { ModListSource.Downloaded, ModListSourceDisplay.Strings[ModListSource.Downloaded] },
+                            { ModListSource.Enabled, ModListSourceDisplay.Strings[ModListSource.Enabled] },
+                            { ModListSource.Disabled, ModListSourceDisplay.Strings[ModListSource.Disabled] },
+                        };
+                    return offlineModListSourceStrings;
+                }
             }
         }
 
-        public Array? SortOptions => Enum.GetValues(typeof(ModListSortOption));
+        public IReadOnlyCollection<KeyValuePair<ModListSortOption, string>> SortOptions => ModListSortOptionDisplay.Strings;
 
         public bool DeployNeeded => userSettings.DeployNeeded;
-        public string LaunchButtonText => DeployNeeded ? "Deploy & Launch Game" : "Launch Game";
+        public string LaunchButtonText => DeployNeeded ? StringResources.DeployAndLaunchGame : StringResources.LaunchGame;
 
         // Constructors
 
@@ -142,7 +151,7 @@ namespace TechtonicaModLoader.MVVM
 
         [RelayCommand]
         private void CreateNewProfile() {
-            if(dialogService.GetStringFromUser(out string name, "Enter Profile Name:", "")) {
+            if(dialogService.GetStringFromUser(out string name, StringResources.NewProfileTitle, "")) {
                 profileManager.CreateNewProfile(name);
             }
         }
@@ -150,7 +159,7 @@ namespace TechtonicaModLoader.MVVM
         [RelayCommand]
         private void DeleteProfile() {
             string name = profileManager.ActiveProfile.Name;
-            if(dialogService.GetUserConfirmation("Delete Profile?", $"Are you sure you want to delete the {name} profile?\nThis cannot be undone.")) {
+            if(dialogService.GetUserConfirmation(StringResources.DeleteProfileTitle, string.Format(StringResources.DeleteProfileMessage, name))) {
                 profileManager.DeleteActiveProfile();
             }
         }
@@ -162,12 +171,10 @@ namespace TechtonicaModLoader.MVVM
         }
 
         partial void OnSelectedModListChanged(ModListSource value) {
-            ModListSource[] onlineLists = new ModListSource[] { ModListSource.All, ModListSource.New, ModListSource.NotDownloaded };
-
             if(!thunderStore.Connected && (SelectedModList == ModListSource.All || SelectedModList == ModListSource.New || SelectedModList == ModListSource.NotDownloaded)) {
                 if (MainWindow.current == null) return;
 
-                dialogService.ShowErrorMessage("Not Connected To Thunderstore", "You can't browse online mods while in offline mode");
+                dialogService.ShowErrorMessage(StringResources.ThunderstoreOfflineTitle, StringResources.ThunderstoreOfflineMessage);
                 SelectedModList = ModListSource.Downloaded;
             }
 

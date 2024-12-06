@@ -1,15 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
-using System.Security.Permissions;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
-using TechtonicaModLoader.MVVM.Models;
 using TechtonicaModLoader.Resources;
 using TechtonicaModLoader.Services;
 using TechtonicaModLoader.Services.ThunderstoreModels;
@@ -99,7 +91,7 @@ namespace TechtonicaModLoader.Stores
                 debugUtils.CrashIfDebug(error);
 
                 if (!programData.IsDebugBuild) {
-                    dialogService.ShowErrorMessage("Couldn't Deploy Mods", "An error occurred while trying to deploy mods. Please click the bug report button");
+                    dialogService.ShowErrorMessage(StringResources.DeployModsErrorTitle, StringResources.DeployModsErrorMessage);
                     // ToDo: Auto display and populate bug report view
                 }
 
@@ -154,7 +146,7 @@ namespace TechtonicaModLoader.Stores
                 debugUtils.CrashIfDebug(error);
 
                 if (!programData.IsDebugBuild) {
-                    dialogService.ShowErrorMessage("Error Occurred While Unzipping Mod", "Please click the bug report button.");
+                    dialogService.ShowErrorMessage(StringResources.ModUnzipErrorTitle, StringResources.ModUnzipErrorMessage);
                     // ToDo: Auto open and populate bug-report View
                     // ToDo: Remove from downloaded mods - Maybe don't add it to downloaded mods until all files are extracted to data folders successfully
                 }
