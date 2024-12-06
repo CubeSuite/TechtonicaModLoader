@@ -27,13 +27,14 @@
                 <Button Content="{Binding ButtonText}" Command="{Binding ExecuteButtonActionCommand}"/>
             </DataTemplate>
 
-            <root:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
             <DataTemplate x:Key="EnumTemplate">
                 <ComboBox ItemsSource="{Binding Options}" 
-                          SelectedItem="{Binding Value, Mode=TwoWay}">
+                          DisplayMemberPath="Value" 
+                          SelectedValuePath="Key"
+                          SelectedValue="{Binding Value, Mode=TwoWay}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding ., Converter={StaticResource EnumDescriptionConverter}}"/>
+                            <TextBlock Text="{Binding Path=Value}"/>
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>

@@ -92,6 +92,7 @@ namespace TechtonicaModLoader.MVVM.ViewModels.Settings
                 name: StringResources.DefaultModListName,
                 description: StringResources.DefaultModListDescription,
                 category: StringResources.CategoryModList,
+                options: ModListSourceDisplay.Strings,
                 getValueFunc: () => userSettings.DefaultModList,
                 setValueFunc: value => userSettings.DefaultModList = value
             ));
@@ -100,6 +101,7 @@ namespace TechtonicaModLoader.MVVM.ViewModels.Settings
                 name: StringResources.DefaultSortOptionName,
                 description: StringResources.DefaultSortOptionDescription,
                 category: StringResources.CategoryModList,
+                options: ModListSortOptionDisplay.Strings,
                 getValueFunc: () => userSettings.DefaultModListSortOption,
                 setValueFunc: value => userSettings.DefaultModListSortOption = value
             ));

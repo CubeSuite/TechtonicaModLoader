@@ -12,6 +12,8 @@ namespace TechtonicaModLoader.MVVM.ViewModels.Settings
         private Func<T> getValue;
         private Action<T> setValue;
 
+        private readonly IReadOnlyCollection<KeyValuePair<T, string>> options;
+
         // Properties
 
         public T Value {
@@ -19,13 +21,14 @@ namespace TechtonicaModLoader.MVVM.ViewModels.Settings
             set => setValue(value);
         }
 
-        public T[] Options => (T[])Enum.GetValues(typeof(T));
+        public IReadOnlyCollection<KeyValuePair<T, string>> Options => options;
 
         // Constructors
 
-        public EnumSetting(string name, string description, string category, Func<T> getValueFunc, Action<T> setValueFunc) : base(name, description, category) {
+        public EnumSetting(string name, string description, string category, IReadOnlyCollection<KeyValuePair<T, string>> options, Func<T> getValueFunc, Action<T> setValueFunc) : base(name, description, category) {
             getValue = getValueFunc;
             setValue = setValueFunc;
+            this.options = options;
         }
     }
 }
