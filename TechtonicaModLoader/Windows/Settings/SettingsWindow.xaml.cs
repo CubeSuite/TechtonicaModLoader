@@ -22,11 +22,10 @@ namespace TechtonicaModLoader.Windows
     /// </summary>
     public partial class SettingsWindow : Window
     {
-        public SettingsWindow(SettingsWindowViewModel settingsWindowViewModel)
-        {
+        public SettingsWindow(IServiceProvider serviceProvider) {
             Owner = Application.Current.MainWindow;
             InitializeComponent();
-            DataContext = settingsWindowViewModel;
+            DataContext = new SettingsWindowViewModel(serviceProvider);
         }
 
         private void OnCloseClicked(object sender, EventArgs e) {

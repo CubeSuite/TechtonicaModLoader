@@ -22,6 +22,8 @@ namespace TechtonicaModLoader.Services
         public void ShowInfoMessage(string title, string description, string buttonText = "Close");
         public void ShowWarningMessage(string title, string description, string buttonText = "Close");
         public void ShowErrorMessage(string title, string description, string buttonText = "Close");
+
+        public void OpenSettingsDialog(IServiceProvider serviceProvider);
     }
 
     public class DialogService : IDialogService
@@ -62,16 +64,19 @@ namespace TechtonicaModLoader.Services
             ShowDialog<ShowNotificationViewModel>([WarningLevel.Error, title, description, buttonText], out _, 1, buttonText);
         }
 
+        public void OpenSettingsDialog(IServiceProvider serviceProvider) {
+            SettingsWindow window = new SettingsWindow(serviceProvider);
+            window.ShowDialog();
+        }
+
         // Private Functions
 
         public bool ShowDialog<TViewModel>(object[] args, out object? result, int numButtons = 2, string leftButtonText = "Confirm", string rightButtonText = "Cancel") {
             if (!viewModelToViewMap.ContainsKey(typeof(TViewModel))) {
-                Log.Error($"No dialog exists for view model: {typeof(TViewModel)}");
-                result = null;
-                return false;
+                throw new Exception($"No dialog exists for view model: {typeof(TViewModel)}");
             }
 
-            GetUserInputWindow dialog = null;
+            GetUserInputWindow? dialog = null;
             object? viewModel = null;
             bool? dialogResult = null;
 
@@ -80,7 +85,7 @@ namespace TechtonicaModLoader.Services
                      ButtonCount = numButtons,
                      LeftButtonText = leftButtonText,
                      RightButtonText = rightButtonText
-                 };
+                };
 
                 Type? dialogType = viewModelToViewMap[typeof(TViewModel)];
                 dialog.inputBorder.Content = Activator.CreateInstance(dialogType);

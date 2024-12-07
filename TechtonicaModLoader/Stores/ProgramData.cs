@@ -26,7 +26,7 @@ namespace TechtonicaModLoader.Stores
         event PropertyChangedEventHandler PropertyChanged;
     }
 
-    public partial class ProgramDataStore : ObservableObject, IProgramData 
+    public partial class ProgramData : ObservableObject, IProgramData 
     {
         // Properties
 
@@ -43,7 +43,7 @@ namespace TechtonicaModLoader.Stores
         public bool RunUnitTests { get; } = false;
         public string BepInExID { get; } = "b9a5a1bd-81d8-4913-a46e-70ca7734628c";
         public Version ProgramVersion => Assembly.GetExecutingAssembly().GetName().Version ?? new Version(1, 0, 0);
-        public IFilePaths FilePaths { get; } = new FilePathsStore();
+        public IFilePaths FilePaths { get; }
         public HashSet<string> ModsSeenThisSession { get; set; } = new HashSet<string>();
 
         public HashSet<string> AllowedMods { get; } = new HashSet<string>() {
@@ -59,51 +59,12 @@ namespace TechtonicaModLoader.Stores
             "r2modman",
             "GaleModManager",
         };
-    }
 
-    public static class ProgramData 
-    {
-        // Members
+        // Constructors
 
-        private static IProgramData? programDataStore;
-
-        // Properties
-
-        private static IProgramData ProgramDataStore {
-            get {
-                if(programDataStore == null) {
-                    Log.Error("programDataStore has not been initialised");
-                    programDataStore = new ProgramDataStore();
-                }
-
-                return programDataStore;
-            }
-        }
-
-        public static bool IsDebugBuild => ProgramDataStore.IsDebugBuild;
-        public static bool IsRuntime => ProgramDataStore.IsRuntime;
-        public static bool RunUnitTests => ProgramDataStore.RunUnitTests;
-        
-        public static string BepInExID => ProgramDataStore.BepInExID;
-        public static Version ProgramVersion => ProgramDataStore.ProgramVersion;
-        public static HashSet<string> ModsSeenThisSession => ProgramDataStore.ModsSeenThisSession;
-        public static HashSet<string> AllowedMods => ProgramDataStore.AllowedMods;
-        public static HashSet<string> DisallowedMods => ProgramDataStore.DisallowedMods;
-        public static IFilePaths FilePaths => ProgramDataStore.FilePaths;
-
-        // Events
-
-        public static event PropertyChangedEventHandler? ProgramDataPropertyChanged;
-
-        private static void OnProgramDataStorePropertyChanged(object? sender, PropertyChangedEventArgs e) {
-            ProgramDataPropertyChanged?.Invoke(sender, e);
-        }
-
-        // Public Functions
-
-        public static void Initialise(IProgramData programDataStore) {
-            ProgramData.programDataStore = programDataStore;
-            ProgramData.programDataStore.PropertyChanged += OnProgramDataStorePropertyChanged;
+        public ProgramData()
+        {
+            FilePaths = new FilePathsStore(this);
         }
     }
 }

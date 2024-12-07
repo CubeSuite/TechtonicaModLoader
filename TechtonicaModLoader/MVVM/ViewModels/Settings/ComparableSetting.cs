@@ -10,7 +10,9 @@ namespace TechtonicaModLoader.MVVM.ViewModels.Settings
     public class ComparableSetting<T> : SettingBase where T : IComparable
     {
         // Members
-        
+
+        private ILoggerService logger;
+
         private Func<T> getValue;
         private Action<T> setValue;
 
@@ -26,12 +28,12 @@ namespace TechtonicaModLoader.MVVM.ViewModels.Settings
             set {
                 if (typesToCheck.Contains(typeof(T))) {
                     if (Min != null && value.CompareTo(Min) < 0) {
-                        Log.Warning($"Tried to set setting '{Name}' to '{value}' which is less than min '{Min}'");
+                        logger.Warning($"Tried to set setting '{Name}' to '{value}' which is less than min '{Min}'");
                         value = Min;
                     }
 
                     if (Max != null && value.CompareTo(Max) > 0) {
-                        Log.Warning($"Tried to set setting '{Name}' to '{value}' which is greater than max '{Max}'");
+                        logger.Warning($"Tried to set setting '{Name}' to '{value}' which is greater than max '{Max}'");
                         value = Max;
                     }
                 }
@@ -42,7 +44,8 @@ namespace TechtonicaModLoader.MVVM.ViewModels.Settings
 
         // Constructors
 
-        public ComparableSetting(string name, string description, string category, bool isVisible, Func<T> getValueFunc, Action<T> setValueFunc, T min, T max) : base(name, description, category, isVisible) {
+        public ComparableSetting(string name, string description, string category, Func<T> getValueFunc, Action<T> setValueFunc, T min, T max, ILoggerService logger) : base(name, description, category) {
+            this.logger = logger;
             getValue = getValueFunc;
             setValue = setValueFunc;
 

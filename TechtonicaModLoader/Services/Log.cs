@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -12,8 +13,8 @@ namespace TechtonicaModLoader
 {
     public interface ILoggerService 
     {
-        void Debug(string message, bool shortenPath);
-        void Info(string messasge, bool shortenPath);
+        void Debug(string message, bool shortenPath = true);
+        void Info(string messasge, bool shortenPath = true);
         void Warning(string message);
         void Error(string message);
 
@@ -22,26 +23,34 @@ namespace TechtonicaModLoader
 
     public class LoggerService : ILoggerService
     {
-        private ConcurrentQueue<string> queue = new ConcurrentQueue<string>();
         private const int paddingSize = 10;
-        private bool missingLogPathNotified = false;
+
+        private ConcurrentQueue<string> queue = new ConcurrentQueue<string>();
         private readonly object consoleLock = new object();
+        private readonly StreamWriter logWriter;
+        private bool missingLogPathNotified = false;
+
+        private IProgramData programData;
+
+        private bool _logDebugToFile = true;
 
         // Properties
 
-        private string LogPath => ProgramData.FilePaths.LogFile;
+        private string LogPath => programData.FilePaths.LogFile;
         private bool IsLogPathSet => !string.IsNullOrEmpty(LogPath);
 
-        private bool _logDebugToFile = true;
         public bool LogDebugToFile {
-            get => _logDebugToFile || ProgramData.IsDebugBuild;
+            get => _logDebugToFile || programData.IsDebugBuild;
             set => _logDebugToFile = value;
         }
 
         // Constructors
 
-        public LoggerService() {
+        public LoggerService(IServiceProvider serviceProvider) {
+            programData = serviceProvider.GetRequiredService<IProgramData>();
+            
             if (File.Exists(LogPath)) File.Delete(LogPath);
+            logWriter = File.CreateText(LogPath);
             StartLoggingThread();
         }
 
@@ -49,7 +58,7 @@ namespace TechtonicaModLoader
 
         public void Debug(string message, bool shortenPath) {
             lock (consoleLock) {
-                if (shortenPath) message = message.Replace(ProgramData.FilePaths.RootFolder, "");
+                if (shortenPath) message = message.Replace(programData.FilePaths.RootFolder, "");
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.Write("[Debug]".PadRight(paddingSize));
                 WriteMessageToConsole(message);
@@ -61,7 +70,7 @@ namespace TechtonicaModLoader
 
         public void Info(string message, bool shortenPath) {
             lock (consoleLock) {
-                if (shortenPath) message = message.Replace(ProgramData.FilePaths.RootFolder, "");
+                if (shortenPath) message = message.Replace(programData.FilePaths.RootFolder, "");
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.Write("[Info]".PadRight(paddingSize));
                 WriteMessageToConsole(message);
@@ -104,11 +113,10 @@ namespace TechtonicaModLoader
             });
         }
 
-        private void WriteQueuedMessages() {
-            if (queue.Count == 0) return;
-            lock (queue) {
-                File.AppendAllLines(LogPath, queue);
-                queue.Clear();
+        private async Task WriteQueuedMessages() {
+            if (queue.IsEmpty) return;
+            while (queue.TryDequeue(out string? message)) {
+                await logWriter.WriteLineAsync(message);
             }
         }
 
@@ -121,40 +129,6 @@ namespace TechtonicaModLoader
             level = $"[{level}]".PadRight(paddingSize);
             string line = $"{level}| {message}";
             queue.Enqueue(line);
-        }
-    }
-
-    public static class Log 
-    {
-        private static ILoggerService? logger;
-
-        public static bool LogDebugToFile {
-            get => logger?.LogDebugToFile ?? false;
-            set {
-                if (logger != null) logger.LogDebugToFile = value;
-            }
-        }
-
-        // Public Functions
-
-        public static void Initialise(ILoggerService logger) {
-            Log.logger = logger;
-        }
-
-        public static void Debug(string message, bool shortenPath = true) {
-            logger?.Debug(message, shortenPath);
-        }
-
-        public static void Info(string message, bool shortenPath = true) {
-            logger?.Info(message, shortenPath);
-        }
-
-        public static void Warning(string message) {
-            logger?.Warning(message);
-        }
-
-        public static void Error(string message) {
-            logger?.Error(message);
         }
     }
 }

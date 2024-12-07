@@ -10,28 +10,23 @@ namespace TechtonicaModLoader.MVVM.ViewModels.Settings
 {
     public partial class ButtonSetting : SettingBase
     {
-        // Members
-
-        private UserSettings userSettings;
-
         // Properties
 
         public string ButtonText { get; }
-        public Action<UserSettings> OnClick { get; }
+        public Action OnClick { get; }
 
         // Commands
 
         [RelayCommand]
         private void ExecuteButtonAction() {
-            OnClick?.Invoke(userSettings);
+            OnClick?.Invoke();
         }
 
         // Constructors
 
-        public ButtonSetting(string name, string description, string category, bool isVisible, string buttonText, Action<UserSettings> onClick, UserSettings userSettings) : base(name, description, category, isVisible) {
+        public ButtonSetting(string name, string description, string category, string buttonText, Action onClick) : base(name, description, category) {
             ButtonText = buttonText;
             OnClick = onClick;
-            this.userSettings = userSettings;
         }
     }
 }

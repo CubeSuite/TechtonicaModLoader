@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,15 +8,35 @@ using TechtonicaModLoader.Stores;
 
 namespace TechtonicaModLoader
 {
-    public static class DebugUtils
+    public interface IDebugUtils
     {
-        public static void CrashIfDebug(string message) {
-            if (ProgramData.IsDebugBuild) throw new Exception(message);
+        void Assert(bool condition, string message);
+        void CrashIfDebug(string message);
+    }
+
+    public class DebugUtils : IDebugUtils
+    {
+        // Members
+
+        private ILoggerService logger;
+        private IProgramData programData;
+
+        // Constructors
+
+        public DebugUtils(IServiceProvider serviceProvider) {
+            logger = serviceProvider.GetRequiredService<ILoggerService>();
+            programData = serviceProvider.GetRequiredService<IProgramData>();
         }
 
-        public static void Assert(bool condition, string message) {
+        // Public Functions
+
+        public void CrashIfDebug(string message) {
+            if (programData.IsDebugBuild) throw new Exception(message);
+        }
+
+        public void Assert(bool condition, string message) {
             if (!condition) {
-                Log.Error($"Assert Failed: {message}");
+                logger.Error($"Assert Failed: {message}");
                 CrashIfDebug(message);
             }
         }

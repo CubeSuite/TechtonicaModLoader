@@ -30,7 +30,7 @@
             <Label Content="Settings" Style="{DynamicResource titleStyle}" Grid.ColumnSpan="2" Margin="7,2,7,0"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="5,5,7,5" Grid.Column="1">
                 <Button Content="Restore Defaults" Margin="0,0,5,0" Height="30" Command="{Binding RestoreDefaultsCommand}"/>
-                <Controls:SvgButton Source="ControlBox/Close" Clicked="OnCloseClicked"/>
+                <Controls:SvgButton Source="{Binding CloseSource}" Clicked="OnCloseClicked"/>
             </StackPanel>
 
             <!--Categories Panel-->

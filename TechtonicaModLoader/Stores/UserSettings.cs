@@ -1,17 +1,12 @@
-﻿using Microsoft.Win32;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using System;
-using System.CodeDom.Compiler;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TechtonicaModLoader.Stores
 {
     public interface IUserSettings
     {
+        // Properties
         bool LogDebugMessages { get; set; }
         
         string GameFolder { get; set; }
@@ -23,7 +18,12 @@ namespace TechtonicaModLoader.Stores
         bool DeployNeeded { get; set; }
         List<string> SeenMods { get; set; }
 
-        void Load();
+        // Events
+
+        event Action DeployNeededChanged;
+
+        // Public Functions
+
         void RestoreDefaults();
         void Save();
     }
@@ -31,6 +31,10 @@ namespace TechtonicaModLoader.Stores
     public class UserSettings : IUserSettings
     {
         // Members
+
+        private ILoggerService logger;
+        private IProgramData programData;
+        private IDebugUtils debugUtils;
 
         private bool loaded = false;
 
@@ -44,6 +48,10 @@ namespace TechtonicaModLoader.Stores
         private int _activeProfileID = 0;
         private bool _deployNeeded = false;
         private List<string> _seenMods = new List<string>();
+
+        // Events
+
+        public event Action DeployNeededChanged;
 
         // Properties
 
@@ -92,6 +100,7 @@ namespace TechtonicaModLoader.Stores
             set {
                 _deployNeeded = value;
                 if (loaded) Save();
+                DeployNeededChanged?.Invoke();
             }
         }
 
@@ -103,24 +112,44 @@ namespace TechtonicaModLoader.Stores
             }
         }
 
+        // Constructors
+
+        public UserSettings(){}
+
+        public UserSettings(IServiceProvider serviceProvider)
+        {
+            logger = serviceProvider.GetRequiredService<ILoggerService>();
+            programData = serviceProvider.GetRequiredService<IProgramData>();
+            debugUtils = serviceProvider.GetRequiredService<IDebugUtils>();
+
+            Load(serviceProvider);
+        }
+
         // Public Functions
 
         public void Save() {
             string json = JsonConvert.SerializeObject(this, Formatting.Indented);
-            File.WriteAllText(ProgramData.FilePaths.SettingsFile, json);
+            File.WriteAllText(programData.FilePaths.SettingsFile, json);
         }
 
-        public void Load() {
-            if (!File.Exists(ProgramData.FilePaths.SettingsFile)) {
+        private void Load(IServiceProvider serviceProvider) {
+            if (!File.Exists(programData.FilePaths.SettingsFile)) {
                 loaded = true;
+                logger.Warning("Settings file not found");
                 return;
             }
 
-            string json = File.ReadAllText(ProgramData.FilePaths.SettingsFile);
-            UserSettings settingsFromFile = JsonConvert.DeserializeObject<UserSettings>(json) ?? new UserSettings();
+            string json = File.ReadAllText(programData.FilePaths.SettingsFile);
+            UserSettings? settingsFromFile = JsonConvert.DeserializeObject<UserSettings>(json);
+            if(settingsFromFile == null) {
+                string error = "Parsed Settings.json is null";
+                logger.Error(error);
+                debugUtils.CrashIfDebug(error);
+                return;
+            }
 
             LogDebugMessages = settingsFromFile.LogDebugMessages;
-            Log.LogDebugToFile = LogDebugMessages;
+            logger.LogDebugToFile = LogDebugMessages;
 
             GameFolder = settingsFromFile.GameFolder;
             DefaultModList = settingsFromFile.DefaultModList;
@@ -128,9 +157,10 @@ namespace TechtonicaModLoader.Stores
             ActiveProfileID = settingsFromFile.ActiveProfileID;
             SeenMods = settingsFromFile.SeenMods;
 
-            ProgramData.FilePaths.BepInExFolder = $"{GameFolder}\\BepInEx";
+            programData.FilePaths.BepInExFolder = $"{GameFolder}\\BepInEx";
 
             loaded = true;
+            logger.Info("Settings loaded");
         }
 
         public void RestoreDefaults() {

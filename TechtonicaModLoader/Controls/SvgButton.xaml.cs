@@ -42,7 +42,10 @@ namespace TechtonicaModLoader.Controls
         }
 
         public static void OnSourceChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
-            ((SvgButton)obj).svg.Source = new Uri($"{ProgramData.FilePaths.ResourcesFolder}\\{((SvgButton)obj).Source}.svg");
+            SvgButton? thisButton = obj as SvgButton;
+            if(thisButton != null) {
+                thisButton.svg.Source = new Uri(thisButton.Source);
+            }
         }
 
         #endregion

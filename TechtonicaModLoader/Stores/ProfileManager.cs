@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Bson;
 using SharpVectors.Dom.Events;
@@ -37,8 +38,10 @@ namespace TechtonicaModLoader.Stores
 
         private Dictionary<int, Profile> profiles = new Dictionary<int, Profile>();
 
+        private ILoggerService logger;
         private IDialogService dialogService;
-        private UserSettings userSettings;
+        private IUserSettings userSettings;
+        private IProgramData programData;
 
         // Properties
 
@@ -55,9 +58,13 @@ namespace TechtonicaModLoader.Stores
 
         // Constructors
 
-        public ProfileManager(IDialogService dialogService, UserSettings userSettings) {
-            this.dialogService = dialogService;
-            this.userSettings = userSettings;
+        public ProfileManager(IServiceProvider serviceProvider) {
+            logger = serviceProvider.GetRequiredService<ILoggerService>();
+            dialogService = serviceProvider.GetRequiredService<IDialogService>();
+            userSettings = serviceProvider.GetRequiredService<IUserSettings>();
+            programData = serviceProvider.GetRequiredService<IProgramData>();
+
+            Load();
         }
 
         // Public Functions
@@ -110,16 +117,17 @@ namespace TechtonicaModLoader.Stores
 
         public void Save() {
             string json = JsonConvert.SerializeObject(profiles.Values, Formatting.Indented);
-            File.WriteAllText(ProgramData.FilePaths.ProfilesFile, json);
+            File.WriteAllText(programData.FilePaths.ProfilesFile, json);
         }
 
         public void Load() {
-            if (!File.Exists(ProgramData.FilePaths.ProfilesFile)) {
+            if (!File.Exists(programData.FilePaths.ProfilesFile)) {
                 CreateDefaultProfiles();
+                logger.Warning("Profiles.json not found");
                 return;
             }
 
-            string json = File.ReadAllText(ProgramData.FilePaths.ProfilesFile);
+            string json = File.ReadAllText(programData.FilePaths.ProfilesFile);
             if (string.IsNullOrEmpty(json)) return;
 
             List<Profile> savedProfiles = JsonConvert.DeserializeObject<List<Profile>>(json ?? "[]") ?? new List<Profile>();
@@ -127,6 +135,8 @@ namespace TechtonicaModLoader.Stores
                 profile.ProfileManager = this;
                 AddProfile(profile);
             }
+
+            logger.Info("Profiles loaded");
         }
 
         private void CreateDefaultProfiles() {

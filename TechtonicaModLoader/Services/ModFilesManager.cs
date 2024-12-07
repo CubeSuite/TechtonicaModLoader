@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,16 +24,22 @@ namespace TechtonicaModLoader.Stores
     public class ModFilesManager : IModFilesManager
     {
         // Members
+        private ILoggerService logger;
         private IDialogService dialogService;
         private IProfileManager profileManager;
+        private IProgramData programData;
+        private IDebugUtils debugUtils;
 
         private Dictionary<string, HashSet<string>> modFiles;
 
         // Constructors
 
-        public ModFilesManager(IDialogService dialogService, IProfileManager profileManager) {
-            this.dialogService = dialogService;
-            this.profileManager = profileManager;
+        public ModFilesManager(IServiceProvider serviceProvider) {
+            logger = serviceProvider.GetRequiredService<ILoggerService>();
+            dialogService = serviceProvider.GetRequiredService<IDialogService>();
+            profileManager = serviceProvider.GetRequiredService<IProfileManager>();
+            programData = serviceProvider.GetRequiredService<IProgramData>();
+            debugUtils = serviceProvider.GetRequiredService<IDebugUtils>();
 
             modFiles = new Dictionary<string, HashSet<string>>();
             Load();
@@ -41,56 +48,56 @@ namespace TechtonicaModLoader.Stores
         // Public Functions
 
         public bool ProcessZipFile(string zipFileLocation, ThunderStoreMod mod) {
-            Log.Info($"Processing zip file: '{zipFileLocation}'");
+            logger.Info($"Processing zip file: '{zipFileLocation}'");
 
             if (!File.Exists(zipFileLocation)) {
                 string error = $"zip file does not exist: '{zipFileLocation}'";
-                Log.Error(error);
-                DebugUtils.CrashIfDebug(error);
+                logger.Error(error);
+                debugUtils.CrashIfDebug(error);
             }
 
             UnzipToTemp(zipFileLocation, out string extractedFolderPath);
             CopyToDataFolders(extractedFolderPath, mod);
             DeleteFolder(extractedFolderPath);
 
-            Log.Debug("Saving ModFiles.json");
+            logger.Debug("Saving ModFiles.json");
             Save();
 
-            Log.Info($"Successfully processed zip file: '{zipFileLocation}'");
+            logger.Info($"Successfully processed zip file: '{zipFileLocation}'");
             return true;
         }
 
         public bool DeployMods() {
-            Log.Info("Attempting to deploy mods");
+            logger.Info("Attempting to deploy mods");
             // ToDo: Think about developer mode
 
             try {
-                Log.Debug("Creating BepInEx directories");
-                Directory.CreateDirectory(ProgramData.FilePaths.BepInExPatchesFolder);
-                Directory.CreateDirectory(ProgramData.FilePaths.BepInExPluginsFolder);
-                Directory.CreateDirectory(ProgramData.FilePaths.BepInExConfigsFolder);
+                logger.Debug("Creating BepInEx directories");
+                Directory.CreateDirectory(programData.FilePaths.BepInExPatchesFolder);
+                Directory.CreateDirectory(programData.FilePaths.BepInExPluginsFolder);
+                Directory.CreateDirectory(programData.FilePaths.BepInExConfigsFolder);
 
                 List<string> filesToInstall = GetFilesToInstall();
                 if (filesToInstall.Count() == 0) {
-                    Log.Warning($"Profile has no mods to deploy, aborting");
+                    logger.Warning($"Profile has no mods to deploy, aborting");
                     return true;
                 }
 
                 foreach (string file in filesToInstall) {
-                    Log.Debug($"Attempting to install {file}");
-                    string newPath = CopyFile(file, ProgramData.FilePaths.RootFolder, ProgramData.FilePaths.BepInExFolder);
-                    Log.Debug($"Successfully installed to {newPath}");
+                    logger.Debug($"Attempting to install {file}");
+                    string newPath = CopyFile(file, programData.FilePaths.RootFolder, programData.FilePaths.BepInExFolder);
+                    logger.Debug($"Successfully installed to {newPath}");
                 }
 
-                Log.Info("Successfully deployed mods");
+                logger.Info("Successfully deployed mods");
                 return true;
             }
             catch (Exception e) {
                 string error = $"Error occurred while deploying mods: {e.Message}";
-                Log.Error(error);
-                DebugUtils.CrashIfDebug(error);
+                logger.Error(error);
+                debugUtils.CrashIfDebug(error);
 
-                if (!ProgramData.IsDebugBuild) {
+                if (!programData.IsDebugBuild) {
                     dialogService.ShowErrorMessage("Couldn't Deploy Mods", "An error occurred while trying to deploy mods. Please click the bug report button");
                     // ToDo: Auto display and populate bug report view
                 }
@@ -103,13 +110,13 @@ namespace TechtonicaModLoader.Stores
 
         private void Save() {
             string json = JsonConvert.SerializeObject(modFiles, Formatting.Indented);
-            File.WriteAllText(ProgramData.FilePaths.ModFilesFile, json);
+            File.WriteAllText(programData.FilePaths.ModFilesFile, json);
         }
 
         private void Load() {
-            if (!File.Exists(ProgramData.FilePaths.ModFilesFile)) return;
+            if (!File.Exists(programData.FilePaths.ModFilesFile)) return;
 
-            string json = File.ReadAllText(ProgramData.FilePaths.ModFilesFile);
+            string json = File.ReadAllText(programData.FilePaths.ModFilesFile);
             modFiles = JsonConvert.DeserializeObject<Dictionary<string, HashSet<string>>>(json) ?? new Dictionary<string, HashSet<string>>();
         }
 
@@ -119,33 +126,33 @@ namespace TechtonicaModLoader.Stores
             extractedFolderPath = "";
             string zipName = Path.GetFileNameWithoutExtension(zipFileLocation);
 
-            Log.Info($"Unzipping '{zipName}'");
+            logger.Info($"Unzipping '{zipName}'");
             try {
                 using (ZipArchive archive = ZipFile.OpenRead(zipFileLocation)) {
                     foreach (ZipArchiveEntry entry in archive.Entries) {
-                        extractedFolderPath = $"{ProgramData.FilePaths.UnzipFolder}\\{zipName}";
+                        extractedFolderPath = $"{programData.FilePaths.UnzipFolder}\\{zipName}";
                         string entryFilePath = Path.Combine(extractedFolderPath, entry.FullName);
                         
                         Directory.CreateDirectory(Path.GetDirectoryName(entryFilePath) ?? throw new Exception("GetDirectoryName() returned null"));
                         if (!entryFilePath.EndsWith("/")) {
                             entry.ExtractToFile(entryFilePath, true);
-                            Log.Debug($"Extracted '{entryFilePath}'");
+                            logger.Debug($"Extracted '{entryFilePath}'");
                         }
                     }
                 }
 
-                Log.Debug($"Attempting to delete '{zipFileLocation}'");
+                logger.Debug($"Attempting to delete '{zipFileLocation}'");
                 File.Delete(zipFileLocation);
 
-                Log.Info($"Successfully unzipped & deleted '{zipFileLocation}'");
+                logger.Info($"Successfully unzipped & deleted '{zipFileLocation}'");
                 return true;
             }
             catch (Exception e) {
                 string error = $"Error occured while unzipping '{zipName}'.zip: {e.Message}";
-                Log.Error(error);
-                DebugUtils.CrashIfDebug(error);
+                logger.Error(error);
+                debugUtils.CrashIfDebug(error);
 
-                if (!ProgramData.IsDebugBuild) {
+                if (!programData.IsDebugBuild) {
                     dialogService.ShowErrorMessage("Error Occurred While Unzipping Mod", "Please click the bug report button.");
                     // ToDo: Auto open and populate bug-report View
                     // ToDo: Remove from downloaded mods - Maybe don't add it to downloaded mods until all files are extracted to data folders successfully
@@ -167,7 +174,7 @@ namespace TechtonicaModLoader.Stores
         }
 
         private void CopyToDataFolders(string extractedFolderPath, ThunderStoreMod mod) {
-            Log.Info($"Copying mod files from '{extractedFolderPath}'");
+            logger.Info($"Copying mod files from '{extractedFolderPath}'");
 
             string[] patches = Array.Empty<string>();
             string[] plugins = Array.Empty<string>();
@@ -182,32 +189,32 @@ namespace TechtonicaModLoader.Stores
             if (Directory.Exists(configsFolder)) configs = SearchForFiles(configsFolder, "*.cfg");
 
             if(patches.Count() == 0 && plugins.Count() == 0) {
-                Log.Warning("Didn't find any .dll files in patches or plugins folders. Searching extractedFolderPath instead. DLL's will be assumed to be plugins");
+                logger.Warning("Didn't find any .dll files in patches or plugins folders. Searching extractedFolderPath instead. DLL's will be assumed to be plugins");
                 plugins = SearchForFiles(extractedFolderPath, "dll");
             }
 
             foreach(string patch in patches) {
-                Log.Debug($"Copying patch file {patch}");
-                string newPath = CopyFile(patch, patchesFolder, ProgramData.FilePaths.PatchesFolder);
+                logger.Debug($"Copying patch file {patch}");
+                string newPath = CopyFile(patch, patchesFolder, programData.FilePaths.PatchesFolder);
                 AddToModFiles(mod, newPath);
-                Log.Debug($"Copied patch file {Path.GetFileName(patch)}");
+                logger.Debug($"Copied patch file {Path.GetFileName(patch)}");
             }
 
             foreach(string plugin in plugins) {
-                Log.Debug($"Copying plugin file {Path.GetFileName(plugin)}");
-                string newPath = CopyFile(plugin, pluginsFolder, ProgramData.FilePaths.PluginsFolder);
+                logger.Debug($"Copying plugin file {Path.GetFileName(plugin)}");
+                string newPath = CopyFile(plugin, pluginsFolder, programData.FilePaths.PluginsFolder);
                 AddToModFiles(mod, newPath);
-                Log.Debug($"Copied plugin file {Path.GetFileName(plugin)}");
+                logger.Debug($"Copied plugin file {Path.GetFileName(plugin)}");
             }
 
             foreach(string config in configs) {
-                Log.Debug($"Copying config file {Path.GetFileName(config)}");
-                string newPath = CopyFile(config, configsFolder, ProgramData.FilePaths.ConfigsFolder);
+                logger.Debug($"Copying config file {Path.GetFileName(config)}");
+                string newPath = CopyFile(config, configsFolder, programData.FilePaths.ConfigsFolder);
                 AddToModFiles(mod, newPath);
-                Log.Debug($"Copied config file {Path.GetFileName(config)}");
+                logger.Debug($"Copied config file {Path.GetFileName(config)}");
             }
 
-            Log.Info($"Successfully copied files to data folder");
+            logger.Info($"Successfully copied files to data folder");
         }
 
         private List<string> GetFilesToInstall() {
@@ -220,10 +227,10 @@ namespace TechtonicaModLoader.Stores
                 }
                 else {
                     string error = $"Cannot deploy mod with id '{modToDeploy}' as it is not present in modFiles";
-                    Log.Error(error);
-                    DebugUtils.CrashIfDebug(error);
+                    logger.Error(error);
+                    debugUtils.CrashIfDebug(error);
 
-                    if (!ProgramData.IsDebugBuild) {
+                    if (!programData.IsDebugBuild) {
                         dialogService.ShowErrorMessage("Couldn't Deploy Mods", "An error occurred while trying to deply mods. Please click the bug report button.");
                         // ToDo: Auto open and populate bug report view
                     }
@@ -257,10 +264,10 @@ namespace TechtonicaModLoader.Stores
             }
             catch (Exception e) {
                 string error = $"Error occurred while deleting '{folder}': {e.Message}";
-                Log.Error(error);
-                Log.Debug(e.StackTrace ?? "Couldn't log StackTrace, is null");
+                logger.Error(error);
+                logger.Debug(e.StackTrace ?? "Couldn't log StackTrace, is null");
 
-                if (!ProgramData.IsDebugBuild) {
+                if (!programData.IsDebugBuild) {
                     dialogService.ShowErrorMessage($"Couldn't Delete Folder", "TML couldn't delete the folder '{folder}'.\nPlease manually delete it and report this issue.");
                     // ToDo: Open bug report view
                 }

@@ -24,8 +24,6 @@ namespace TechtonicaModLoader.MVVM.Views
         public ModView()
         {
             InitializeComponent();
-            downloadsSvg.Source = new Uri($"{ProgramData.FilePaths.ResourcesFolder}\\ModPanel\\Download.svg");
-            ratingSvg.Source = new Uri($"{ProgramData.FilePaths.ResourcesFolder}\\ModPanel\\Thumb.svg");
         }
     }
 }

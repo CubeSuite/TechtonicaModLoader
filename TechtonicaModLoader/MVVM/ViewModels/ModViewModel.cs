@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,8 +20,17 @@ namespace TechtonicaModLoader.MVVM.ViewModels
 
         private IProfileManager profileManager;
         private IThunderStore thunderStore;
+        private IProgramData programData;
 
         // Properties
+
+        [ObservableProperty] private string _downloadSource;
+        [ObservableProperty] private string _thumbSource;
+        [ObservableProperty] private string _updateSource;
+        [ObservableProperty] private string _donateSource;
+        [ObservableProperty] private string _configureSource;
+        [ObservableProperty] private string _viewModPageSource;
+        [ObservableProperty] private string _deleteSource;
 
         [ObservableProperty] private string _id;
         [ObservableProperty] private string _name;
@@ -45,10 +55,19 @@ namespace TechtonicaModLoader.MVVM.ViewModels
 
         // Constructors
 
-        public ModViewModel(Mod mod, IProfileManager profileManager, IThunderStore thunderStore) {
-            this.profileManager = profileManager;
-            this.thunderStore = thunderStore;
-            
+        public ModViewModel(Mod mod, IServiceProvider serviceProvider) {
+            profileManager = serviceProvider.GetRequiredService<IProfileManager>();
+            thunderStore = serviceProvider.GetRequiredService<IThunderStore>();
+            programData = serviceProvider.GetRequiredService<IProgramData>();
+
+            _downloadSource = $"{programData.FilePaths.ResourcesFolder}\\ModPanel\\Download.svg";
+            _thumbSource = $"{programData.FilePaths.ResourcesFolder}\\ModPanel\\Thumb.svg";
+            _updateSource = $"{programData.FilePaths.ResourcesFolder}\\ModPanel\\Update.svg";
+            _donateSource = $"{programData.FilePaths.ResourcesFolder}\\ModPanel\\Donate.svg";
+            _configureSource = $"{programData.FilePaths.ResourcesFolder}\\ModPanel\\Configure.svg";
+            _viewModPageSource = $"{programData.FilePaths.ResourcesFolder}\\ModPanel\\ViewModPage.svg";
+            _deleteSource = $"{programData.FilePaths.ResourcesFolder}\\ModPanel\\Delete.svg";
+
             _mod = mod;
             _mod.IsDownloadingChanged += OnModModelIsDownloadingChanged;
 
@@ -68,8 +87,8 @@ namespace TechtonicaModLoader.MVVM.ViewModels
             _updateAvailable = mod.UpdateAvailable;
             _hasConfigFile = mod.HasConfigFile;
 
-            if (!ProgramData.ModsSeenThisSession.Contains(mod.ID)) {
-                ProgramData.ModsSeenThisSession.Add(mod.ID);
+            if (!programData.ModsSeenThisSession.Contains(mod.ID)) {
+                programData.ModsSeenThisSession.Add(mod.ID);
             }
         }
 

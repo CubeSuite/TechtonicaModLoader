@@ -38,9 +38,11 @@ namespace TechtonicaModLoader.Stores
 
     public class FilePathsStore : IFilePaths
     {
+        private IProgramData programData;
+
         public string RootFolder {
             get {
-                if (!ProgramData.IsDebugBuild) {
+                if (!programData.IsDebugBuild) {
                     return $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\TechtonicaModLoaderData";
                 }
                 else {
@@ -120,6 +122,13 @@ namespace TechtonicaModLoader.Stores
 
             // MainWindow.current.controlBox.RefreshIcons();
             // ToDo: Refresh Icons
+        }
+
+        // Constructors
+
+        public FilePathsStore(ProgramData programData)
+        {
+            this.programData = programData;
         }
 
         // Private Functions

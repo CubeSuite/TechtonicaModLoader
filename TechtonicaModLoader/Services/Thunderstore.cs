@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -38,8 +39,6 @@ namespace TechtonicaModLoader.Services
         bool IsModDownloading(string fullName);
         bool IsModDownloaded(string id, ModVersion version);
         bool SearchForMod(string fullName, out ThunderStoreMod? mod);
-
-        void Load();
     }
 
     public partial class ThunderStore : ObservableObject, IThunderStore
@@ -50,11 +49,15 @@ namespace TechtonicaModLoader.Services
         private List<string> downloadQueue = new List<string>();
         private const string baseURL = "https://thunderstore.io/c/techtonica/api/v1";
         private string? lastJson;
-        
+
+        private IServiceProvider serviceProvider;
+        private ILoggerService logger;
         private IDialogService dialogService;
         private IProfileManager profileManager;
         private IModFilesManager modFilesManager;
-        private SettingsWindowViewModel settingsWindowViewModel;
+        private IProgramData programData;
+        private IDebugUtils debugUtils;
+        private IUserSettings userSettings;
 
         private List<Mod> _modCache = new List<Mod>();
 
@@ -66,12 +69,19 @@ namespace TechtonicaModLoader.Services
 
         // Constructors
 
-        public ThunderStore(IDialogService dialogService, IProfileManager profileManager, IModFilesManager modFilesManager, SettingsWindowViewModel settingsWindowViewModel) 
+        public ThunderStore(IServiceProvider serviceProvider) 
         {
-            this.dialogService = dialogService;
-            this.profileManager = profileManager;
-            this.modFilesManager = modFilesManager;
-            this.settingsWindowViewModel = settingsWindowViewModel;
+            this.serviceProvider = serviceProvider;
+            logger = serviceProvider.GetRequiredService<ILoggerService>();
+            dialogService = serviceProvider.GetRequiredService<IDialogService>();
+            profileManager = serviceProvider.GetRequiredService<IProfileManager>();
+            modFilesManager = serviceProvider.GetRequiredService<IModFilesManager>();
+            programData = serviceProvider.GetRequiredService<IProgramData>();
+            debugUtils = serviceProvider.GetRequiredService<IDebugUtils>();
+            userSettings = serviceProvider.GetRequiredService<IUserSettings>();
+
+            Load();
+            
             StartUpdateThread();
             StartDownloadThread();
         }
@@ -85,7 +95,7 @@ namespace TechtonicaModLoader.Services
         }
 
         private void OnDownloadFinished(ThunderStoreMod thunderStoreMod, string zipFileLocation) {
-            downloadedMods.Add(thunderStoreMod.uuid4, ModVersion.Parse(thunderStoreMod.versions[0].version_number));
+            downloadedMods.Add(thunderStoreMod.uuid4, ModVersion.Parse(thunderStoreMod.versions[0].version_number, serviceProvider) ?? new ModVersion(1, 0 ,0));
             Save();
 
             profileManager.AddMod(thunderStoreMod);
@@ -93,7 +103,7 @@ namespace TechtonicaModLoader.Services
 
             modFilesManager.ProcessZipFile(zipFileLocation, thunderStoreMod);
 
-            settingsWindowViewModel.DeployNeeded = true;
+            userSettings.DeployNeeded = true;
         }
 
         // Public Functions
@@ -104,7 +114,7 @@ namespace TechtonicaModLoader.Services
             Application.Current.Dispatcher.Invoke(delegate () {
                 ModCache.Clear();
                 foreach (ThunderStoreMod mod in thunderStoreModCache) {
-                    ModCache.Add(new Mod(mod, this, profileManager));
+                    ModCache.Add(new Mod(mod, serviceProvider));
                 }
 
                 OnPropertyChanged(nameof(ModCache));
@@ -127,7 +137,7 @@ namespace TechtonicaModLoader.Services
 
         public bool SearchForMod(string fullName, out ThunderStoreMod? mod) {
             if(thunderStoreModCache == null || thunderStoreModCache.Count() == 0) {
-                Log.Error($"ThunderStore.SearchForMod() called before thunderStoreModCache was populated");
+                logger.Error($"ThunderStore.SearchForMod() called before thunderStoreModCache was populated");
                 mod = null;
                 return false;
             }
@@ -161,7 +171,7 @@ namespace TechtonicaModLoader.Services
         }
 
         private async Task FetchModsList() {
-            Log.Debug("Fetching update from ThunderStore");
+            logger.Debug("Fetching update from ThunderStore");
             IEnumerable<ThunderStoreMod>? thunderstoreMods = await GetAllThunderstoreMods();
             if (thunderstoreMods == null) return;
 
@@ -173,8 +183,8 @@ namespace TechtonicaModLoader.Services
             ThunderStoreMod? thunderStoreMod = thunderStoreModCache.Where(mod => mod.AllVersionNames.Contains(fullName)).FirstOrDefault();
             if(thunderStoreMod == null) {
                 string error = $"Couldn't find mod '{fullName}' in thunderStoreModCache";
-                Log.Error(error);
-                DebugUtils.CrashIfDebug(error);
+                logger.Error(error);
+                debugUtils.CrashIfDebug(error);
                 dialogService.ShowErrorMessage($"Couldn't Download {fullName}", "An error occured while trying to download this mod.\nPlease click the bug report button.");
                 return false;
             }
@@ -182,14 +192,14 @@ namespace TechtonicaModLoader.Services
             Mod? model = ModCache.Where(mod => mod.FullName == fullName).FirstOrDefault();
             if(model == null) {
                 string error = $"Couldn't find ModModel for '{fullName}'";
-                Log.Error(error);
-                DebugUtils.CrashIfDebug(error);
+                logger.Error(error);
+                debugUtils.CrashIfDebug(error);
             }
             else {
                 model.IsDownloading = true;
             }
 
-            string zipFileLocation = $"{ProgramData.FilePaths.ModsFolder}\\{fullName}.zip";
+            string zipFileLocation = $"{programData.FilePaths.ModsFolder}\\{fullName}.zip";
             
             using (HttpClient client = new HttpClient()) {
                 client.DefaultRequestHeaders.Add("Accept", "text/html, application/xhtml+xml, */*");
@@ -207,8 +217,8 @@ namespace TechtonicaModLoader.Services
                 }
                 catch (Exception ex) {
                     string error = $"An error occurred while downloading {fullName}: {ex.Message}";
-                    Log.Error(error);
-                    DebugUtils.CrashIfDebug(error);
+                    logger.Error(error);
+                    debugUtils.CrashIfDebug(error);
                     dialogService.ShowErrorMessage($"Couldn't Download {fullName}", "An error occured while trying to download this mod.\nPlease click the bug report button.");
                     return false;
                 }
@@ -231,21 +241,21 @@ namespace TechtonicaModLoader.Services
                     }
                     else {
                         string error = $"HTTP request failed with status code {response.StatusCode}";
-                        Log.Error(error);
-                        DebugUtils.CrashIfDebug(error);
+                        logger.Error(error);
+                        debugUtils.CrashIfDebug(error);
                         return "";
                     }
                 }
             }
             catch (Exception e) {
-                Log.Error($"Error occurred while getting API data: {e.Message}");
+                logger.Error($"Error occurred while getting API data: {e.Message}");
                 return "";
             }
         }
 
         private async Task<IEnumerable<ThunderStoreMod>?> GetAllThunderstoreMods() {
             string endPoint = $"{baseURL}/package/";
-            Log.Debug($"Querying ThunderStore API endpoint: '{endPoint}'");
+            logger.Debug($"Querying ThunderStore API endpoint: '{endPoint}'");
 
             string json = await GetApiData(endPoint);
             if (string.IsNullOrEmpty(json)) {
@@ -253,7 +263,7 @@ namespace TechtonicaModLoader.Services
                     dialogService.ShowErrorMessage("Couldn't connect to ThunderStore", "Couldn't fetch mods from Thunderstore. Local cache will be loaded instead.");
                 }
 
-                Log.Warning("Couldn't get mods from ThunderStore, switching to local cache");
+                logger.Warning("Couldn't get mods from ThunderStore, switching to local cache");
                 Connected = false;
                 return null;
             }
@@ -263,11 +273,11 @@ namespace TechtonicaModLoader.Services
 
             List<ThunderStoreMod> thunderstoreMods = JsonConvert.DeserializeObject<List<ThunderStoreMod>>(json) ?? new List<ThunderStoreMod>();
             if(thunderstoreMods.Count() == 0) {
-                Log.Warning($"ThunderStore returned no mods from API call");
+                logger.Warning($"ThunderStore returned no mods from API call");
                 return null;
             }
 
-            thunderstoreMods = thunderstoreMods.Where(mod => mod.PassesFilterChecks()).ToList();
+            thunderstoreMods = thunderstoreMods.Where(mod => mod.PassesFilterChecks(programData)).ToList();
             
             return thunderstoreMods;
         }
@@ -276,21 +286,23 @@ namespace TechtonicaModLoader.Services
 
         private void Save() {
             string json = JsonConvert.SerializeObject(downloadedMods, Formatting.Indented);
-            File.WriteAllText(ProgramData.FilePaths.DownloadedModsFile, json);
+            File.WriteAllText(programData.FilePaths.DownloadedModsFile, json);
 
             string modCacheJson = JsonConvert.SerializeObject(thunderStoreModCache);
-            File.WriteAllText(ProgramData.FilePaths.ModsCacheFile, modCacheJson);
+            File.WriteAllText(programData.FilePaths.ModsCacheFile, modCacheJson);
         }
 
-        public void Load() {
-            if (File.Exists(ProgramData.FilePaths.DownloadedModsFile)) {
-                string json = File.ReadAllText(ProgramData.FilePaths.DownloadedModsFile);
+        private void Load() {
+            if (File.Exists(programData.FilePaths.DownloadedModsFile)) {
+                string json = File.ReadAllText(programData.FilePaths.DownloadedModsFile);
                 downloadedMods = JsonConvert.DeserializeObject<Dictionary<string, ModVersion>>(json ?? "{}") ?? new Dictionary<string, ModVersion>();
+                logger.Info("Downloaded mods loaded");
             }
 
-            if (File.Exists(ProgramData.FilePaths.ModsCacheFile)) {
-                string json = File.ReadAllText(ProgramData.FilePaths.ModsCacheFile);
+            if (File.Exists(programData.FilePaths.ModsCacheFile)) {
+                string json = File.ReadAllText(programData.FilePaths.ModsCacheFile);
                 thunderStoreModCache = JsonConvert.DeserializeObject<List<ThunderStoreMod>>(json ?? "[]") ?? new List<ThunderStoreMod>();
+                logger.Info("Mod Cache loaded");
             }
         }
     }

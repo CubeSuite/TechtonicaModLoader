@@ -17,21 +17,24 @@ namespace TechtonicaModLoader
         // Members
 
         private IServiceProvider serviceProvider;
-
-        private UserSettings? userSettings;
-        private ILoggerService? logger = null;
-        private IProgramData? programData = null;
-        private IDialogService? dialogService;
-        private IProfileManager? profileManager;
-        private IThunderStore? thunderStore;
-        private IModFilesManager? modFilesManager;
+        private ILoggerService logger;
+        private IProgramData programData;
         
         private MainViewModel? mainVeiwModel = null;
-        private SettingsWindowViewModel? settingsWindowViewModel;
+
+        // Constructors
+
+        public App()
+        {
+            serviceProvider = ConfigureServiceProvider();
+            logger = serviceProvider.GetRequiredService<ILoggerService>();
+            programData = serviceProvider.GetRequiredService<IProgramData>();
+        }
 
         // Overrides
 
         protected override void OnStartup(StartupEventArgs e) {
+            ConfigureServiceProvider();
             DoStartupProcess();
 
             MainWindow = new MainWindow() {
@@ -44,51 +47,31 @@ namespace TechtonicaModLoader
 
         // Private Functions
 
-        //private void ConfigureServiceProvider() {
-        //    ServiceCollection services = new ServiceCollection();
+        private ServiceProvider ConfigureServiceProvider() {
+            ServiceCollection services = new ServiceCollection();
 
-        //    services.AddSingleton<IUserSettings, UserSettings>();
-        //    services.AddSingleton<ILoggerService, Log>();
-        //}
+            services.AddSingleton<IUserSettings, UserSettings>();
+            services.AddSingleton<ILoggerService, LoggerService>();
+            services.AddSingleton<IProgramData, ProgramData>();
+            services.AddSingleton<IDialogService, DialogService>();
+            services.AddSingleton<IProfileManager, ProfileManager>();
+            services.AddSingleton<IThunderStore, ThunderStore>();
+            services.AddSingleton<IModFilesManager, ModFilesManager>();
+            services.AddSingleton<IDebugUtils, DebugUtils>();
+
+            return services.BuildServiceProvider();
+        }
 
         private void DoStartupProcess() {
-            programData = new ProgramDataStore();
-            ProgramData.Initialise(programData);
+            programData.FilePaths.CreateFolderStructure();
+            programData.FilePaths.GenerateResources();
 
-            logger = new LoggerService();
-            Log.Initialise(logger);
-            Log.Info("Logger started");
-            
-            ProgramData.FilePaths.CreateFolderStructure();
-            Log.Info("Created folder structure");
-            ProgramData.FilePaths.GenerateResources();
-            Log.Info("Generated resources");
+            logger = serviceProvider.GetRequiredService<ILoggerService>();
+            logger.Info("Logger started");
 
-            dialogService = new DialogService();
-
-            userSettings = new UserSettings();
-            userSettings.Load();
-            Log.Info("Settings loaded");
-
-            settingsWindowViewModel = new SettingsWindowViewModel(userSettings, dialogService);
-            Log.Info("Created SettingsWindowViewModel");
-
-            profileManager = new ProfileManager(dialogService, userSettings);
-            profileManager.Load();
-            Log.Info("ProfileManager loaded");
-
-            modFilesManager = new ModFilesManager(dialogService, profileManager);
-            Log.Info("ModFilesManager loaded");
-
-            thunderStore = new ThunderStore(dialogService, profileManager, modFilesManager, settingsWindowViewModel);
-            thunderStore.Load();
-            Log.Info($"ThunderStore loaded");
-
-            mainVeiwModel = new MainViewModel(dialogService, settingsWindowViewModel, profileManager, thunderStore, modFilesManager);
-            mainVeiwModel.SelectedModList = userSettings?.DefaultModList;
-            mainVeiwModel.SelectedSortOption = userSettings?.DefaultModListSortOption;
-            Log.Info($"MainViewModel loaded");
-            Log.Info($"Running V{ProgramData.ProgramVersion.Major}.{ProgramData.ProgramVersion.Minor}.{ProgramData.ProgramVersion.Build}");
+            mainVeiwModel = new MainViewModel(serviceProvider);
+            logger.Info($"MainViewModel loaded");
+            logger.Info($"Running V{programData.ProgramVersion.Major}.{programData.ProgramVersion.Minor}.{programData.ProgramVersion.Build}");
         }
     }
 

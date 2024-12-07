@@ -39,9 +39,9 @@
                 <Button Content="Deploy" Padding="5,0" Margin="0,0,5,0" Command="{Binding DeployModsCommand}"
                         Visibility="{Binding DeployNeeded, Converter={StaticResource falseToCollapseConverter}}"/>
                 <Button Content="{Binding LaunchButtonText}" Padding="5,0" Margin="0,0,5,0" Command="{Binding LaunchGameCommand}"/>
-                <Controls:SvgButton Source="ControlBox/Settings" HandleClickCommand="{Binding OpenSettingsCommand}" Margin="0,0,5,0"/>
-                <Controls:SvgButton Source="ControlBox/Minimise" HandleClickCommand="{Binding MinimiseProgramCommand}" Margin="0,0,5,0"/>
-                <Controls:SvgButton Source="ControlBox/Close" HandleClickCommand="{Binding CloseProgramCommand}"/>
+                <Controls:SvgButton Source="{Binding SettingsSource}" HandleClickCommand="{Binding OpenSettingsCommand}" Margin="0,0,5,0"/>
+                <Controls:SvgButton Source="{Binding MinimiseSource}" HandleClickCommand="{Binding MinimiseProgramCommand}" Margin="0,0,5,0"/>
+                <Controls:SvgButton Source="{Binding CloseSource}" HandleClickCommand="{Binding CloseProgramCommand}"/>
             </StackPanel>
 
             <!--Options Panel-->
@@ -66,8 +66,8 @@
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
-                        <Controls:SvgButton Source="GUI/Add" Grid.Column="1" Margin="0,0,5,0" HandleClickCommand="{Binding CreateNewProfileCommand}"/>
-                        <Controls:SvgButton Source="ControlBox/Minimise" Grid.Column="2" HandleClickCommand="{Binding DeleteProfileCommand}"/>
+                        <Controls:SvgButton Source="{Binding AddSource}" Grid.Column="1" Margin="0,0,5,0" HandleClickCommand="{Binding CreateNewProfileCommand}"/>
+                        <Controls:SvgButton Source="{Binding MinimiseSource}" Grid.Column="2" HandleClickCommand="{Binding DeleteProfileCommand}"/>
                     </Grid>
                     
                     <!--Mod List-->

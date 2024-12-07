@@ -1,5 +1,6 @@
 ﻿using Accessibility;
 using CommunityToolkit.Mvvm.ComponentModel.__Internals;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,8 +36,11 @@ namespace TechtonicaModLoader.MVVM.Models
 
         private readonly List<Mod> dependencies = new List<Mod>();
 
+        private ILoggerService logger;
+        private IServiceProvider serviceProvider;
         private IThunderStore thunderStore;
         private IProfileManager profileManager;
+        private IDebugUtils debugUtils;
 
         // Properties
 
@@ -72,9 +76,12 @@ namespace TechtonicaModLoader.MVVM.Models
 
         // Constructors
 
-        public Mod(ThunderStoreMod thunderStoreMod, IThunderStore thunderStore, IProfileManager profileManager) {
-            this.thunderStore = thunderStore;
-            this.profileManager = profileManager;
+        public Mod(ThunderStoreMod thunderStoreMod, IServiceProvider serviceProvider) {
+            this.serviceProvider = serviceProvider;
+            logger = serviceProvider.GetRequiredService<ILoggerService>();
+            thunderStore = serviceProvider.GetRequiredService<IThunderStore>();
+            profileManager = serviceProvider.GetRequiredService<IProfileManager>();
+            debugUtils = serviceProvider.GetRequiredService<IDebugUtils>();
 
             _id = thunderStoreMod.uuid4;
             _name = thunderStoreMod.name;
@@ -82,7 +89,7 @@ namespace TechtonicaModLoader.MVVM.Models
             _tagline = thunderStoreMod.versions[0].description;
             _downloads = thunderStoreMod.GetNumDownloads();
             _rating = thunderStoreMod.rating_score;
-            _version = ModVersion.Parse(thunderStoreMod.versions[0].version_number);
+            _version = ModVersion.Parse(thunderStoreMod.versions[0].version_number, serviceProvider);
 
             _link = thunderStoreMod.package_url;
             _iconLink = thunderStoreMod.versions[0].icon;
@@ -94,12 +101,12 @@ namespace TechtonicaModLoader.MVVM.Models
                 if (dependency.Contains("BepInEx")) continue;
 
                 if(thunderStore.SearchForMod(dependency, out ThunderStoreMod? mod) && mod != null) {
-                    dependencies.Add(new Mod(mod, thunderStore, profileManager));
+                    dependencies.Add(new Mod(mod, serviceProvider));
                 }
                 else {
                     string error = $"Failed to find dependency '{dependency}'";
-                    Log.Error(error);
-                    DebugUtils.CrashIfDebug(error);
+                    logger.Error(error);
+                    debugUtils.CrashIfDebug(error);
                 }
             }
 
@@ -107,14 +114,14 @@ namespace TechtonicaModLoader.MVVM.Models
                 _lastUpdated = lastUpdated;
             }
             else {
-                Log.Warning($"Couldn't parse {this}'s date_updated member ({thunderStoreMod.date_updated ?? "null"})");
+                logger.Warning($"Couldn't parse {this}'s date_updated member ({thunderStoreMod.date_updated ?? "null"})");
             }
 
             if (DateTime.TryParse(thunderStoreMod.date_created, out DateTime dateUploaded)) {
                 _dateUploaded = dateUploaded;
             }
             else {
-                Log.Warning($"Couldn't parse {this}'s date_uploaded member ({thunderStoreMod.date_created ?? "null"})");
+                logger.Warning($"Couldn't parse {this}'s date_uploaded member ({thunderStoreMod.date_created ?? "null"})");
             }
         }
 

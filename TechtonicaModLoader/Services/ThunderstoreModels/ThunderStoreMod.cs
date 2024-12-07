@@ -28,10 +28,10 @@ namespace TechtonicaModLoader.Services.ThunderstoreModels
 
         // Public Functions
 
-        public bool PassesFilterChecks() {
+        public bool PassesFilterChecks(IProgramData programData) {
             if (is_deprecated) return false;
-            if (ProgramData.AllowedMods.Contains(name)) return true;
-            if (ProgramData.DisallowedMods.Contains(name)) return false;
+            if (programData.AllowedMods.Contains(name)) return true;
+            if (programData.DisallowedMods.Contains(name)) return false;
             if (DateTime.Parse(date_updated) < new DateTime(2024, 11, 7)) return false;
 
             return true;
