@@ -260,7 +260,7 @@ namespace TechtonicaModLoader.Stores
                 logger.Error(error);
                 logger.Debug(e.StackTrace ?? "Couldn't log StackTrace, is null");
 
-                if (!ProgramData.IsDebugBuild) {
+                if (!programData.IsDebugBuild) {
                     dialogService.ShowErrorMessage(StringResources.DeleteFolderErrorTitle, StringResources.DeployModsErrorMessage);
                     // ToDo: Open bug report view
                 }

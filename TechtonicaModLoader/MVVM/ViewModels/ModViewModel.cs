@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using TechtonicaModLoader.MVVM.Models;
 using TechtonicaModLoader.Resources;
 using TechtonicaModLoader.Services;
@@ -44,7 +45,7 @@ namespace TechtonicaModLoader.MVVM.ViewModels
 
         public bool HasDonationLink => !string.IsNullOrEmpty(DonationLink);
 
-        public bool AllowToggling => string.Equals(profileManager.ActiveProfile.Name, StringResources.ProfileVanilla, StringComparison.CurrentCulture);
+        public bool AllowToggling => !string.Equals(profileManager.ActiveProfile.Name, StringResources.ProfileVanilla, StringComparison.CurrentCulture);
         // ToDo: disable toggling for dependent mods
 
         // Constructors

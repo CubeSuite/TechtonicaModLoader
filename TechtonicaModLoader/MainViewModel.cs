@@ -1,25 +1,14 @@
-﻿using Accessibility;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Data;
 using TechtonicaModLoader.MVVM.Models;
 using TechtonicaModLoader.MVVM.ViewModels;
 using TechtonicaModLoader.Resources;
 using TechtonicaModLoader.Services;
 using TechtonicaModLoader.Stores;
-using TechtonicaModLoader.Windows;
-using TechtonicaModLoader.Windows.Settings;
 
 namespace TechtonicaModLoader.MVVM
 {

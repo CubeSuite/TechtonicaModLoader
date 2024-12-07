@@ -41,8 +41,8 @@ namespace TechtonicaModLoader.MVVM.Models
         public bool IsModEnabled(Mod mod) {
             if (string.Equals(_profileManager.ActiveProfile.Name, StringResources.ProfileVanilla, StringComparison.CurrentCulture)) return false;
 
-            if (!ModEnabledStates.TryGetValue(mod.ID, out bool value)) return false;
-            return value;
+            if (!ModEnabledStates.ContainsKey(mod.ID)) return false;
+            return ModEnabledStates[mod.ID];
         }
 
         public void AddMod(ThunderStoreMod mod) {
