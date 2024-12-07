@@ -44,7 +44,7 @@ namespace TechtonicaModLoader.MVVM.ViewModels
 
         public bool HasDonationLink => !string.IsNullOrEmpty(DonationLink);
 
-        public bool AllowToggling => profileManager.ActiveProfile.Name != StringResources.ProfileVanilla;
+        public bool AllowToggling => string.Equals(profileManager.ActiveProfile.Name, StringResources.ProfileVanilla, StringComparison.CurrentCulture);
         // ToDo: disable toggling for dependent mods
 
         // Constructors
