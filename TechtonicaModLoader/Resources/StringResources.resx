@@ -1,0 +1,354 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="BrowseForGameFolderButtonDescription" xml:space="preserve">
+    <value>Manually browse for Techtonica's installation location.</value>
+  </data>
+  <data name="BrowseForGameFolderButtonName" xml:space="preserve">
+    <value>Browse for Game Folder</value>
+  </data>
+  <data name="BrowseForGameFolderButtonText" xml:space="preserve">
+    <value>Browse</value>
+  </data>
+  <data name="ButtonTextCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ButtonTextClose" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="ButtonTextConfirm" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+  <data name="ButtonTextNo" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="ButtonTextYes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="CategoryGameFolder" xml:space="preserve">
+    <value>Game Folder</value>
+  </data>
+  <data name="CategoryGeneral" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="CategoryModList" xml:space="preserve">
+    <value>Mod List</value>
+  </data>
+  <data name="DefaultModListDescription" xml:space="preserve">
+    <value>The mod list that is displayed when you open Techtonica Mod Loader.</value>
+  </data>
+  <data name="DefaultModListName" xml:space="preserve">
+    <value>Default Mod List</value>
+  </data>
+  <data name="DefaultSortOptionDescription" xml:space="preserve">
+    <value>The default sort option to apply to the mod list.</value>
+  </data>
+  <data name="DefaultSortOptionName" xml:space="preserve">
+    <value>Default Sort Option</value>
+  </data>
+  <data name="DeleteFolderErrorMessage" xml:space="preserve">
+    <value>TML couldn't delete the folder '{folder}'.\nPlease manually delete it and report this issue.</value>
+  </data>
+  <data name="DeleteFolderErrorTitle" xml:space="preserve">
+    <value>Couldn't Delete Folder</value>
+  </data>
+  <data name="DeployModsErrorMessage" xml:space="preserve">
+    <value>An error occurred while trying to deply mods. Please click the bug report button.</value>
+  </data>
+  <data name="DeployModsErrorTitle" xml:space="preserve">
+    <value>Couldn't Deploy Mods</value>
+  </data>
+  <data name="FindGameFolderButtonDescription" xml:space="preserve">
+    <value>Have Techtonica Mod Loader search for your Techtonica installation folder.</value>
+  </data>
+  <data name="FindGameFolderButtonName" xml:space="preserve">
+    <value>Find Game Folder</value>
+  </data>
+  <data name="FindGameFolderButtonText" xml:space="preserve">
+    <value>Find</value>
+  </data>
+  <data name="GameFolderDescription" xml:space="preserve">
+    <value>Techtonica's Installation Location.</value>
+  </data>
+  <data name="GameFolderName" xml:space="preserve">
+    <value>Game Folder</value>
+  </data>
+  <data name="LogDebugMessagesDisplay" xml:space="preserve">
+    <value>Whether debug messages should be logged to file. Enable to gather info for a bug report.</value>
+  </data>
+  <data name="LogDebugMessagesName" xml:space="preserve">
+    <value>Log Debug Messages</value>
+  </data>
+  <data name="ModDownloadErrorMessage" xml:space="preserve">
+    <value>An error occured while trying to download this mod.\nPlease click the bug report button.</value>
+  </data>
+  <data name="ModDownloadErrorTitle" xml:space="preserve">
+    <value>Couldn't Download {0}</value>
+  </data>
+  <data name="ModListSortOptionAlphabetical" xml:space="preserve">
+    <value>Alphabetical</value>
+  </data>
+  <data name="ModListSortOptionLastUpdated" xml:space="preserve">
+    <value>Last Updated</value>
+  </data>
+  <data name="ModListSortOptionNewest" xml:space="preserve">
+    <value>Newest</value>
+  </data>
+  <data name="ModListSortOptionDownloads" xml:space="preserve">
+    <value>Downloads</value>
+  </data>
+  <data name="ModListSourceAll" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="ModListSourceDisabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="ModListSourceDownloaded" xml:space="preserve">
+    <value>Downloaded</value>
+  </data>
+  <data name="ModListSourceEnabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="ModListSourceNew" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="ModListSourceNotDownloaded" xml:space="preserve">
+    <value>Not Downloaded</value>
+  </data>
+  <data name="OfflineModListSourceDisabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="OfflineModListSourceDownloaded" xml:space="preserve">
+    <value>Downloaded</value>
+  </data>
+  <data name="OfflineModListSourceEnabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="ProfileDevelopment" xml:space="preserve">
+    <value>Development</value>
+  </data>
+  <data name="ProfileModded" xml:space="preserve">
+    <value>Modded</value>
+  </data>
+  <data name="ProfileVanilla" xml:space="preserve">
+    <value>Vanilla</value>
+  </data>
+  <data name="ShowLogInExplorerButtonDescription" xml:space="preserve">
+    <value>Opens the folder that contains Techtonica Mod Loader's log file.</value>
+  </data>
+  <data name="ShowLogInExplorerButtonName" xml:space="preserve">
+    <value>Show Log In Explorer</value>
+  </data>
+  <data name="ShowLogInExplorerButtonText" xml:space="preserve">
+    <value>Show In Explorer</value>
+  </data>
+  <data name="ThunderstoreConnectErrorMessage" xml:space="preserve">
+    <value>Couldn't fetch mods from Thunderstore. Local cache will be loaded instead.</value>
+  </data>
+  <data name="ThunderstoreConnectErrorTitle" xml:space="preserve">
+    <value>Couldn't connect to ThunderStore</value>
+  </data>
+  <data name="ThunderstoreReconnectMessage" xml:space="preserve">
+    <value>Connection To ThunderStore has been restored, you can now browse online mods again.</value>
+  </data>
+  <data name="ThunderstoreReconnectTitle" xml:space="preserve">
+    <value>Reconnected To Thunderstore</value>
+  </data>
+  <data name="WrongFileMessage" xml:space="preserve">
+    <value>You need to select the file 'Techtonica.exe'</value>
+  </data>
+  <data name="WrongFileTitle" xml:space="preserve">
+    <value>Wrong File Selected</value>
+  </data>
+  <data name="ModListSortOptionPopularity" xml:space="preserve">
+    <value>Popularity</value>
+  </data>
+  <data name="DeployAndLaunchGame" xml:space="preserve">
+    <value>Deploy &amp; Launch Game</value>
+  </data>
+  <data name="LaunchGame" xml:space="preserve">
+    <value>Launch Game</value>
+  </data>
+  <data name="NewProfileTitle" xml:space="preserve">
+    <value>Enter Profile Name:</value>
+  </data>
+  <data name="DeleteProfileTitle" xml:space="preserve">
+    <value>Delete Profile?</value>
+  </data>
+  <data name="DeleteProfileMessage" xml:space="preserve">
+    <value>Are you sure you want to delete the {0} profile?\nThis cannot be undone.</value>
+  </data>
+  <data name="ThunderstoreOfflineTitle" xml:space="preserve">
+    <value>Not Connected To Thunderstore</value>
+  </data>
+  <data name="ThunderstoreOfflineMessage" xml:space="preserve">
+    <value>You can't browse online mods while in offline mode</value>
+  </data>
+  <data name="WarningLevelInfo" xml:space="preserve">
+    <value>Info: </value>
+  </data>
+  <data name="WarningLevelWarning" xml:space="preserve">
+    <value>Warning: </value>
+  </data>
+  <data name="WarningLevelError" xml:space="preserve">
+    <value>Error: </value>
+  </data>
+  <data name="ModUnzipErrorTitle" xml:space="preserve">
+    <value>Error Occurred While Unzipping Mod</value>
+  </data>
+  <data name="ModUnzipErrorMessage" xml:space="preserve">
+    <value>Please click the bug report button.</value>
+  </data>
+  <data name="ProfileNameConfirmationTitle" xml:space="preserve">
+    <value>Name Taken</value>
+  </data>
+  <data name="ProfileNameConfirmationMessage" xml:space="preserve">
+    <value>The profile name '{0}' is already taken, are you sure you want to use it again?</value>
+  </data>
+  <data name="UpdateAllButtonText" xml:space="preserve">
+    <value>Update All</value>
+  </data>
+  <data name="CheckForUpdatesButtonText" xml:space="preserve">
+    <value>Check For Updates</value>
+  </data>
+  <data name="DeployButtonText" xml:space="preserve">
+    <value>Deploy</value>
+  </data>
+  <data name="ProfileLabelText" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="ModListLabelText" xml:space="preserve">
+    <value>Mod List</value>
+  </data>
+  <data name="SortByLabelText" xml:space="preserve">
+    <value>Sort By</value>
+  </data>
+  <data name="SearchBarDefaultText" xml:space="preserve">
+    <value>Search...</value>
+  </data>
+  <data name="SettingsLabelText" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="RestoreDefaultsButtonText" xml:space="preserve">
+    <value>Restore Defaults</value>
+  </data>
+  <data name="CategoriesLabelText" xml:space="preserve">
+    <value>Categories</value>
+  </data>
+</root>

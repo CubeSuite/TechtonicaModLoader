@@ -1,17 +1,8 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Newtonsoft.Json.Bson;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Security.RightsManagement;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 using System.Windows;
-using TechtonicaModLoader.Stores;
+using TechtonicaModLoader.Resources;
 using TechtonicaModLoader.Windows;
 using TechtonicaModLoader.Windows.Dialogs;
-using TechtonicaModLoader.Windows.Settings;
 
 namespace TechtonicaModLoader.Services
 {
@@ -19,9 +10,9 @@ namespace TechtonicaModLoader.Services
     {
         public bool GetStringFromUser(out string output, string title, string defaultInput);
         public bool GetUserConfirmation(string title, string description);
-        public void ShowInfoMessage(string title, string description, string buttonText = "Close");
-        public void ShowWarningMessage(string title, string description, string buttonText = "Close");
-        public void ShowErrorMessage(string title, string description, string buttonText = "Close");
+        public void ShowInfoMessage(string title, string description, string buttonText = "");
+        public void ShowWarningMessage(string title, string description, string buttonText = "");
+        public void ShowErrorMessage(string title, string description, string buttonText = "");
 
         public void OpenSettingsDialog(IServiceProvider serviceProvider);
     }
@@ -49,18 +40,21 @@ namespace TechtonicaModLoader.Services
         }
 
         public bool GetUserConfirmation(string title, string description) {
-            return ShowDialog<GetConfirmationViewModel>([title, description], out _, 2, "Yes", "No");
+            return ShowDialog<GetConfirmationViewModel>([title, description], out _, 2, StringResources.ButtonTextYes, StringResources.ButtonTextNo);
         }
 
-        public void ShowInfoMessage(string title, string description, string buttonText = "Close") {
+        public void ShowInfoMessage(string title, string description, string buttonText = "") {
+            if (string.IsNullOrEmpty(buttonText)) buttonText = StringResources.ButtonTextClose;
             ShowDialog<ShowNotificationViewModel>([WarningLevel.Info, title, description, buttonText], out _, 1, buttonText);
         }
 
-        public void ShowWarningMessage(string title, string description, string buttonText = "Close") {
+        public void ShowWarningMessage(string title, string description, string buttonText = "") {
+            if (string.IsNullOrEmpty(buttonText)) buttonText = StringResources.ButtonTextClose;
             ShowDialog<ShowNotificationViewModel>([WarningLevel.Warning, title, description, buttonText], out _, 1, buttonText);
         }
 
-        public void ShowErrorMessage(string title, string description, string buttonText = "Close") {
+        public void ShowErrorMessage(string title, string description, string buttonText = "") {
+            if (string.IsNullOrEmpty(buttonText)) buttonText = StringResources.ButtonTextClose;
             ShowDialog<ShowNotificationViewModel>([WarningLevel.Error, title, description, buttonText], out _, 1, buttonText);
         }
 
@@ -71,17 +65,18 @@ namespace TechtonicaModLoader.Services
 
         // Private Functions
 
-        public bool ShowDialog<TViewModel>(object[] args, out object? result, int numButtons = 2, string leftButtonText = "Confirm", string rightButtonText = "Cancel") {
+        private bool ShowDialog<TViewModel>(object[] args, out object? result, int numButtons = 2, string leftButtonText = "", string rightButtonText = "") {
+            if (string.IsNullOrEmpty(leftButtonText)) leftButtonText = StringResources.ButtonTextConfirm;
+            if (string.IsNullOrEmpty(rightButtonText)) rightButtonText = StringResources.ButtonTextCancel;
             if (!viewModelToViewMap.ContainsKey(typeof(TViewModel))) {
                 throw new Exception($"No dialog exists for view model: {typeof(TViewModel)}");
             }
 
-            GetUserInputWindow? dialog = null;
             object? viewModel = null;
             bool? dialogResult = null;
 
             Application.Current.Dispatcher.Invoke(delegate () {
-                dialog = new GetUserInputWindow() {
+                GetUserInputWindow dialog = new() {
                      ButtonCount = numButtons,
                      LeftButtonText = leftButtonText,
                      RightButtonText = rightButtonText

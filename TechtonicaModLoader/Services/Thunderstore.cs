@@ -1,24 +1,15 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Configuration;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media.Imaging;
-using System.Xml.Linq;
 using TechtonicaModLoader.MVVM.Models;
+using TechtonicaModLoader.Resources;
 using TechtonicaModLoader.Services.ThunderstoreModels;
 using TechtonicaModLoader.Stores;
-using TechtonicaModLoader.Windows.Settings;
 
 namespace TechtonicaModLoader.Services
 {
@@ -46,7 +37,7 @@ namespace TechtonicaModLoader.Services
         // Members
         private IEnumerable<ThunderStoreMod> thunderStoreModCache = new List<ThunderStoreMod>();
         private Dictionary<string, ModVersion> downloadedMods = new Dictionary<string, ModVersion>();
-        private List<string> downloadQueue = new List<string>();
+        private readonly List<string> downloadQueue = new List<string>();
         private const string baseURL = "https://thunderstore.io/c/techtonica/api/v1";
         private string? lastJson;
 
@@ -90,7 +81,7 @@ namespace TechtonicaModLoader.Services
 
         partial void OnConnectedChanging(bool value) {
             if(!Connected && value) {
-                dialogService.ShowInfoMessage("Reconnected To Thunderstore", "Connection To ThunderStore has been restored, you can now browse online mods again");
+                dialogService.ShowInfoMessage(StringResources.ThunderstoreReconnectTitle, StringResources.ThunderstoreReconnectMessage);
             }
         }
 
@@ -185,7 +176,7 @@ namespace TechtonicaModLoader.Services
                 string error = $"Couldn't find mod '{fullName}' in thunderStoreModCache";
                 logger.Error(error);
                 debugUtils.CrashIfDebug(error);
-                dialogService.ShowErrorMessage($"Couldn't Download {fullName}", "An error occured while trying to download this mod.\nPlease click the bug report button.");
+                dialogService.ShowErrorMessage(string.Format(StringResources.ModDownloadErrorTitle, fullName), StringResources.ModDownloadErrorMessage);
                 return false;
             }
 
@@ -219,7 +210,7 @@ namespace TechtonicaModLoader.Services
                     string error = $"An error occurred while downloading {fullName}: {ex.Message}";
                     logger.Error(error);
                     debugUtils.CrashIfDebug(error);
-                    dialogService.ShowErrorMessage($"Couldn't Download {fullName}", "An error occured while trying to download this mod.\nPlease click the bug report button.");
+                    dialogService.ShowErrorMessage(string.Format(StringResources.ModDownloadErrorTitle, fullName), StringResources.ModDownloadErrorMessage);
                     return false;
                 }
 
@@ -260,7 +251,7 @@ namespace TechtonicaModLoader.Services
             string json = await GetApiData(endPoint);
             if (string.IsNullOrEmpty(json)) {
                 if (Connected) {
-                    dialogService.ShowErrorMessage("Couldn't connect to ThunderStore", "Couldn't fetch mods from Thunderstore. Local cache will be loaded instead.");
+                    dialogService.ShowErrorMessage(StringResources.ThunderstoreConnectErrorTitle, StringResources.ThunderstoreConnectErrorMessage);
                 }
 
                 logger.Warning("Couldn't get mods from ThunderStore, switching to local cache");

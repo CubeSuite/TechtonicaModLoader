@@ -1,18 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Bson;
-using SharpVectors.Dom.Events;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
 using TechtonicaModLoader.MVVM.Models;
+using TechtonicaModLoader.Resources;
 using TechtonicaModLoader.Services;
 using TechtonicaModLoader.Services.ThunderstoreModels;
 
@@ -71,7 +64,7 @@ namespace TechtonicaModLoader.Stores
 
         public void CreateNewProfile(string name) {
             if (ProfilesList.Select(profile => profile.Name).Contains(name)) {
-                if (!dialogService.GetUserConfirmation("Name Taken", $"The profile name '{name}' is already taken, are you sure you want to use it again?")) {
+                if (!dialogService.GetUserConfirmation(StringResources.ProfileNameConfirmationTitle, string.Format(StringResources.ProfileNameConfirmationMessage, name))) {
                     return;
                 }
             }
@@ -140,9 +133,9 @@ namespace TechtonicaModLoader.Stores
         }
 
         private void CreateDefaultProfiles() {
-            AddProfile(new Profile(this, "Modded", true));
-            AddProfile(new Profile(this, "Development", true));
-            AddProfile(new Profile(this, "Vanilla", true));
+            AddProfile(new Profile(this, StringResources.ProfileModded, true));
+            AddProfile(new Profile(this, StringResources.ProfileDevelopment, true));
+            AddProfile(new Profile(this, StringResources.ProfileVanilla, true));
 
             userSettings.ActiveProfileID = 0;
 

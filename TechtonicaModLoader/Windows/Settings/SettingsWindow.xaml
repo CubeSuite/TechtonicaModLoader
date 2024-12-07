@@ -6,7 +6,9 @@
         xmlns:local="clr-namespace:TechtonicaModLoader.Windows"
         xmlns:Controls="clr-namespace:TechtonicaModLoader.Controls"
         xmlns:SettingVMs="clr-namespace:TechtonicaModLoader.MVVM.ViewModels.Settings"
-        xmlns:Views="clr-namespace:TechtonicaModLoader.MVVM.Views"
+        xmlns:Views="clr-namespace:TechtonicaModLoader.MVVM.Views" 
+        xmlns:settings="clr-namespace:TechtonicaModLoader.Windows.Settings" 
+        d:DataContext="{d:DesignInstance Type=settings:SettingsWindowViewModel}"
         mc:Ignorable="d"
         Title="SettingsWindow" Height="675" Width="1600"
         Background="Transparent" AllowsTransparency="True"
@@ -27,9 +29,9 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <Label Content="Settings" Style="{DynamicResource titleStyle}" Grid.ColumnSpan="2" Margin="7,2,7,0"/>
+            <Label Content="{Binding SettingsLabelText}"  d:Content="@Settings" Style="{DynamicResource titleStyle}" Grid.ColumnSpan="2" Margin="7,2,7,0"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="5,5,7,5" Grid.Column="1">
-                <Button Content="Restore Defaults" Margin="0,0,5,0" Height="30" Command="{Binding RestoreDefaultsCommand}"/>
+                <Button Content="{Binding RestoreDefaultsButtonText}" d:Content="@Restore Defaults" Margin="0,0,5,0" Height="30" Command="{Binding RestoreDefaultsCommand}"/>
                 <Controls:SvgButton Source="{Binding CloseSource}" Clicked="OnCloseClicked"/>
             </StackPanel>
 
@@ -41,7 +43,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <Label Content="Categories" Style="{DynamicResource titleStyle}" FontSize="16" Margin="5,0"/>
+                    <Label Content="{Binding CategoriesLabelText}" d:Content="@Categories" Style="{DynamicResource titleStyle}" FontSize="16" Margin="5,0"/>
                     <ListView ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedItem, Mode=TwoWay}" Margin="5" Grid.Row="1"/>
                 </Grid>
             </Border>
