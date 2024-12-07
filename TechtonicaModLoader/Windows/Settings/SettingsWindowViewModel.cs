@@ -49,6 +49,10 @@ namespace TechtonicaModLoader.Windows.Settings
             }
         }
 
+        public string SettingsLabelText => StringResources.SettingsLabelText;
+        public string RestoreDefaultsButtonText => StringResources.RestoreDefaultsButtonText;
+        public string CategoriesLabelText => StringResources.CategoriesLabelText;
+
         [ObservableProperty] string _selectedItem;
         [ObservableProperty] bool _deployNeeded = false;
         [ObservableProperty] string _closeSource;

@@ -81,6 +81,13 @@ namespace TechtonicaModLoader.MVVM
 
         public bool DeployNeeded => userSettings.DeployNeeded;
         public string LaunchButtonText => DeployNeeded ? StringResources.DeployAndLaunchGame : StringResources.LaunchGame;
+        public string UpdateAllButtonText => StringResources.UpdateAllButtonText;
+        public string CheckForUpdatesButtonText => StringResources.CheckForUpdatesButtonText;
+        public string DeployButtonText => StringResources.DeployButtonText;
+        public string ProfileLabelText => StringResources.ProfileLabelText;
+        public string ModListLabelText => StringResources.ModListLabelText;
+        public string SortByLabelText => StringResources.SortByLabelText;
+        public string SearchBarDefaultText => StringResources.SearchBarDefaultText;
 
         // Constructors
 

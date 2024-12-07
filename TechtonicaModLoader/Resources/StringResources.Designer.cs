@@ -133,6 +133,15 @@ namespace TechtonicaModLoader.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Categories.
+        /// </summary>
+        internal static string CategoriesLabelText {
+            get {
+                return ResourceManager.GetString("CategoriesLabelText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Game Folder.
         /// </summary>
         internal static string CategoryGameFolder {
@@ -156,6 +165,15 @@ namespace TechtonicaModLoader.Resources {
         internal static string CategoryModList {
             get {
                 return ResourceManager.GetString("CategoryModList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check For Updates.
+        /// </summary>
+        internal static string CheckForUpdatesButtonText {
+            get {
+                return ResourceManager.GetString("CheckForUpdatesButtonText", resourceCulture);
             }
         }
         
@@ -237,6 +255,15 @@ namespace TechtonicaModLoader.Resources {
         internal static string DeployAndLaunchGame {
             get {
                 return ResourceManager.GetString("DeployAndLaunchGame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deploy.
+        /// </summary>
+        internal static string DeployButtonText {
+            get {
+                return ResourceManager.GetString("DeployButtonText", resourceCulture);
             }
         }
         
@@ -345,6 +372,15 @@ namespace TechtonicaModLoader.Resources {
         internal static string ModDownloadErrorTitle {
             get {
                 return ResourceManager.GetString("ModDownloadErrorTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mod List.
+        /// </summary>
+        internal static string ModListLabelText {
+            get {
+                return ResourceManager.GetString("ModListLabelText", resourceCulture);
             }
         }
         
@@ -511,6 +547,15 @@ namespace TechtonicaModLoader.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Profile.
+        /// </summary>
+        internal static string ProfileLabelText {
+            get {
+                return ResourceManager.GetString("ProfileLabelText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Modded.
         /// </summary>
         internal static string ProfileModded {
@@ -547,6 +592,33 @@ namespace TechtonicaModLoader.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Restore Defaults.
+        /// </summary>
+        internal static string RestoreDefaultsButtonText {
+            get {
+                return ResourceManager.GetString("RestoreDefaultsButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search....
+        /// </summary>
+        internal static string SearchBarDefaultText {
+            get {
+                return ResourceManager.GetString("SearchBarDefaultText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Settings.
+        /// </summary>
+        internal static string SettingsLabelText {
+            get {
+                return ResourceManager.GetString("SettingsLabelText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Opens the folder that contains Techtonica Mod Loader&apos;s log file..
         /// </summary>
         internal static string ShowLogInExplorerButtonDescription {
@@ -570,6 +642,15 @@ namespace TechtonicaModLoader.Resources {
         internal static string ShowLogInExplorerButtonText {
             get {
                 return ResourceManager.GetString("ShowLogInExplorerButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sort By.
+        /// </summary>
+        internal static string SortByLabelText {
+            get {
+                return ResourceManager.GetString("SortByLabelText", resourceCulture);
             }
         }
         
@@ -624,6 +705,15 @@ namespace TechtonicaModLoader.Resources {
         internal static string ThunderstoreReconnectTitle {
             get {
                 return ResourceManager.GetString("ThunderstoreReconnectTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update All.
+        /// </summary>
+        internal static string UpdateAllButtonText {
+            get {
+                return ResourceManager.GetString("UpdateAllButtonText", resourceCulture);
             }
         }
         
