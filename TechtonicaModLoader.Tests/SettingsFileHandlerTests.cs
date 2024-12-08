@@ -1,5 +1,6 @@
 ﻿using Moq;
 using System.Drawing;
+using System.IO.Abstractions;
 using TechtonicaModLoader.MVVM.Models;
 using TechtonicaModLoader.Resources;
 using TechtonicaModLoader.Stores;
@@ -82,62 +83,84 @@ namespace TechtonicaModLoader.Tests
             SeenMods = ["42f76853-d2a4-4520-949b-13a02fdbbbcb", "3ab8e328-cff6-498e-8e85-c226e8ba94c5", "ea219b83-70f4-494d-adcc-650c102525f9"],
         };
 
-        private (Mock<ILoggerService>, Mock<IServiceProvider>) SetupV1Schema() {
-            Mock<ILoggerService> logger = new(MockBehavior.Strict);
+        private ILoggerService? logger;
+        private IProgramData? programData;
+        private Mock<IProfileManager>? profileManager;
+        private Mock<IFileSystem>? fileSystem;
 
-            IProgramData programData = Mock.Of<IProgramData>(p => p.FilePaths.SettingsFile == "SomePath");
+        private Mock<IServiceProvider> SetupMockServiceProvider() {
+            logger = Mock.Of<ILoggerService>();
+            programData = Mock.Of<IProgramData>(p => p.FilePaths.SettingsFile == "SomePath");
 
-            Mock<IProfileManager> profileManager = new(MockBehavior.Strict);
+            profileManager = new Mock<IProfileManager>(MockBehavior.Strict);
             profileManager.Setup(p => p.ProfilesList).Returns([
                 new Profile(profileManager.Object, StringResources.ProfileModded, true),
                 new Profile(profileManager.Object, StringResources.ProfileDevelopment, true),
                 new Profile(profileManager.Object, StringResources.ProfileVanilla, true),
                 ]);
 
+            fileSystem = new Mock<IFileSystem>(MockBehavior.Strict);
+            fileSystem.Setup(f => f.File.WriteAllText(It.IsAny<string>(), It.IsAny<string>()));
+
             Mock<IServiceProvider> serviceProvider = new(MockBehavior.Strict);
-            serviceProvider.Setup(s => s.GetService(typeof(ILoggerService))).Returns(logger.Object);
+            serviceProvider.Setup(s => s.GetService(typeof(ILoggerService))).Returns(logger);
             serviceProvider.Setup(s => s.GetService(typeof(IProgramData))).Returns(programData);
             serviceProvider.Setup(s => s.GetService(typeof(IProfileManager))).Returns(profileManager.Object);
+            serviceProvider.Setup(s => s.GetService(typeof(IFileSystem))).Returns(fileSystem.Object);
 
-            return (logger, serviceProvider);
+            return serviceProvider;
         }
 
         [TestMethod]
-        public void ParseSettingsJson_EmptyJson_LogErrorReturnDefault() {
-            (Mock<ILoggerService> logger, Mock<IServiceProvider> serviceProvider) = SetupV1Schema();
-            logger.Setup(l => l.Error(It.IsAny<string>()));
+        public void Load_FileNotExist_ReturnsDefault() {
+            Mock<IServiceProvider> serviceProvider = SetupMockServiceProvider();
+            Assert.IsNotNull(fileSystem);
+            fileSystem.Setup(f => f.File.Exists(It.IsAny<string>())).Returns(false);
 
             SettingsFileHandler settingsFileHandler = new(serviceProvider.Object);
-            string empty = string.Empty;
-            SettingsData? settingsData = settingsFileHandler.ParseSettingsJson(ref empty);
+            SettingsData? settingsData = settingsFileHandler.Load();
 
-            Assert.IsNull(settingsData);
+            Assert.IsNotNull(settingsData);
+            Assert.AreEqual(settingsData, new SettingsData());
+            fileSystem.Verify(f => f.File.WriteAllText(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [TestMethod]
+        public void Load_FileEmpty_ReturnsDefault() {
+            Mock<IServiceProvider> serviceProvider = SetupMockServiceProvider();
+            Assert.IsNotNull(fileSystem);
+            fileSystem.Setup(f => f.File.Exists(It.IsAny<string>())).Returns(true);
+            fileSystem.Setup(f => f.File.ReadAllText(It.IsAny<string>())).Returns(string.Empty);
+
+            SettingsFileHandler settingsFileHandler = new(serviceProvider.Object);
+            SettingsData? settingsData = settingsFileHandler.Load();
+
+            Assert.IsNotNull(settingsData);
+            Assert.AreEqual(settingsData, new SettingsData());
+            fileSystem.Verify(f => f.File.WriteAllText(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         }
 
         [TestMethod]
         public void ParseSettingsJson_V1Schema_DoesNotThrow() {
-            (Mock<ILoggerService> logger, Mock<IServiceProvider> serviceProvider) = SetupV1Schema();
-            logger.Setup(l => l.Error(It.IsAny<string>()));
-            logger.Setup(l => l.Warning(It.IsAny<string>()));
-            logger.Setup(l => l.Info(It.IsAny<string>(), true));
+            Mock<IServiceProvider> serviceProvider = SetupMockServiceProvider();
 
             SettingsFileHandler settingsFileHandler = new(serviceProvider.Object);
             SettingsData? settingsData = settingsFileHandler.ParseSettingsJson(ref v1Schema);
 
             Assert.IsNotNull(settingsData);
             Assert.IsTrue(settingsData == convertedV1Schema);
+            Assert.IsNotNull(fileSystem);
+            fileSystem.Verify(f => f.File.WriteAllText(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         }
 
         [TestMethod]
         public void ParseSettingsJson_BadJson_LogErrorReturnDefault() {
-            (Mock<ILoggerService> logger, Mock<IServiceProvider> serviceProvider) = SetupV1Schema();
-            logger.Setup(l => l.Error(It.IsAny<string>()));
-            logger.Setup(l => l.Debug(It.IsAny<string>(), true));
+            Mock<IServiceProvider> serviceProvider = SetupMockServiceProvider();
 
             SettingsFileHandler settingsFileHandler = new(serviceProvider.Object);
             string badJson = "{";
-
             SettingsData? settingsData = settingsFileHandler.ParseSettingsJson(ref badJson);
+
             Assert.IsNull(settingsData);
         }
     }

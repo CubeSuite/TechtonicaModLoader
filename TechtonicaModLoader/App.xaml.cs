@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using System.IO.Abstractions;
 using System.Windows;
 using TechtonicaModLoader.MVVM;
 using TechtonicaModLoader.Services;
@@ -58,6 +59,7 @@ namespace TechtonicaModLoader
             services.AddSingleton<IThunderStore, ThunderStore>();
             services.AddSingleton<IModFilesManager, ModFilesManager>();
             services.AddSingleton<IDebugUtils, DebugUtils>();
+            services.AddTransient<IFileSystem, FileSystem>();
 
             return services.BuildServiceProvider();
         }

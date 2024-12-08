@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using System.IO;
+using System.IO.Abstractions;
 using TechtonicaModLoader.Stores.Settings.V1;
 
 namespace TechtonicaModLoader.Stores.Settings
@@ -23,22 +23,28 @@ namespace TechtonicaModLoader.Stores.Settings
         }
 
         public void Save(SettingsData settingsData) {
+            IFileSystem fileSystem = serviceProvider.GetRequiredService<IFileSystem>();
             string json = JsonConvert.SerializeObject(settingsData, Formatting.Indented);
-            File.WriteAllText(programData.FilePaths.SettingsFile, json);
+            fileSystem.File.WriteAllText(programData.FilePaths.SettingsFile, json);
         }
 
         public SettingsData Load() {
+            IFileSystem fileSystem = serviceProvider.GetRequiredService<IFileSystem>();
+            SettingsData? settingsData = null;
             string settingsFilePath = programData.FilePaths.SettingsFile;
-            if (!File.Exists(settingsFilePath)) {
-                logger.Info("Settings file not found. Using default settings.");
-                return new SettingsData();
+
+            if (!fileSystem.File.Exists(settingsFilePath)) {
+                logger.Info("Settings file not found.");
+            }
+            else {
+                string json = fileSystem.File.ReadAllText(settingsFilePath);
+                settingsData = ParseSettingsJson(ref json);
             }
 
-            string json = File.ReadAllText(settingsFilePath);
-            SettingsData? settingsData = ParseSettingsJson(ref json);
             if (settingsData is null) {
                 logger.Warning("Using default settings.");
                 settingsData = new();
+                Save(settingsData);
             }
             return settingsData;
         }
@@ -98,6 +104,7 @@ namespace TechtonicaModLoader.Stores.Settings
                 SeenMods = v1Data.seenMods.GetSeenMods()
             };
 
+            Save(settingsData);
             return settingsData;
         }
 

@@ -32,6 +32,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="SharpVectors" Version="1.8.4.2" />
+    <PackageReference Include="TestableIO.System.IO.Abstractions.Wrappers" Version="21.1.7" />
   </ItemGroup>
 
   <ItemGroup>
