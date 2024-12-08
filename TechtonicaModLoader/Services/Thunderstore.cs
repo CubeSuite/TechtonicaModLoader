@@ -10,6 +10,7 @@ using TechtonicaModLoader.MVVM.Models;
 using TechtonicaModLoader.Resources;
 using TechtonicaModLoader.Services.ThunderstoreModels;
 using TechtonicaModLoader.Stores;
+using TechtonicaModLoader.Stores.Settings;
 
 namespace TechtonicaModLoader.Services
 {
