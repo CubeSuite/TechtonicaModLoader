@@ -60,6 +60,7 @@ namespace TechtonicaModLoader.Stores.Settings
             }
             catch (JsonReaderException) {
                 logger.Error("Error parsing settings.");
+                logger.Info("Attempting to parse as V1 schema.");
                 settingsFromFile = ConvertV1Json(json);
             }
             catch (Exception ex) {
@@ -82,6 +83,10 @@ namespace TechtonicaModLoader.Stores.Settings
             }
             catch (JsonReaderException) {
                 logger.Warning("Failed to parse settings as V1 schema.");
+            }
+            catch (Exception ex) {
+                logger.Error($"Unexpected exception parsing settings: {ex.GetType().Name}");
+                logger.Debug(ex.ToString());
             }
 
             if (v1Data is null) return null;
