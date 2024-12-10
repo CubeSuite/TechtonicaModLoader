@@ -25,7 +25,7 @@ namespace TechtonicaModLoader.MVVM.ViewModels.Settings
 
             SettingViewModels.Add(new Setting<bool>(
                 name: StringResources.LogDebugMessagesName,
-                description: StringResources.LogDebugMessagesDisplay,
+                description: StringResources.LogDebugMessagesDescription,
                 category: StringResources.CategoryGeneral,
                 getValueFunc: () => userSettings.LogDebugMessages,
                 setValueFunc: value => userSettings.LogDebugMessages = value
