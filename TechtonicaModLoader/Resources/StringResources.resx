@@ -189,7 +189,7 @@
   <data name="GameFolderName" xml:space="preserve">
     <value>Game Folder</value>
   </data>
-  <data name="LogDebugMessagesDisplay" xml:space="preserve">
+  <data name="LogDebugMessagesDescription" xml:space="preserve">
     <value>Whether debug messages should be logged to file. Enable to gather info for a bug report.</value>
   </data>
   <data name="LogDebugMessagesName" xml:space="preserve">

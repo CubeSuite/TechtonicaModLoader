@@ -342,9 +342,9 @@ namespace TechtonicaModLoader.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Whether debug messages should be logged to file. Enable to gather info for a bug report..
         /// </summary>
-        internal static string LogDebugMessagesDisplay {
+        internal static string LogDebugMessagesDescription {
             get {
-                return ResourceManager.GetString("LogDebugMessagesDisplay", resourceCulture);
+                return ResourceManager.GetString("LogDebugMessagesDescription", resourceCulture);
             }
         }
         
