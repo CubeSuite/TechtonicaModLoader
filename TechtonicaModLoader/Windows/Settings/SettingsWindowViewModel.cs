@@ -5,6 +5,7 @@ using TechtonicaModLoader.MVVM.ViewModels.Settings;
 using TechtonicaModLoader.Resources;
 using TechtonicaModLoader.Services;
 using TechtonicaModLoader.Stores;
+using TechtonicaModLoader.Stores.Settings;
 
 namespace TechtonicaModLoader.Windows.Settings
 {

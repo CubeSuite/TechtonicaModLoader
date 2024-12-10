@@ -107,7 +107,7 @@ namespace TechtonicaModLoader
 
             await Task.Run(async () => {
                 while (true) {
-                    WriteQueuedMessages();
+                    await WriteQueuedMessages();
                     await Task.Delay(1000);
                 }
             });

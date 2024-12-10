@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows10.0.17763.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
@@ -11,6 +11,10 @@
     <FileVersion>3.0.0.0</FileVersion>
   </PropertyGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="TechtonicaModLoader.Tests" />
+  </ItemGroup>    
+    
   <ItemGroup>
     <None Remove="Images\Background.jpg" />
     <None Remove="Images\Logo.png" />
@@ -28,6 +32,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="SharpVectors" Version="1.8.4.2" />
+    <PackageReference Include="TestableIO.System.IO.Abstractions.Wrappers" Version="21.1.7" />
   </ItemGroup>
 
   <ItemGroup>

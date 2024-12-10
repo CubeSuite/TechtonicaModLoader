@@ -1,11 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System.Configuration;
-using System.Data;
+using System.IO.Abstractions;
 using System.Windows;
 using TechtonicaModLoader.MVVM;
 using TechtonicaModLoader.Services;
 using TechtonicaModLoader.Stores;
-using TechtonicaModLoader.Windows.Settings;
+using TechtonicaModLoader.Stores.Settings;
 
 namespace TechtonicaModLoader
 {
@@ -16,10 +15,11 @@ namespace TechtonicaModLoader
     {
         // Members
 
-        private IServiceProvider serviceProvider;
-        private ILoggerService logger;
-        private IProgramData programData;
-        
+        private readonly IServiceProvider serviceProvider;
+        private readonly ILoggerService logger;
+        private readonly IProgramData programData;
+        private readonly IUserSettings userSettings;
+
         private MainViewModel? mainVeiwModel = null;
 
         // Constructors
@@ -29,12 +29,12 @@ namespace TechtonicaModLoader
             serviceProvider = ConfigureServiceProvider();
             logger = serviceProvider.GetRequiredService<ILoggerService>();
             programData = serviceProvider.GetRequiredService<IProgramData>();
-        }
+            userSettings = serviceProvider.GetRequiredService<IUserSettings>();
+       }
 
         // Overrides
 
         protected override void OnStartup(StartupEventArgs e) {
-            ConfigureServiceProvider();
             DoStartupProcess();
 
             MainWindow = new MainWindow() {
@@ -51,6 +51,7 @@ namespace TechtonicaModLoader
             ServiceCollection services = new ServiceCollection();
 
             services.AddSingleton<IUserSettings, UserSettings>();
+            services.AddSingleton<ISettingsFileHandler, SettingsFileHandler>();
             services.AddSingleton<ILoggerService, LoggerService>();
             services.AddSingleton<IProgramData, ProgramData>();
             services.AddSingleton<IDialogService, DialogService>();
@@ -58,16 +59,15 @@ namespace TechtonicaModLoader
             services.AddSingleton<IThunderStore, ThunderStore>();
             services.AddSingleton<IModFilesManager, ModFilesManager>();
             services.AddSingleton<IDebugUtils, DebugUtils>();
+            services.AddTransient<IFileSystem, FileSystem>();
 
             return services.BuildServiceProvider();
         }
 
         private void DoStartupProcess() {
+            programData.FilePaths.BepInExFolder = $"{userSettings.GameFolder}\\BepInEx";
             programData.FilePaths.CreateFolderStructure();
             programData.FilePaths.GenerateResources();
-
-            logger = serviceProvider.GetRequiredService<ILoggerService>();
-            logger.Info("Logger started");
 
             mainVeiwModel = new MainViewModel(serviceProvider);
             logger.Info($"MainViewModel loaded");

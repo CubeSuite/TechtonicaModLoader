@@ -8,6 +8,7 @@ using TechtonicaModLoader.MVVM.Models;
 using TechtonicaModLoader.Resources;
 using TechtonicaModLoader.Services;
 using TechtonicaModLoader.Services.ThunderstoreModels;
+using TechtonicaModLoader.Stores.Settings;
 
 namespace TechtonicaModLoader.Stores
 {
@@ -31,19 +32,31 @@ namespace TechtonicaModLoader.Stores
 
         private Dictionary<int, Profile> profiles = new Dictionary<int, Profile>();
 
-        private ILoggerService logger;
-        private IDialogService dialogService;
-        private IUserSettings userSettings;
-        private IProgramData programData;
+        private readonly IServiceProvider serviceProvider;
+        private readonly ILoggerService logger;
+        private readonly IDialogService dialogService;
+        private readonly IProgramData programData;
+        private IUserSettings? _userSettings;
 
         // Properties
 
         public Profile ActiveProfile {
-            get => profiles[userSettings.ActiveProfileID];
+            get => profiles[UserSettings.ActiveProfileID];
             set {
                 if (value == null) return;
-                userSettings.ActiveProfileID = value.Id;
+                UserSettings.ActiveProfileID = value.Id;
                 OnPropertyChanged(nameof(ActiveProfile));
+            }
+        }
+
+
+        private IUserSettings UserSettings {
+            get {
+                // Lazily create the UserSettings object to avoid circular dependencies.
+                if (_userSettings is null) {
+                    _userSettings = serviceProvider.GetRequiredService<IUserSettings>();
+                }
+                return _userSettings;
             }
         }
 
@@ -52,9 +65,9 @@ namespace TechtonicaModLoader.Stores
         // Constructors
 
         public ProfileManager(IServiceProvider serviceProvider) {
+            this.serviceProvider = serviceProvider;
             logger = serviceProvider.GetRequiredService<ILoggerService>();
             dialogService = serviceProvider.GetRequiredService<IDialogService>();
-            userSettings = serviceProvider.GetRequiredService<IUserSettings>();
             programData = serviceProvider.GetRequiredService<IProgramData>();
 
             Load();
@@ -137,7 +150,7 @@ namespace TechtonicaModLoader.Stores
             AddProfile(new Profile(this, StringResources.ProfileDevelopment, true));
             AddProfile(new Profile(this, StringResources.ProfileVanilla, true));
 
-            userSettings.ActiveProfileID = 0;
+            UserSettings.ActiveProfileID = 0;
 
             Save();
         }
