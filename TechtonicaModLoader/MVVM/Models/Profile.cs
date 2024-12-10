@@ -1,11 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+using TechtonicaModLoader.Resources;
 using TechtonicaModLoader.Services.ThunderstoreModels;
 using TechtonicaModLoader.Stores;
 
@@ -44,7 +39,7 @@ namespace TechtonicaModLoader.MVVM.Models
         // Public Functions
 
         public bool IsModEnabled(Mod mod) {
-            if (_profileManager.ActiveProfile.Name == "Vanilla") return false;
+            if (string.Equals(_profileManager.ActiveProfile.Name, StringResources.ProfileVanilla, StringComparison.CurrentCulture)) return false;
 
             if (!ModEnabledStates.ContainsKey(mod.ID)) return false;
             return ModEnabledStates[mod.ID];

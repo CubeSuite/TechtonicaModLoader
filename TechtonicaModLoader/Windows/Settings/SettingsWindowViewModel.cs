@@ -1,16 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TechtonicaModLoader.MVVM.ViewModels.Settings;
+using TechtonicaModLoader.Resources;
 using TechtonicaModLoader.Services;
 using TechtonicaModLoader.Stores;
 
@@ -19,8 +11,6 @@ namespace TechtonicaModLoader.Windows.Settings
     public partial class SettingsWindowViewModel : ObservableObject
     {
         // Members
-
-        private const string defaultCategory = "General";
 
         private readonly ILoggerService logger;
         private readonly IUserSettings userSettings;
@@ -50,7 +40,11 @@ namespace TechtonicaModLoader.Windows.Settings
             }
         }
 
-        [ObservableProperty] string _selectedItem = defaultCategory;
+        public string SettingsLabelText => StringResources.SettingsLabelText;
+        public string RestoreDefaultsButtonText => StringResources.RestoreDefaultsButtonText;
+        public string CategoriesLabelText => StringResources.CategoriesLabelText;
+
+        [ObservableProperty] string _selectedItem;
         [ObservableProperty] bool _deployNeeded = false;
         [ObservableProperty] string _closeSource;
 
@@ -65,6 +59,7 @@ namespace TechtonicaModLoader.Windows.Settings
 
             settingViewModelHelper = new SettingViewModelHelper(serviceProvider, OnSettingChanged);
 
+            _selectedItem = StringResources.CategoryGeneral;
             _closeSource = $"{programData.FilePaths.ResourcesFolder}\\ControlBox\\Close.svg";
         }
 
